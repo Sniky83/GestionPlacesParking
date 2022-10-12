@@ -3,7 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking", "GestionPlacesParking\GestionPlacesParking.csproj", "{59A1CE01-30D7-4C2F-805C-38BE56AE71A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Web.UI", "GestionPlacesParking\GestionPlacesParking.Web.UI.csproj", "{59A1CE01-30D7-4C2F-805C-38BE56AE71A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{C525BA6A-8D63-439A-A930-9BAAB417E2F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{E97338B1-3005-4C81-A065-5D4E2BD1EFDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Application", "GestionPlacesParking.Core.Application\GestionPlacesParking.Core.Application.csproj", "{D876C8AE-123F-486C-B666-93BBD020B2C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Infrastructure", "GestionPlacesParking.Core.Infrastructure\GestionPlacesParking.Core.Infrastructure.csproj", "{4492FB17-D11C-42F1-8B2A-989FCBA90272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Infrastructure.Web", "GestionPlacesParking.Core.Infrastructure.Web\GestionPlacesParking.Core.Infrastructure.Web.csproj", "{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Interfaces", "GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj", "{3AABB87A-B332-4C78-BD92-04F55697E108}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Models", "GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj", "{C4632DDF-D4DE-4001-9E93-6BB87DF96684}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +29,37 @@ Global
 		{59A1CE01-30D7-4C2F-805C-38BE56AE71A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59A1CE01-30D7-4C2F-805C-38BE56AE71A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59A1CE01-30D7-4C2F-805C-38BE56AE71A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D876C8AE-123F-486C-B666-93BBD020B2C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D876C8AE-123F-486C-B666-93BBD020B2C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D876C8AE-123F-486C-B666-93BBD020B2C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D876C8AE-123F-486C-B666-93BBD020B2C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4492FB17-D11C-42F1-8B2A-989FCBA90272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4492FB17-D11C-42F1-8B2A-989FCBA90272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4492FB17-D11C-42F1-8B2A-989FCBA90272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4492FB17-D11C-42F1-8B2A-989FCBA90272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AABB87A-B332-4C78-BD92-04F55697E108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AABB87A-B332-4C78-BD92-04F55697E108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AABB87A-B332-4C78-BD92-04F55697E108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AABB87A-B332-4C78-BD92-04F55697E108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4632DDF-D4DE-4001-9E93-6BB87DF96684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4632DDF-D4DE-4001-9E93-6BB87DF96684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4632DDF-D4DE-4001-9E93-6BB87DF96684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4632DDF-D4DE-4001-9E93-6BB87DF96684}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{59A1CE01-30D7-4C2F-805C-38BE56AE71A6} = {C525BA6A-8D63-439A-A930-9BAAB417E2F9}
+		{D876C8AE-123F-486C-B666-93BBD020B2C6} = {E97338B1-3005-4C81-A065-5D4E2BD1EFDD}
+		{4492FB17-D11C-42F1-8B2A-989FCBA90272} = {E97338B1-3005-4C81-A065-5D4E2BD1EFDD}
+		{D7D99A19-2D40-4813-9F4A-B14ACAF5F255} = {E97338B1-3005-4C81-A065-5D4E2BD1EFDD}
+		{3AABB87A-B332-4C78-BD92-04F55697E108} = {E97338B1-3005-4C81-A065-5D4E2BD1EFDD}
+		{C4632DDF-D4DE-4001-9E93-6BB87DF96684} = {E97338B1-3005-4C81-A065-5D4E2BD1EFDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E14A9EA7-B02F-4498-8D19-E10FB60320C8}
