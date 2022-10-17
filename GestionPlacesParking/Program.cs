@@ -1,7 +1,18 @@
+using GestionPlacesParking.Core.Infrastructure.Databases;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+// Add context
+string connectionString = builder.Configuration.GetConnectionString("DroneContext");
+
+builder.Services.AddDbContext<ParkingDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
 
 var app = builder.Build();
 
