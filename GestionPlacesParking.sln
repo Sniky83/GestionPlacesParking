@@ -9,15 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{C525BA6A-8D63-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{E97338B1-3005-4C81-A065-5D4E2BD1EFDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Application", "GestionPlacesParking.Core.Application\GestionPlacesParking.Core.Application.csproj", "{D876C8AE-123F-486C-B666-93BBD020B2C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Application", "GestionPlacesParking.Core.Application\GestionPlacesParking.Core.Application.csproj", "{D876C8AE-123F-486C-B666-93BBD020B2C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Infrastructure", "GestionPlacesParking.Core.Infrastructure\GestionPlacesParking.Core.Infrastructure.csproj", "{4492FB17-D11C-42F1-8B2A-989FCBA90272}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Infrastructure", "GestionPlacesParking.Core.Infrastructure\GestionPlacesParking.Core.Infrastructure.csproj", "{4492FB17-D11C-42F1-8B2A-989FCBA90272}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Infrastructure.Web", "GestionPlacesParking.Core.Infrastructure.Web\GestionPlacesParking.Core.Infrastructure.Web.csproj", "{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Infrastructure.Web", "GestionPlacesParking.Core.Infrastructure.Web\GestionPlacesParking.Core.Infrastructure.Web.csproj", "{D7D99A19-2D40-4813-9F4A-B14ACAF5F255}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Interfaces", "GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj", "{3AABB87A-B332-4C78-BD92-04F55697E108}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Interfaces", "GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj", "{3AABB87A-B332-4C78-BD92-04F55697E108}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionPlacesParking.Core.Models", "GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj", "{C4632DDF-D4DE-4001-9E93-6BB87DF96684}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Models", "GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj", "{C4632DDF-D4DE-4001-9E93-6BB87DF96684}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
