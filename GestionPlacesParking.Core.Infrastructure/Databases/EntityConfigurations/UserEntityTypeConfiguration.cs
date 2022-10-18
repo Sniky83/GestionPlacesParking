@@ -15,10 +15,8 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfiguration
         {
             builder.HasKey(item => item.Id);
             builder.ToTable("User");
-            builder.Property(item => item.Email).IsRequired(true);
-            builder.Property(item => item.Password).IsRequired(true);
-            builder.Property(item => item.Email).HasMaxLength(50);
-            builder.Property(item => item.Password).HasMaxLength(64);
+            builder.Property(item => item.Email).IsRequired(true).HasMaxLength(50);
+            builder.Property(item => item.Password).IsRequired(true).HasMaxLength(64);
         }
     }
 }

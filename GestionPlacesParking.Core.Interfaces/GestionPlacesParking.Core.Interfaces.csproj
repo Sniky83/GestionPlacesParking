@@ -8,7 +8,10 @@
 
   <ItemGroup>
     <Folder Include="Infrastructures\" />
-    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DataLayers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
       <PrivateAssets>all</PrivateAssets>
@@ -21,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj" />
     <ProjectReference Include="..\GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj" />
   </ItemGroup>
 

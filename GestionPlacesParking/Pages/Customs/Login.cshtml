@@ -1,0 +1,23 @@
+﻿@page "/login"
+@model GestionPlacesParking.Web.UI.Pages.Customs.LoginModel
+@{
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <span class="text-danger">@Model.ErrorMessage</span>
+            <div class="form-floating mb-4">
+                <input asp-for="User.Email" class="form-control" autocomplete="email" maxlength="50"/>
+                <label asp-for="User.Email" class="form-label"></label>
+                <span asp-validation-for="User.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-4">
+                <input asp-for="User.Password" type="password" class="form-control" autocomplete="current-password" maxlength="16"/>
+                <label asp-for="User.Password" class="form-label"></label>
+                <span asp-validation-for="User.Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Se connecter</button>
+        </form>
+    </div>
+</div>

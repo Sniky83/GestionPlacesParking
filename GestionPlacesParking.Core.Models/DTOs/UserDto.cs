@@ -5,17 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionPlacesParking.Core.Models
+namespace GestionPlacesParking.Core.Models.DTOs
 {
-    /// <summary>
-    /// Utilisateur du site
-    /// </summary>
-    public class User
+    public class UserDto
     {
-        public int Id { get; set; }
-        [EmailAddress]
         public string Email { get; set; } = string.Empty;
-        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
     }
 }

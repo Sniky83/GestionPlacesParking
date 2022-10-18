@@ -1,20 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GestionPlacesParking.Pages
+namespace GestionPlacesParking.Web.UI.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
+        public IActionResult OnGet()
         {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
+            //On redirige vers le vrai index
+            return RedirectToPage("/Customs/Index");
         }
     }
 }

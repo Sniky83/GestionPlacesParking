@@ -11,7 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GestionPlacesParking.Core.Application\GestionPlacesParking.Core.Application.csproj" />
+    <ProjectReference Include="..\GestionPlacesParking.Core.Infrastructure.Web\GestionPlacesParking.Core.Infrastructure.Web.csproj" />
     <ProjectReference Include="..\GestionPlacesParking.Core.Infrastructure\GestionPlacesParking.Core.Infrastructure.csproj" />
+    <ProjectReference Include="..\GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
