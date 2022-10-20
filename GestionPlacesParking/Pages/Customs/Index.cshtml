@@ -1,6 +1,111 @@
 ﻿@page "/Index"
 @model GestionPlacesParking.Web.UI.Pages.Customs.IndexModel
+@inject LinkGenerator linkGenerator
 @{
 }
 
 <h1 class="display-4">Places de parking</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            @foreach (var ParkingSlot in Model.ParkingSlotList)
+            {
+                <th>@ParkingSlot.Label</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var DayOfTheWeek in Model.Day.DaysOfTheWeek)
+        {
+            @*Règle métier: Le samedi et le dimanche on ne fait pas de réservation*@
+            @if (DayOfTheWeek.Key != "Samedi" && DayOfTheWeek.Key != "Dimanche")
+            {
+                <tr>
+                    <td>@DayOfTheWeek.Key</td>
+                    @for (var i = Model.ParkingSlotList.First().Id; i < Model.ParkingSlotList.Count + 1; i++)
+                    {
+                        @foreach (var Reservation in Model.ReservationList)
+                        {
+                            @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
+                            @if (Reservation.ReservationDate.Date.ToShortDateString() == DayOfTheWeek.Value.ToShortDateString() &&
+                            Reservation.ParkingSlot.Id == i)
+                            {
+                                @*Pas besoin d'injecter un ID pour reconnaitre car ne réserve pas pour un jour déjà réservé*@
+                                <td><button class="bg-danger">@Reservation.ReservingName</button></td>
+                            }
+                            else
+                            {
+                                <td><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
+                            }
+                        }
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<partial name="Partials/_Modal" />
+
+@section scripts {
+    <script>
+        let myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        let getIdClickedBtn = null;
+
+        function openModal(event) {
+            getIdClickedBtn = event.target.attributes.id.value;
+            myModal.show();
+        }
+
+        function validModal() {
+            newReservation();
+
+            myModal.hide();
+        }
+
+        async function newReservation() {
+            const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/MakeReservationService")';
+
+            /*let bodyJson = new FormData();
+            bodyJson.append("json", JSON.stringify({ ReservingNames: "test" }));
+
+            let init = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: bodyJson
+            };
+
+            const response = await fetch(url, init);*/
+
+            const reservingName = document.getElementById('reservingName').value;
+            const reservationDate = getIdClickedBtn.split('_')[0] + " 00:00:00";
+            const parkingSlotId = getIdClickedBtn.split('_')[1];
+
+            var date = new Date(reservationDate);
+
+            console.log(reservingName, reservationDate, parkingSlotId, date);
+
+            const urlParams = url + "?" + "ReservingName=" + reservingName + "&ReservationDate=" + reservationDate + "&ParkingSlotId=" + parkingSlotId;
+            const response = await fetch(urlParams);
+            const data = await response.json();
+
+            console.log(data);
+
+            return data;
+
+            /*$.ajax({
+                url: '@linkGenerator.GetPathByPage(HttpContext, "./Index")',
+                method: 'POST',
+                success: function (data) {
+                    alert("Succès: " + data);
+                },
+                error: function (error) {
+                    alert("Error: " + error);
+                }
+            })*/
+        }
+    </script>
+}

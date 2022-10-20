@@ -22,6 +22,10 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
 // Injections de dépendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IParkingSlotDataLayer, SqlServerParkingSlotDataLayer>();
+builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
+builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
 // Config session Login
 builder.Services.AddDistributedMemoryCache();
@@ -31,6 +35,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+//Ajout d'un Token CSRF
+//builder.Services.AddAntiforgery(o => o.HeaderName = "CSRF-TOKEN");
 
 var app = builder.Build();
 
@@ -45,7 +52,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseStatusCodePagesWithRedirects("/errors/{0}");
+//app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
 app.UseRouting();
 
@@ -54,7 +61,7 @@ app.UseAuthorization();
 app.UseSession();
 
 // Implémentation des Custom Middlewares
-app.UseRedirectIfNotConnected();
+//app.UseRedirectIfNotConnected();
 
 app.MapRazorPages();
 

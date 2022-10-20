@@ -15,6 +15,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfiguration
         {
             builder.HasKey(item => item.Id);
             builder.ToTable("Reservation");
+            builder.Property(item => item.ReservationDate).HasColumnType("Date");
             builder.Property(item => item.ReservingName).IsRequired(true);
             builder.Property(item => item.ReservingName).HasMaxLength(50);
         }

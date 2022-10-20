@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionPlacesParking.Core.Models
+namespace GestionPlacesParking.Core.Models.DTOs
 {
-    /// <summary>
-    /// Réservation de l'application
-    /// </summary>
-    public class Reservation
+    public class ReservationDto
     {
-        public int? Id { get; set; }
         public int ParkingSlotId { get; set; }
-        public ParkingSlot? ParkingSlot { get; set; } = null;
         public string ReservingName { get; set; } = string.Empty;
         public bool IsReserved { get; set; } = true;
         public DateTime ReservationDate { get; set; }

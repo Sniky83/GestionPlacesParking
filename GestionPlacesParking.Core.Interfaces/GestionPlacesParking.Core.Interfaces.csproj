@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructures\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GestionPlacesParking.Core.Models\GestionPlacesParking.Core.Models.csproj" />
   </ItemGroup>
 
