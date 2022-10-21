@@ -32,15 +32,11 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             {
                 ParkingSlotList = _parkingRepository.GetAll();
                 ReservationList = _reservationRepository.GetAllReserved();
+                //TODO: Faire un _dayRepository
                 Day = new Day();
             }
 
             return result;
-        }
-
-        public void OnPost()
-        {
-
         }
     }
 }

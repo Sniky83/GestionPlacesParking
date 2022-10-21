@@ -13,7 +13,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
         public ParkingDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ParkingDbContext>();
-            optionsBuilder.UseSqlServer("Server=.;Database=GestionPlacesParking;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=GestionPlacesParking;Trusted_Connection=True;");
 
             return new ParkingDbContext(optionsBuilder.Options);
         }

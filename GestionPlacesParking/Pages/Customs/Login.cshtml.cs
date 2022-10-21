@@ -19,10 +19,6 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             _repository = repository;
         }
 
-        public void OnGet()
-        {
-        }
-
         public IActionResult OnPost()
         {
             IActionResult result = Page();
@@ -42,6 +38,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                 }
                 catch (Exception)
                 {
+                    result = BadRequest();
                     ErrorMessage = "Mot de passe ou adresse e-mail incorrect !";
                 }
             }

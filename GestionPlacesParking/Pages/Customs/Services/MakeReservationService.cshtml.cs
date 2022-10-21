@@ -10,32 +10,30 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
     {
         private readonly IReservationRepository _repository;
 
-        //[BindProperty]
-        //public new Reservation Reservation { get; set; }
-        //public new string ErrorMessage { get; set; }
-
         public MakeReservationServiceModel(IReservationRepository repository)
         {
             _repository = repository;
         }
 
-        public IActionResult OnGet(ReservationDto reservation)
+        public IActionResult OnPost([FromBody] Reservation Reservation)
         {
             IActionResult result = Page();
 
-            int rowsAffected = 1;// _repository.MakeReservation(reservation);
-
-            if (rowsAffected < 1)
+            if(ModelState.IsValid)
             {
-                result = BadRequest("Problème lors de l'ajout de la réservation. Veuillez remplir le champ Nom.");
+                int rowsAffected = _repository.MakeReservation(Reservation);
+
+                if (rowsAffected < 1)
+                {
+                    result = BadRequest(new { message = "Problème lors de l'ajout de la réservation. Veuillez remplir le champ Nom." });
+                }
+            }
+            else
+            {
+                result = BadRequest(new { message = ModelState.Values.First().Errors.First().ErrorMessage });
             }
 
             return result;
-        }
-
-        public JsonResult OnPost([FromBody] string ReservingNames)
-        {
-            return new JsonResult(new List<Reservation>() { new() { ReservingName = "Test" } });
         }
     }
 }

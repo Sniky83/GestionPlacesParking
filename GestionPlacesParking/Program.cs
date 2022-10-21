@@ -37,7 +37,12 @@ builder.Services.AddSession(options =>
 });
 
 //Ajout d'un Token CSRF
-//builder.Services.AddAntiforgery(o => o.HeaderName = "CSRF-TOKEN");
+builder.Services.AddAntiforgery(options =>
+{
+    options.FormFieldName = "XSRF-TOKEN";
+    options.HeaderName = "XSRF-TOKEN";
+    options.SuppressXFrameOptionsHeader = false;
+});
 
 var app = builder.Build();
 
@@ -50,9 +55,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
-//app.UseStatusCodePagesWithRedirects("/errors/{0}");
+app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
 app.UseRouting();
 
