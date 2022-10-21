@@ -18,7 +18,7 @@ namespace GestionPlacesParking.Core.Models
         public ParkingSlot? ParkingSlot { get; set; } = null;
         [MaxLength(50, ErrorMessage = "Le champ Nom doit contenir au maximum 50 charactères.")]
         [MinLength(3, ErrorMessage = "Le champ Nom doit contenir au moins 3 charactères.")]
-        [RegularExpression(@"^[^\p{P}\p{Sm}]*$", ErrorMessage = "Les charactères spéciaux sont interdits.")]
+        [RegularExpression(@"^[^\p{P}\p{Sm}0-9]*$", ErrorMessage = "Les charactères spéciaux et les chiffres sont interdits.")]
         public string ReservingName { get; set; } = string.Empty;
         public bool IsReserved { get; set; } = true;
         public DateTime ReservationDate { get; set; }
