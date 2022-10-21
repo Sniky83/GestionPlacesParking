@@ -22,7 +22,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
             var id = context.Session.GetInt32("UserId");
             var isLoginPage = context.Request.Path.Value?.ToLower().Contains("login");
 
-            if (id > 1 && (!isLoginPage.HasValue || !isLoginPage.Value))
+            if (id == null && (!isLoginPage.HasValue || !isLoginPage.Value))
             {
                 context.Response.Redirect("/Login");
                 return;

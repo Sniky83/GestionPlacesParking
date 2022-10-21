@@ -16,8 +16,8 @@
                 <input asp-for="User.Password" type="password" class="form-control" autocomplete="current-password" maxlength="16"/>
                 <label asp-for="User.Password" class="form-label"></label>
                 <span asp-validation-for="User.Password" class="text-danger"></span>
+                <span class="text-danger">@Model.ErrorMessage</span>
             </div>
-            <span class="text-danger">@Model.ErrorMessage</span>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Se connecter</button>
         </form>
     </div>
