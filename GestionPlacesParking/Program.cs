@@ -62,7 +62,7 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseStatusCodePagesWithRedirects("/errors/{0}");
+//app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
 app.UseRouting();
 
