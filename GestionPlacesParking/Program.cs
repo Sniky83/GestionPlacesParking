@@ -22,10 +22,14 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
 // Injections de dépendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IParkingSlotDataLayer, SqlServerParkingSlotDataLayer>();
 builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
+
 builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+
+builder.Services.AddScoped<IDayRepository, DayRepository>();
 
 // Config session Login
 builder.Services.AddDistributedMemoryCache();

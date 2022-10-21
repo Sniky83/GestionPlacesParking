@@ -10,6 +10,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
     {
         private readonly IParkingSlotRepository _parkingRepository;
         private readonly IReservationRepository _reservationRepository;
+        private readonly IDayRepository _dayRepository;
         private readonly ILogger<IndexModel> _logger;
 
         [BindProperty]
@@ -17,11 +18,12 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         public new List<Reservation> ReservationList { get; set; }
         public new Day Day { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger, IParkingSlotRepository parkingRepository, IReservationRepository reservationRepository)
+        public IndexModel(ILogger<IndexModel> logger, IParkingSlotRepository parkingRepository, IReservationRepository reservationRepository, IDayRepository dayRepository)
         {
             _logger = logger;
             _parkingRepository = parkingRepository;
             _reservationRepository = reservationRepository;
+            _dayRepository = dayRepository;
         }
 
         public IActionResult OnGet()
@@ -32,8 +34,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             {
                 ParkingSlotList = _parkingRepository.GetAll();
                 ReservationList = _reservationRepository.GetAllReserved();
-                //TODO: Faire un _dayRepository
-                Day = new Day();
+                Day = _dayRepository.ExtractDaysWithDate();
             }
 
             return result;
