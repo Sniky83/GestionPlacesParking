@@ -4,7 +4,6 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
     var requestToken = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
-    bool isReserved = false;
 }
 
 <h1 class="display-4">Places de parking</h1>
@@ -28,27 +27,21 @@
                     <td>@DayOfTheWeek.Key</td>
                     @for (var i = Model.ParkingSlotList.First().Id; i < (Model.ParkingSlotList.Count + 1); i++)
                     {
-                        @foreach (var Reservation in Model.ReservationList)
-                        {
-                            @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
-                            @if (Reservation.ReservationDate.Date.ToShortDateString() == DayOfTheWeek.Value.ToShortDateString() &&
-                            Reservation.ParkingSlot.Id == i)
-                            {
-                                @*Pas besoin d'injecter un ID pour reconnaitre car ne réserve pas pour un jour déjà réservé*@
-                                <td><button class="bg-danger">@Reservation.ReservingName</button></td>
+                        @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
+                        var findReservation = Model.ReservationList.Find(
+                            x => x.ReservationDate.ToShortDateString() == DayOfTheWeek.Value.ToShortDateString() &&
+                            x.ParkingSlotId == i
+                        );
 
-                                isReserved = true;
-                                break;
-                            }
-                        }
-
-                        if(!isReserved)
+                        if (findReservation != null)
                         {
-                            <td><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
+                            @*Pas besoin d'injecter un ID pour reconnaitre car ne réserve pas pour un jour déjà réservé*@
+                            <td><button class="bg-danger">@findReservation.ReservingName</button></td>
                         }
                         else
                         {
-                            isReserved = false;
+                            @*On inject un ID pour le récupérer facilement dans le JS pour faire la requete de création d'une réservation*@
+                            <td><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
                         }
                     }
                 </tr>
@@ -113,23 +106,6 @@
                 const data = await response.json();
                 document.getElementById('error-span').innerHTML = data.message;
             }
-
-            /*$.ajax({
-                url: url,
-                method: 'POST',
-                contentType: 'application/json',
-                dataType: 'json',
-                data: JSON.stringify(params),
-                headers: {
-                    'XSRF-TOKEN': token
-                },
-                success: function (data) {
-                    alert("Succès: " + data);
-                },
-                error: function (error) {
-                    alert("Error: " + error);
-                }
-            })*/
         }
     </script>
 }
