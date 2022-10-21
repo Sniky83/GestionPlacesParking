@@ -19,10 +19,10 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var id = context.Session.GetString("UserId");
+            var id = context.Session.GetInt32("UserId");
             var isLoginPage = context.Request.Path.Value?.ToLower().Contains("login");
 
-            if (string.IsNullOrEmpty(id) && (!isLoginPage.HasValue || !isLoginPage.Value))
+            if (id > 1 && (!isLoginPage.HasValue || !isLoginPage.Value))
             {
                 context.Response.Redirect("/Login");
                 return;

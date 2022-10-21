@@ -32,7 +32,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
                     if (user != null)
                     {
-                        HttpContext.Session.SetString("UserId", user.Email);
+                        HttpContext.Session.SetInt32("UserId", user.Id);
                         result = RedirectToPage("/Index");
                     }
                 }
