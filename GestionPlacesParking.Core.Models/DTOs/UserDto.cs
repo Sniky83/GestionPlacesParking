@@ -9,8 +9,9 @@ namespace GestionPlacesParking.Core.Models.DTOs
 {
     public class UserDto
     {
-        [Required(ErrorMessage = "Le champ e-mail est obligatoire !")]
+        [Required(ErrorMessage = "Le champ email est obligatoire !")]
         [MaxLength(50, ErrorMessage = "L'email ne doit pas dépasser 50 charactères !")]
+        [RegularExpression(@"^\\S+@\\S+\\.\\S+$", ErrorMessage = "Veuillez saisir un email valide !")]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Le champ mot de passe est obligatoire !")]
