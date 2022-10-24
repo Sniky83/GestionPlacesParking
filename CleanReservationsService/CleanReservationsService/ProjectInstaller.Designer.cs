@@ -41,7 +41,7 @@
             // 
             this.serviceInstaller1.Description = "Ce service UPDATE tous les Vendredi à 11h la BDD pour mettre à IsActif = 0 toutes" +
     " les réservations du projet Gestion des places de parking.";
-            this.serviceInstaller1.DisplayName = "Mon Service qui nettoie les Réservations";
+            this.serviceInstaller1.DisplayName = "Service qui nettoie les Réservations";
             this.serviceInstaller1.ServiceName = "CleanReservations";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
