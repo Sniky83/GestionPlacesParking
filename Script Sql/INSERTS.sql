@@ -7,7 +7,7 @@ INSERT INTO ParkingSlot VALUES('P3')
 INSERT INTO ParkingSlot VALUES('P4')
 
 --PWD: apside_user
-INSERT INTO [User] VALUES ('user@apside-groupe.com', '3fce61ebb4f305664ddd45110f3f4f27e32e61b052609e0a027b0f64f08e0801', 0)
+INSERT INTO [User] VALUES ('user@apside-groupe.com', '25707515faae7c87cf20d7be987c15f5533867ee003f49011d5d2913d3f5ad6b', 0)
 
 --PWD: apside_administrateur
-INSERT INTO [User] VALUES ('admin@apside-groupe.com', '7196165f31d788bc9e33eb64c47d88f5560c8d4a0806981eea986f13962ddf7f', 1)
+INSERT INTO [User] VALUES ('admin@apside-groupe.com', 'a5d2db9447f30b6f256a774b034a6c7eb2041824bb8bff84b717db637699e5e5', 1)
