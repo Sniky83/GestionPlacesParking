@@ -40,7 +40,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-//Ajout d'un Token CSRF
+// Ajout d'un Token CSRF
 builder.Services.AddAntiforgery(options =>
 {
     options.FormFieldName = "XSRF-TOKEN";
@@ -71,7 +71,7 @@ app.UseAuthorization();
 app.UseSession();
 
 // Implémentation des Custom Middlewares
-app.UseRedirectIfNotConnected();
+//app.UseRedirectIfNotConnected();
 
 app.MapRazorPages();
 

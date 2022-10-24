@@ -32,6 +32,11 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
                     if (user != null)
                     {
+                        if(user.IsAdmin == true)
+                        {
+                            HttpContext.Session.SetInt32("IsAdmin", 1);
+                        }
+
                         HttpContext.Session.SetInt32("UserId", user.Id);
                         result = RedirectToPage("/Index");
                     }
