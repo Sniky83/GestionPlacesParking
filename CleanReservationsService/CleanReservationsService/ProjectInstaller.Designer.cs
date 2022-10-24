@@ -43,11 +43,11 @@
     " les réservations du projet Gestion des places de parking.";
             this.serviceInstaller1.DisplayName = "Mon Service qui nettoie les Réservations";
             this.serviceInstaller1.ServiceName = "CleanReservations";
-            this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
+            this.serviceProcessInstaller1,
             this.serviceInstaller1});
 
         }
