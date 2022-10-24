@@ -70,8 +70,8 @@ app.UseAuthorization();
 
 app.UseSession();
 
-// Implémentation des Custom Middlewares
-app.UseRedirectIfNotConnected();
+// Implémentation des Customs Middlewares
+//app.UseRedirectIfNotConnected();
 app.UseRedirectIfNotAdmin();
 
 app.MapRazorPages();
