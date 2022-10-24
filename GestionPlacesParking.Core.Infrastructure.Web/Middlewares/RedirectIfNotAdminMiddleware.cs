@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 {
-    public class RedirectIfNotConnectedMiddleware
+    public class RedirectIfNotAdminMiddleware
     {
         private readonly RequestDelegate _next;
-        public RedirectIfNotConnectedMiddleware(RequestDelegate next)
+        public RedirectIfNotAdminMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -20,14 +20,10 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             var userId = context.Session.GetInt32("UserId");
-            bool isLoginPage = context.Request.Path.Value.ToLower().Contains("login");
+            var isAdmin = context.Session.GetInt32("IsAdmin");
+            bool isHistorique = context.Request.Path.Value.ToLower().Contains("historique");
 
-            if (userId == null && !isLoginPage)
-            {
-                context.Response.Redirect("/Login");
-                return;
-            }
-            else if(userId != null && isLoginPage)
+            if (userId != null && isAdmin == null && isHistorique)
             {
                 context.Response.Redirect("/Index");
                 return;
@@ -37,11 +33,11 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
         }
     }
 
-    public static class AuthenticationMiddlewares
+    public static class AdminAuthenticationMiddlewares
     {
-        public static IApplicationBuilder UseRedirectIfNotConnected(this IApplicationBuilder app)
+        public static IApplicationBuilder UseRedirectIfNotAdmin(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<RedirectIfNotConnectedMiddleware>();
+            return app.UseMiddleware<RedirectIfNotAdminMiddleware>();
         }
     }
 }
