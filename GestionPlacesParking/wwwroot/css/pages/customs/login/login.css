@@ -1,0 +1,15 @@
+﻿.login-img {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    display: block;
+}
+
+.login-form {
+    width: 33%;
+    height: auto;
+    margin: auto;
+    margin-top: 3%;
+    position: relative;
+}

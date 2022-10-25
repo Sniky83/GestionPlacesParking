@@ -3,6 +3,18 @@
 @inject LinkGenerator linkGenerator
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
+    var isAdmin = HttpContext.Session.GetInt32("IsAdmin");
+
+    if(isAdmin == 1)
+    {
+        Layout = "_AdminLayout";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
+
+    int MinId = Model.ParkingSlotList.First().Id;
     var requestToken = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
 }
 
@@ -24,8 +36,8 @@
             @if (DayOfTheWeek.Key != "Samedi" && DayOfTheWeek.Key != "Dimanche")
             {
                 <tr>
-                    <td>@DayOfTheWeek.Key</td>
-                    @for (var i = Model.ParkingSlotList.First().Id; i < (Model.ParkingSlotList.Count + 1); i++)
+                    <td class="col-md-2">@DayOfTheWeek.Key</td>
+                    @for (int i = MinId; i < (MinId + Model.ParkingSlotList.Count); i++)
                     {
                         @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
                         var findReservation = Model.ReservationList.Find(
@@ -36,12 +48,12 @@
                         if (findReservation != null)
                         {
                             @*Pas besoin d'injecter un ID pour reconnaitre car ne réserve pas pour un jour déjà réservé*@
-                            <td><button class="bg-danger">@findReservation.ReservingName</button></td>
+                            <td class="col-md-2"><button class="bg-danger">@findReservation.ReservingName</button></td>
                         }
                         else
                         {
                             @*On inject un ID pour le récupérer facilement dans le JS pour faire la requete de création d'une réservation*@
-                            <td><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
+                            <td class="col-md-2"><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
                         }
                     }
                 </tr>
@@ -95,14 +107,12 @@
             };
 
             const response = await fetch(url, init);
-            
-            if(response.ok)
-            {
+
+            if (response.ok) {
                 //Rafraichi la page
                 location.reload();
             }
-            else
-            {
+            else {
                 const data = await response.json();
                 document.getElementById('error-span').innerHTML = data.message;
             }
