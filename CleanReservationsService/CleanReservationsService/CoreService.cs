@@ -37,7 +37,7 @@ namespace CleanReservationsService
             DateTime currentTime = DateTime.Now;
 
             //Règle métier: Si on est vendredi 11h00
-            if((int)currentTime.DayOfWeek == 5 && currentTime.Hour == 11 && currentTime.Minute < 1)
+            if((int)currentTime.DayOfWeek == 5 && currentTime.Hour == 11 && currentTime.Minute == 0)
             {
                 CleanReservations();
             }
