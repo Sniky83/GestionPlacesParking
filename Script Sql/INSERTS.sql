@@ -1,6 +1,10 @@
 USE GestionPlacesParking
 GO
 
+DELETE ParkingSlot
+DELETE [User]
+
+--Ajout des places parking à l'application
 INSERT INTO ParkingSlot VALUES('P1')
 INSERT INTO ParkingSlot VALUES('P2')
 INSERT INTO ParkingSlot VALUES('P3')
