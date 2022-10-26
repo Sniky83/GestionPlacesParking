@@ -25,7 +25,7 @@
             <th></th>
             @foreach (var ParkingSlot in Model.ParkingSlotList)
             {
-                <th>@ParkingSlot.Label</th>
+                <th class="justify-content-center text-center">@ParkingSlot.Label</th>
             }
         </tr>
     </thead>
@@ -36,7 +36,7 @@
             @if (DayOfTheWeek.Key != "Samedi" && DayOfTheWeek.Key != "Dimanche")
             {
                 <tr>
-                    <td class="col-md-2">@DayOfTheWeek.Key</td>
+                    <td class="col-md-1">@DayOfTheWeek.Key</td>
                     @for (int i = MinId; i < (MinId + Model.ParkingSlotList.Count); i++)
                     {
                         @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
@@ -48,12 +48,12 @@
                         if (findReservation != null)
                         {
                             @*Pas besoin d'injecter un ID pour reconnaitre car ne réserve pas pour un jour déjà réservé*@
-                            <td class="col-md-2"><button class="bg-danger">@findReservation.ReservingName</button></td>
+                            <td class="col-md-2 justify-content-center text-center"><button class="btn bg-danger">@findReservation.ReservingName</button></td>
                         }
                         else
                         {
                             @*On inject un ID pour le récupérer facilement dans le JS pour faire la requete de création d'une réservation*@
-                            <td class="col-md-2"><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="bg-success p-3" onClick="openModal(event)"></button></td>
+                            <td class="col-md-2 justify-content-center text-center"><button id="@String.Format("{0}_{1}", DayOfTheWeek.Value, i)" class="btn bg-success p-3" onClick="openModal(event)"></button></td>
                         }
                     }
                 </tr>
