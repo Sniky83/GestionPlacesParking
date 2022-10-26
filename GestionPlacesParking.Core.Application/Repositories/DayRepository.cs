@@ -17,27 +17,34 @@ namespace GestionPlacesParking.Core.Application.Repositories
         {
             int daysToDeduce = 0;
 
-            switch (DateTime.Today.DayOfWeek.ToString().ToLower())
+            switch ((int)DateTime.Today.DayOfWeek)
             {
-                case "monday":
+                //Lundi
+                case 1:
                     daysToDeduce = 0;
                     break;
-                case "tuesday":
+                //Mardi
+                case 2:
                     daysToDeduce = 1;
                     break;
-                case "wednesday":
+                //Mercredi
+                case 3:
                     daysToDeduce = 2;
                     break;
-                case "thursday":
+                //Jeudi
+                case 4:
                     daysToDeduce = 3;
                     break;
-                case "friday":
+                //Vendredi
+                case 5:
                     daysToDeduce = 4;
                     break;
-                case "saturday":
+                //Samedi
+                case 6:
                     daysToDeduce = 5;
                     break;
-                case "sunday":
+                //Dimanche
+                case 7:
                     daysToDeduce = 6;
                     break;
             }
