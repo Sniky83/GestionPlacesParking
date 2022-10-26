@@ -24,7 +24,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<Reservation> GetAllReserved()
         {
-            return Context?.Reservations.Where(r => r.IsReserved == true).ToList();
+            return Context?.Reservations.Where(r => r.IsDeleted == false).ToList();
         }
     }
 }

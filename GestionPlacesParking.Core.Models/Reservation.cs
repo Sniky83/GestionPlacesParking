@@ -20,7 +20,7 @@ namespace GestionPlacesParking.Core.Models
         [MinLength(3, ErrorMessage = "Le champ Nom doit contenir au moins 3 caractères.")]
         [RegularExpression(@"^[^\p{P}\p{Sm}0-9]*$", ErrorMessage = "Les caractères spéciaux et les chiffres sont interdits.")]
         public string ReservingName { get; set; } = string.Empty;
-        public bool IsReserved { get; set; } = true;
+        public bool IsDeleted { get; set; }
         public DateTime ReservationDate { get; set; }
     }
 }
