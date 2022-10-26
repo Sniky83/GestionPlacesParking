@@ -7,8 +7,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
     {
         public IActionResult OnGet()
         {
-            HttpContext.Session.Remove("UserId");
-            HttpContext.Session.Remove("IsAdmin");
+            HttpContext.Session.Clear();
 
             return Redirect("/login");
         }
