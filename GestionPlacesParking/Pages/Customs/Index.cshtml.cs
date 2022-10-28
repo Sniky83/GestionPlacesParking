@@ -33,8 +33,8 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             if (ModelState.IsValid)
             {
                 ParkingSlotList = _parkingRepository.GetAll();
-                ReservationList = _reservationRepository.GetAllReserved();
                 Day = _dayRepository.ExtractDaysWithDate();
+                ReservationList = _reservationRepository.GetAllReserved((DateOnly)Day.DaysOfTheWeek.First().Value);
             }
 
             return result;

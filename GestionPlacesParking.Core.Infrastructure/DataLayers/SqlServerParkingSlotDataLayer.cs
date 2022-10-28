@@ -22,9 +22,24 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             return Context.SaveChanges();
         }
 
-        public List<Reservation> GetAllReserved()
+        public List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek)
         {
-            return Context?.Reservations.Where(r => r.IsDeleted == false).ToList();
+            DateTime currentTime = DateTime.Now;
+
+            //Règle métier: Si on est vendredi >= à 11h00
+            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
+            {
+                DateTime nextMonday = firstDayOfTheWeek.ToDateTime(TimeOnly.Parse("00:00"));
+
+                return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
+            }
+            else
+            {
+                DateTime thisMonday = firstDayOfTheWeek.AddDays(-7).ToDateTime(TimeOnly.Parse("00:00"));
+                DateTime thisFriday = firstDayOfTheWeek.AddDays(-3).ToDateTime(TimeOnly.Parse("00:00"));
+
+                return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
+            }
         }
     }
 }

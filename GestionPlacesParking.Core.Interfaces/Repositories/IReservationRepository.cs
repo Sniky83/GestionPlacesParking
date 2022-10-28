@@ -10,7 +10,7 @@ namespace GestionPlacesParking.Core.Interfaces.Repositories
 {
     public interface IReservationRepository
     {
-        List<Reservation> GetAllReserved();
+        List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek);
         int MakeReservation(Reservation reservation);
     }
 }

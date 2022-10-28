@@ -54,7 +54,16 @@ namespace GestionPlacesParking.Core.Application.Repositories
             int firstDayNumber = 1;
             bool isNextMonth = false;
 
+            DateTime currentTime = DateTime.Now;
             int firstDayOfTheWeek = (DateTime.Today.Day - daysToDeduce);
+
+            //Règle métier: Si on est au moins vendredi à 11h00
+            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
+            {
+                //On passe au lundi d'après
+                firstDayOfTheWeek += 7;
+            }
+                
             int currentYear = DateTime.Now.Year;
             int currentMonth = DateTime.Now.Month;
             int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
