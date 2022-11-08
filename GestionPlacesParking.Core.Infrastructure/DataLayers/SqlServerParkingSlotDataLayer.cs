@@ -35,6 +35,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             }
             else
             {
+                //On prends les réservations du lundi jusqu'au vendredi
                 DateTime thisMonday = firstDayOfTheWeek.AddDays(-7).ToDateTime(TimeOnly.Parse("00:00"));
                 DateTime thisFriday = firstDayOfTheWeek.AddDays(-3).ToDateTime(TimeOnly.Parse("00:00"));
 
