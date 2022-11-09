@@ -13,6 +13,6 @@ namespace GestionPlacesParking.Core.Interfaces.Repositories
     /// </summary>
     public interface IUserRepository
     {
-        User LogIn(UserDto user);
+        User LogIn(AuthenticationUserDto user);
     }
 }

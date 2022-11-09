@@ -15,7 +15,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
     {
         public SqlServerUserDataLayer(ParkingDbContext context) : base(context) { }
 
-        public User GetOne(UserDto user)
+        public User GetOne(AuthenticationUserDto user)
         {
             return Context?.Users.Where(item => item.Email == user.Email && item.Password == Sha256Cipher.Hash(user.Password)).First();
         }

@@ -19,9 +19,16 @@ namespace GestionPlacesParking.Core.Application.Repositories
             _dataLayer = dataLayer;
         }
 
-        public List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek)
+        public int DeleteReservation(DeleteOneReservationDto deleteOneReservationDto)
         {
-            var reservationList = _dataLayer.GetAllReserved(firstDayOfTheWeek);
+            int deleteReservation = _dataLayer.DeleteOne(deleteOneReservationDto);
+
+            return deleteReservation;
+        }
+
+        public List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek, bool isNextWeek)
+        {
+            var reservationList = _dataLayer.GetAllReserved(firstDayOfTheWeek, isNextWeek);
 
             if (reservationList == null)
             {

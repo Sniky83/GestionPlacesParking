@@ -11,36 +11,13 @@ using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 {
-    public class SqlServerReservationDataLayer : BaseSqlServerDataLayer, IReservationDataLayer
+    public class SqlServerParkingSlotDataLayer : BaseSqlServerDataLayer, IParkingSlotDataLayer
     {
-        public SqlServerReservationDataLayer(ParkingDbContext context) : base(context) { }
+        public SqlServerParkingSlotDataLayer(ParkingDbContext context) : base(context) { }
 
-        public int AddOne(Reservation reservation)
+        public List<ParkingSlot> GetAll()
         {
-            Context?.Reservations.Add(reservation);
-
-            return Context.SaveChanges();
-        }
-
-        public List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek)
-        {
-            DateTime currentTime = DateTime.Now;
-
-            //Règle métier: Si on est vendredi >= à 11h00
-            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
-            {
-                DateTime nextMonday = firstDayOfTheWeek.ToDateTime(TimeOnly.Parse("00:00"));
-
-                return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
-            }
-            else
-            {
-                //On prends les réservations du lundi jusqu'au vendredi
-                DateTime thisMonday = firstDayOfTheWeek.AddDays(-7).ToDateTime(TimeOnly.Parse("00:00"));
-                DateTime thisFriday = firstDayOfTheWeek.AddDays(-3).ToDateTime(TimeOnly.Parse("00:00"));
-
-                return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
-            }
+            return Context?.ParkingSlots.ToList();
         }
     }
 }

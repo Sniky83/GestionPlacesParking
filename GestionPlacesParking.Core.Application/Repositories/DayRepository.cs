@@ -57,11 +57,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
             DateTime currentTime = DateTime.Now;
             int firstDayOfTheWeek = (DateTime.Today.Day - daysToDeduce);
 
+            Day day = new Day();
+
             //Règle métier: Si on est au moins vendredi à 11h00
             if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
             {
                 //On passe au lundi d'après
                 firstDayOfTheWeek += 7;
+                day.IsNextWeek = true;
             }
                 
             int currentYear = DateTime.Now.Year;
@@ -98,8 +101,6 @@ namespace GestionPlacesParking.Core.Application.Repositories
                     firstDayOfTheWeek += 1;
                 }
             }
-
-            Day day = new Day();
 
             day.DaysOfTheWeek = new Dictionary<string, DateOnly>()
             {

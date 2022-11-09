@@ -1,20 +1,17 @@
-﻿<div class="modal" id="myModal" tabindex="-1">
-    <div class="modal-dialog">
+﻿<div class="modal" id="deleteReservationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Suppression d'une réservation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <label class="form-label">Nom du réservataire</label>
-                <div class="input-group mb-2">
-                    <input class="form-control" id="reservingName" maxlength="50" />
-                </div>
-                <span id="error-span" class="text-danger"></span>
+                <div id="delete-body-message"></div>
+                <span id="delete-error-span" class="text-danger"></span>
             </div>
             <div class="modal-footer">
-                <button id="btnModalValid" type="button" class="btn btn-orange-apside" onclick="validModal()">Valider</button>
-                <button type="button" class="btn close-btn btn-bleu-apside" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-orange-apside" onclick="validDeleteReservationModal()">Oui</button>
+                <button type="button" class="btn close-btn btn-bleu-apside" data-bs-dismiss="modal">Non</button>
             </div>
         </div>
     </div>

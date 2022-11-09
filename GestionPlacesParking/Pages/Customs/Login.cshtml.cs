@@ -11,7 +11,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         private readonly IUserRepository _repository;
 
         [BindProperty]
-        public new UserDto? User { get; set; }
+        public new AuthenticationUserDto? User { get; set; }
         public string ErrorMessage { get; set; }
 
         public LoginModel(IUserRepository repository)

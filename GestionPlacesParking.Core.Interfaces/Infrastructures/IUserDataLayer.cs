@@ -13,6 +13,6 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
     /// </summary>
     public interface IUserDataLayer
     {
-        User GetOne(UserDto user);
+        User GetOne(AuthenticationUserDto user);
     }
 }

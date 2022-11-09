@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Models.DTOs
 {
-    public class UserDto
+    public class AuthenticationUserDto
     {
         [Required(ErrorMessage = "Le champ email est obligatoire !")]
         [MaxLength(50, ErrorMessage = "L'email ne doit pas dépasser 50 caractères !")]

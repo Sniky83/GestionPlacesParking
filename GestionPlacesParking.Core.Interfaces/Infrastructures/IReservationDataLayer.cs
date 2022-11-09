@@ -11,7 +11,8 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
 {
     public interface IReservationDataLayer
     {
-        List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek);
+        List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek, bool isNextWeek);
         int AddOne(Reservation reservation);
+        int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
     }
 }

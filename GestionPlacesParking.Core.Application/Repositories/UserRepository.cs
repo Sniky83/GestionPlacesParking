@@ -13,7 +13,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
         {
             _dataLayer = dataLayer;
         }
-        public User LogIn(UserDto user)
+        public User LogIn(AuthenticationUserDto user)
         {
             var userData = _dataLayer.GetOne(user);
 
