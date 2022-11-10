@@ -9,8 +9,10 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
         public ParkingDbContext CreateDbContext(string[] args)
         {
             string path = Directory.GetCurrentDirectory();
+            string parent = Directory.GetParent(path).ToString();
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(path).ToString() + "\\GestionPlacesParking\\")
+            .SetBasePath(parent + "\\GestionPlacesParking\\")
             .AddJsonFile("appsettings.json")
             .Build();
 
