@@ -83,6 +83,7 @@
     <script>
         const makeReservationModal = new bootstrap.Modal(document.getElementById('makeReservationModal'));
         const deleteReservationModal = new bootstrap.Modal(document.getElementById('deleteReservationModal'));
+        const token = document.getElementById("XSRF-TOKEN").value;
         let getIdClickedBtn = null;
 
         function openMakeReservationModal(event) {
@@ -120,7 +121,6 @@
 
         async function newReservation() {
             const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/MakeReservationService")';
-            const token = document.getElementById("XSRF-TOKEN").value;
 
             const reservingName = document.getElementById('reservingName').value;
             const proprietaireId = parseInt('@userId') || 0;
@@ -165,7 +165,6 @@
 
         async function deleteOneReservation() {
             const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/DeleteReservationService")';
-            const token = document.getElementById("XSRF-TOKEN").value;
 
             const reservationId = parseInt(getIdClickedBtn.split('_')[4]);
 
@@ -176,7 +175,7 @@
             let init = {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json; charset = utf-8;',
+                    'Content-Type': 'application/json',
                     'XSRF-TOKEN': token
                 },
                 body: JSON.stringify(bodyParams)
