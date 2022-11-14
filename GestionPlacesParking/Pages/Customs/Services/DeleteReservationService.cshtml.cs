@@ -20,7 +20,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
 
             string errorMessage = "Problème lors de la suppression de la réservation. Veuillez réessayer ultérieurement.";
 
-            if (ModelState.IsValid)
+            try
             {
                 int? userId = HttpContext.Session.GetInt32("UserId");
                 int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
@@ -35,7 +35,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
                     result = BadRequest(new { message = errorMessage });
                 }
             }
-            else
+            catch (Exception)
             {
                 result = BadRequest(new { message = errorMessage });
             }

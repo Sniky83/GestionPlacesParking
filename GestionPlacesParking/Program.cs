@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Add context
-string connectionString = builder.Configuration.GetConnectionString("ParkingContext");
+string connectionString = Environment.GetEnvironmentVariable("ParkingContextConnectionString", EnvironmentVariableTarget.User);
 
 builder.Services.AddDbContext<ParkingDbContext>(options =>
 {

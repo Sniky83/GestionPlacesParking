@@ -1,14 +1,7 @@
 ﻿using GestionPlacesParking.Core.Infrastructure.Databases;
-using GestionPlacesParking.Core.Infrastructure.Web.Cipher;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 {
@@ -18,6 +11,13 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public int AddOne(Reservation reservation)
         {
+            var checkDuplicateReservation = Context.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate == reservation.ReservationDate && r.ParkingSlotId == reservation.ParkingSlotId).Any();
+
+            if (checkDuplicateReservation)
+            {
+                return -1;
+            }
+
             Context?.Reservations.Add(reservation);
 
             return Context.SaveChanges();
@@ -40,7 +40,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
             var findCurrentReservation = findCurrentReservationQuery.FirstOrDefault();
 
-            if(findCurrentReservation != null)
+            if (findCurrentReservation != null)
             {
                 findCurrentReservation.IsDeleted = true;
 

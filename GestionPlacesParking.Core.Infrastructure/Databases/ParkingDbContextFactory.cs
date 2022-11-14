@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
 
 namespace GestionPlacesParking.Core.Infrastructure.Databases
 {
@@ -8,15 +7,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
     {
         public ParkingDbContext CreateDbContext(string[] args)
         {
-            string path = Directory.GetCurrentDirectory();
-            string parent = Directory.GetParent(path).ToString();
-
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(parent + "\\GestionPlacesParking\\")
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-            var connectionString = configuration.GetConnectionString("ParkingContext");
+            string connectionString = Environment.GetEnvironmentVariable("ParkingContextConnectionString", EnvironmentVariableTarget.User);
 
             var optionsBuilder = new DbContextOptionsBuilder<ParkingDbContext>();
             optionsBuilder.UseSqlServer(connectionString);

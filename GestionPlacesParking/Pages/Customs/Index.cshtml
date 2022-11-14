@@ -83,8 +83,34 @@
     <script>
         const makeReservationModal = new bootstrap.Modal(document.getElementById('makeReservationModal'));
         const deleteReservationModal = new bootstrap.Modal(document.getElementById('deleteReservationModal'));
+        let isMakeReservationModalError = false;
+        let isDeleteReservationModalError = false;
         const token = document.getElementById("XSRF-TOKEN").value;
         let getIdClickedBtn = null;
+
+        function refreshPageIfModifications() {
+            let nbReservations = null;
+
+            async function checkDifferencesReservation() {
+                const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/MakeReservationService")';
+
+                const response = await fetch(url);
+                const json = await response.json();
+
+                //On rafraichi la page pour tous les utilisateurs s'il y a des nouvelles réservations ou des suppressions de réservations
+                if ((json.nbReservations > nbReservations || json.nbReservations < nbReservations) && nbReservations !== null) {
+                    //Rafraichi la page
+                    location.reload();
+                }
+                else {
+                    nbReservations = json.nbReservations;
+                }
+            }
+
+            const milliseconds = 2000;
+            setInterval(checkDifferencesReservation, milliseconds);
+        }
+        refreshPageIfModifications();
 
         function openMakeReservationModal(event) {
             getIdClickedBtn = event.target.attributes.id.value;
@@ -101,17 +127,15 @@
             const proprietaireId = getIdClickedBtn.split('_')[3];
 
             //Si on est le propriétaire de la réservation
-            if (@userId == proprietaireId)
-            {
+            if (@userId == proprietaireId) {
                 modalBody.innerHTML = "Voulez vous supprimer votre réservation de la place <b>" + currentParkingSlot + "</b> du <b>" + currentDay + " " + currentDate + "</b> ?";
             }
-            else
-            {
+            else {
                 //Si on est Admin on peut supperviser toutes les réservations
                 //L'admin aura accès a cette partie mais pas un user lambda
                 modalBody.innerHTML = "Voulez vous supprimer la réservation de <b>" + event.currentTarget.innerText + "</b> de la place <b>" + currentParkingSlot + "</b> du <b>" + currentDay + " " + currentDate + "</b> ?";
             }
-            
+
             deleteReservationModal.show();
         }
 
@@ -154,6 +178,8 @@
                 location.reload();
             }
             else {
+                isMakeReservationModalError = true;
+
                 const data = await response.json();
                 document.getElementById('make-error-span').innerHTML = data.message;
             }
@@ -188,9 +214,25 @@
                 location.reload();
             }
             else {
+                isDeleteReservationModalError = true;
+
                 const data = await response.json();
                 document.getElementById('delete-error-span').innerHTML = data.message;
             }
         }
+
+        makeReservationModal._element.addEventListener('hidden.bs.modal', function (event) {
+            if (isMakeReservationModalError) {
+                location.reload();
+                isMakeReservationModalError = false;
+            }
+        });
+
+        deleteReservationModal._element.addEventListener('hidden.bs.modal', function (event) {
+            if (isDeleteReservationModalError) {
+                location.reload();
+                isDeleteReservationModalError = false;
+            }
+        });
     </script>
 }

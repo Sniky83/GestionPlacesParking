@@ -1,13 +1,6 @@
 ﻿using GestionPlacesParking.Core.Infrastructure.Databases;
-using GestionPlacesParking.Core.Infrastructure.Web.Cipher;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models;
-using GestionPlacesParking.Core.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 {
