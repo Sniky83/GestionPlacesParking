@@ -1,10 +1,5 @@
 ﻿using GestionPlacesParking.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.Databases
 {
@@ -21,6 +16,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
             modelBuilder.ApplyConfiguration(new EntityConfigurations.ParkingSlotEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new EntityConfigurations.ReservationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new EntityConfigurations.UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EntityConfigurations.AdminEntityTypeConfiguration());
         }
 
         public DbSet<ParkingSlot> ParkingSlots { get; set; }
