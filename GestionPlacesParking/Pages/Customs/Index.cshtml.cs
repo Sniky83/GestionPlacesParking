@@ -34,7 +34,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             {
                 ParkingSlotList = _parkingRepository.GetAll();
                 Day = _dayRepository.ExtractDaysWithDate();
-                ReservationList = _reservationRepository.GetAllReserved((DateOnly)Day.DaysOfTheWeek.First().Value, Day.IsNextWeek);
+                ReservationList = _reservationRepository.GetAllReserved();
             }
 
             return result;

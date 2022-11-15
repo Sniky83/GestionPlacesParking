@@ -1,6 +1,5 @@
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models;
-using GestionPlacesParking.Core.Models.Locals;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -9,18 +8,15 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
     public class MakeReservationServiceModel : PageModel
     {
         private readonly IReservationRepository _reservationRepository;
-        private readonly IDayRepository _dayRepository;
 
         public MakeReservationServiceModel(IReservationRepository reservationRepository, IDayRepository dayRepository)
         {
             _reservationRepository = reservationRepository;
-            _dayRepository = dayRepository;
         }
 
         public JsonResult OnGet()
         {
-            Day day = _dayRepository.ExtractDaysWithDate();
-            List<Reservation> nbReservations = _reservationRepository.GetAllReserved((DateOnly)day.DaysOfTheWeek.First().Value, day.IsNextWeek);
+            List<Reservation> nbReservations = _reservationRepository.GetAllReserved();
             return new JsonResult(new { nbReservations = nbReservations.Count });
         }
 

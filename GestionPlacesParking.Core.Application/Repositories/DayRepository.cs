@@ -1,13 +1,5 @@
-﻿using GestionPlacesParking.Core.Interfaces.Infrastructures;
-using GestionPlacesParking.Core.Interfaces.Repositories;
-using GestionPlacesParking.Core.Models;
-using GestionPlacesParking.Core.Models.DTOs;
+﻿using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.Locals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -59,14 +51,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             Day day = new Day();
 
-            //Règle métier: Si on est au moins vendredi à 11h00
+            //Règle métier: Si on est vendredi >= à 11h00
             if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
             {
                 //On passe au lundi d'après
                 firstDayOfTheWeek += 7;
                 day.IsNextWeek = true;
             }
-                
+
             int currentYear = DateTime.Now.Year;
             int currentMonth = DateTime.Now.Month;
             int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);

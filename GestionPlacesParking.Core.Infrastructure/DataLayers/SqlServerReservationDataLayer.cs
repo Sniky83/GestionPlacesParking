@@ -52,22 +52,23 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             }
         }
 
-        public List<Reservation> GetAllReserved(DateOnly firstDayOfTheWeek, bool isNextWeek)
+        public List<Reservation> GetAllReserved()
         {
             DateTime currentTime = DateTime.Now;
 
             //Règle métier: Si on est vendredi >= à 11h00
-            if (isNextWeek)
+            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
             {
-                DateTime nextMonday = firstDayOfTheWeek.ToDateTime(TimeOnly.Parse("00:00"));
+                DateTime nextMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek);
+                nextMonday = nextMonday.AddDays(7).Date;
 
                 return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
             }
             else
             {
                 //On prends les réservations du lundi jusqu'au vendredi
-                DateTime thisMonday = firstDayOfTheWeek.ToDateTime(TimeOnly.Parse("00:00"));
-                DateTime thisFriday = firstDayOfTheWeek.AddDays(4).ToDateTime(TimeOnly.Parse("00:00"));
+                DateTime thisMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date;
+                DateTime thisFriday = thisMonday.AddDays(4).Date;
 
                 return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
             }
