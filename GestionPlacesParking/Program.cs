@@ -4,6 +4,7 @@ using GestionPlacesParking.Core.Infrastructure.DataLayers;
 using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
+using GestionPlacesParking.Web.UI.Utils;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add context
-string connectionString = Environment.GetEnvironmentVariable("ParkingContextConnectionString", EnvironmentVariableTarget.User);
+string connectionString = ConnectionString.GetConnectionString();
 
+// Add context
 builder.Services.AddDbContext<ParkingDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
