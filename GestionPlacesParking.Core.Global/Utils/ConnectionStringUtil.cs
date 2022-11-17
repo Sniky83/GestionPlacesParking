@@ -1,6 +1,6 @@
 ﻿namespace GestionPlacesParking.Web.UI.Utils
 {
-    public static class ConnectionString
+    public static class ConnectionStringUtil
     {
         private static string GetConnectionStringEnv(EnvironmentVariableTarget environmentVariableTarget)
         {

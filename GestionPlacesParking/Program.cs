@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-string connectionString = ConnectionString.GetConnectionString();
+string connectionString = ConnectionStringUtil.GetConnectionString();
 
 // Add context
 builder.Services.AddDbContext<ParkingDbContext>(options =>

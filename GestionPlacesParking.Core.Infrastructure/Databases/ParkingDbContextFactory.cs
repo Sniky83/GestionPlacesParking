@@ -8,7 +8,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
     {
         public ParkingDbContext CreateDbContext(string[] args)
         {
-            string connectionString = ConnectionString.GetConnectionString();
+            string connectionString = ConnectionStringUtil.GetConnectionString();
 
             var optionsBuilder = new DbContextOptionsBuilder<ParkingDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
