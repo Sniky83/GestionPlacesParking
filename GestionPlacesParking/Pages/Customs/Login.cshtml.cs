@@ -1,5 +1,4 @@
 using GestionPlacesParking.Core.Interfaces.Repositories;
-using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -32,7 +31,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
                     if (user != null)
                     {
-                        if(user.IsAdmin == true)
+                        if (user.IsAdmin == true)
                         {
                             HttpContext.Session.SetInt32("IsAdmin", 1);
                         }
