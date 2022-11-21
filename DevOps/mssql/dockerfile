@@ -1,9 +1,4 @@
 FROM mcr.microsoft.com/mssql/server:latest
-ENV ACCEPT_EULA=Y
-ENV MSSQL_SA_PASSWORD=!@pside2022!
-ENV MSSQL_PID=Express
 RUN mkdir /tmp/project
 COPY createUser.sql /tmp/project
 COPY createDB.sql /tmp/project
-#RUN /opt/mssql-tools/bin/sqlcmd -U SA -P !@pside2022! -i /tmp/project/createDB.sql
-#RUN /opt/mssql-tools/bin/sqlcmd -U SA -P !@pside2022! -i /tmp/project/createUser.sql
