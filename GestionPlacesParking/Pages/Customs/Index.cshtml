@@ -19,7 +19,7 @@
     var requestToken = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
 }
 
-<h1 class="display-6">Places de parking du @Model.Day.DaysOfTheWeek.First() au @Model.Day.DaysOfTheWeek.ElementAt(4)</h1>
+<h1 class="display-6">Places de parking du @Model.Day.DaysOfTheWeek.Keys.First() @DateOnly.Parse(Model.Day.DaysOfTheWeek.Values.First()).ToString("dd/MM/yyyy") au @Model.Day.DaysOfTheWeek.Keys.ElementAt(4) @DateOnly.Parse(Model.Day.DaysOfTheWeek.Values.ElementAt(4)).ToString("dd/MM/yyyy")</h1>
 <table class="table">
     <thead>
         <tr>
@@ -92,7 +92,7 @@
             let nbReservations = null;
 
             async function checkDifferencesReservation() {
-                const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/MakeReservationService")';
+                const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/GetReservationsService")';
 
                 const response = await fetch(url);
                 const json = await response.json();
