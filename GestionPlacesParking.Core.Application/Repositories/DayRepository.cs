@@ -1,4 +1,5 @@
-﻿using GestionPlacesParking.Core.Interfaces.Repositories;
+﻿using GestionPlacesParking.Core.Global.BusinessLogics;
+using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.Locals;
 
 namespace GestionPlacesParking.Core.Application.Repositories
@@ -43,16 +44,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             int numberDaysInWeek = 7;
             int maxMonths = 12;
-            int firstDayNumber = 1;
             bool isNextMonth = false;
 
-            DateTime currentTime = DateTime.Now;
             int firstDayOfTheWeek = (DateTime.Today.Day - daysToDeduce);
 
             Day day = new Day();
 
             //Règle métier: Si on est vendredi >= à 11h00
-            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
+            if (EveryFridayBusinessLogic.IsEndReservationsCurrentWeek())
             {
                 //On passe au lundi d'après
                 firstDayOfTheWeek += 7;
@@ -62,8 +61,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
             int currentYear = DateTime.Now.Year;
             int currentMonth = DateTime.Now.Month;
             int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
+            string dateFormat = "yyyy/MM/dd";
 
-            List<DateOnly> dateForeachDaysList = new List<DateOnly>();
+            List<string> dateForeachDaysList = new List<string>();
 
             for (int i = 0; i < numberDaysInWeek; i++)
             {
@@ -76,25 +76,20 @@ namespace GestionPlacesParking.Core.Application.Repositories
                             currentYear += 1;
                         }
 
+                        firstDayOfTheWeek = 1;
                         currentMonth += 1;
                         isNextMonth = true;
                     }
-
-                    DateOnly date = new DateOnly(currentYear, currentMonth, firstDayNumber);
-
-                    dateForeachDaysList.Add(date);
-                    firstDayNumber += 1;
                 }
-                else
-                {
-                    DateOnly date = new DateOnly(currentYear, currentMonth, firstDayOfTheWeek);
 
-                    dateForeachDaysList.Add(date);
-                    firstDayOfTheWeek += 1;
-                }
+                string date = new DateOnly(currentYear, currentMonth, firstDayOfTheWeek).ToString(dateFormat);
+
+                firstDayOfTheWeek += 1;
+
+                dateForeachDaysList.Add(date);
             }
 
-            day.DaysOfTheWeek = new Dictionary<string, DateOnly>()
+            day.DaysOfTheWeek = new Dictionary<string, string>()
             {
                 { "Lundi", dateForeachDaysList[0] },
                 { "Mardi", dateForeachDaysList[1] },

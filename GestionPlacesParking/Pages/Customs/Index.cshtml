@@ -42,7 +42,7 @@
                     {
                         @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
                         var findReservation = Model.ReservationList.Find(
-                            x => x.ReservationDate.ToShortDateString() == DayOfTheWeek.Value.ToShortDateString() &&
+                            x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
                             x.ParkingSlotId == i
                         );
 
@@ -151,7 +151,7 @@
             const reservationDateString = getIdClickedBtn.split('_')[0];
             const parkingSlotId = parseInt(getIdClickedBtn.split('_')[1]);
 
-            const [day, month, year] = reservationDateString.split('/').map(Number);
+            const [year, month, day] = reservationDateString.split('/').map(Number);
 
             const reservationDate = new Date(Date.UTC(year, (month - 1), day)).toISOString();
 
