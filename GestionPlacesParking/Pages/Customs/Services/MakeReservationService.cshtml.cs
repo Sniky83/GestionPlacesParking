@@ -14,10 +14,9 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
             _reservationRepository = reservationRepository;
         }
 
-        public JsonResult OnGet()
+        public override BadRequestObjectResult BadRequest(object error)
         {
-            List<Reservation> nbReservations = _reservationRepository.GetAllReserved();
-            return new JsonResult(new { nbReservations = nbReservations.Count });
+            return base.BadRequest(new { message = error });
         }
 
         public IActionResult OnPost([FromBody] Reservation Reservation)
@@ -25,25 +24,20 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
             IActionResult result = Page();
             string errorMessage = "Problème lors de l'ajout de la réservation. Veuillez réessayer ultérieurement.";
 
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                try
                 {
-                    int rowsAffected = _reservationRepository.MakeReservation(Reservation);
-
-                    if (rowsAffected < 1)
-                    {
-                        result = BadRequest(new { message = errorMessage });
-                    }
+                    _reservationRepository.AddOne(Reservation);
                 }
-                else
+                catch (Exception)
                 {
-                    result = BadRequest(new { message = ModelState.Values.First().Errors.First().ErrorMessage });
+                    result = BadRequest(errorMessage);
                 }
             }
-            catch (Exception)
+            else
             {
-                result = BadRequest(new { message = errorMessage });
+                result = BadRequest(ModelState.Values.First().Errors.First().ErrorMessage);
             }
 
             return result;

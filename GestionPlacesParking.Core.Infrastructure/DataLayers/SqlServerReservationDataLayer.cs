@@ -11,8 +11,13 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public int AddOne(Reservation reservation)
         {
-            var checkDuplicateReservation = Context.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate == reservation.ReservationDate && r.ParkingSlotId == reservation.ParkingSlotId).Any();
+            var checkDuplicateReservation = Context.Reservations.Where(
+                r => r.IsDeleted == false &&
+                r.ReservationDate == reservation.ReservationDate &&
+                r.ParkingSlotId == reservation.ParkingSlotId
+            ).Any();
 
+            //Si la réservation est dupliquée
             if (checkDuplicateReservation)
             {
                 return -1;
@@ -52,26 +57,21 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             }
         }
 
-        public List<Reservation> GetAllReserved()
+        public List<Reservation> GetAllReservationsCurrentWeek()
         {
-            DateTime currentTime = DateTime.Now;
+            //On prends les réservations du lundi jusqu'au vendredi
+            DateTime thisMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date;
+            DateTime thisFriday = thisMonday.AddDays(4).Date;
 
-            //Règle métier: Si on est vendredi >= à 11h00
-            if ((int)currentTime.DayOfWeek >= 5 && currentTime.Hour >= 11 && currentTime.Minute >= 0)
-            {
-                DateTime nextMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek);
-                nextMonday = nextMonday.AddDays(7).Date;
+            return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
+        }
 
-                return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
-            }
-            else
-            {
-                //On prends les réservations du lundi jusqu'au vendredi
-                DateTime thisMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date;
-                DateTime thisFriday = thisMonday.AddDays(4).Date;
+        public List<Reservation> GetAllReservationsNextWeek()
+        {
+            //On prends les réservations de la semaine prochaine
+            DateTime nextMonday = DateTime.Now.AddDays((DayOfWeek.Monday - DateTime.Now.DayOfWeek) + 7).Date;
 
-                return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
-            }
+            return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
         }
     }
 }
