@@ -1,0 +1,4 @@
+FROM mcr.microsoft.com/mssql/server:latest
+RUN mkdir /tmp/project
+COPY DevOps/mssql/createUser.sql /tmp/project
+COPY DevOps/mssql/createDB.sql /tmp/project
