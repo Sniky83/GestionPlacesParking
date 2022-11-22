@@ -34,7 +34,6 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             {
                 try
                 {
-                    throw new ArgumentNullException(nameof(result));
                     ParkingSlotList = _parkingRepository.GetAll();
                     ReservationList = _reservationRepository.GetAll();
                     Day = _dayRepository.ExtractDaysWithDate();
