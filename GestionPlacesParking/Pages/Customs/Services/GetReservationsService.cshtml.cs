@@ -16,7 +16,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
 
         public JsonResult OnGet()
         {
-            List<Reservation> nbReservations = _reservationRepository.GetAllReserved();
+            List<Reservation> nbReservations = _reservationRepository.GetAll();
             return new JsonResult(new { nbReservations = nbReservations.Count });
         }
     }

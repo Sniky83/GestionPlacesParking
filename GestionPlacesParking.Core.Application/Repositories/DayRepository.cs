@@ -1,4 +1,5 @@
-﻿using GestionPlacesParking.Core.Global.BusinessLogics;
+﻿using GestionPlacesParking.Core.Application.Exceptions;
+using GestionPlacesParking.Core.Global.BusinessLogics;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.Locals;
 
@@ -9,8 +10,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
         public Day ExtractDaysWithDate()
         {
             int daysToDeduce = 0;
+            int dayOfWeek = (int)DateTime.Today.DayOfWeek;
 
-            switch ((int)DateTime.Today.DayOfWeek)
+            switch (dayOfWeek)
             {
                 //Lundi
                 case 1:
@@ -40,6 +42,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 case 7:
                     daysToDeduce = 6;
                     break;
+                default:
+                    //Signifie que le code est outdated
+                    throw new NotFoundException(nameof(dayOfWeek));
             }
 
             int numberDaysInWeek = 7;
@@ -51,7 +56,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             Day day = new Day();
 
             //Règle métier: Si on est vendredi >= à 11h00
-            if (EveryFridayBusinessLogic.IsEndReservationsCurrentWeek())
+            if (ReservationBusinessLogic.IsEndReservationsCurrentWeek())
             {
                 //On passe au lundi d'après
                 firstDayOfTheWeek += 7;

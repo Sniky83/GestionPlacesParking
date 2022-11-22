@@ -14,9 +14,9 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         private readonly ILogger<IndexModel> _logger;
 
         [BindProperty]
-        public new List<ParkingSlot> ParkingSlotList { get; set; }
-        public new List<Reservation> ReservationList { get; set; }
-        public new Day Day { get; set; }
+        public List<ParkingSlot> ParkingSlotList { get; set; }
+        public List<Reservation> ReservationList { get; set; }
+        public Day Day { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IParkingSlotRepository parkingRepository, IReservationRepository reservationRepository, IDayRepository dayRepository)
         {
@@ -32,9 +32,19 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
             if (ModelState.IsValid)
             {
-                ParkingSlotList = _parkingRepository.GetAll();
-                Day = _dayRepository.ExtractDaysWithDate();
-                ReservationList = _reservationRepository.GetAllReserved();
+                try
+                {
+                    throw new ArgumentNullException(nameof(result));
+                    ParkingSlotList = _parkingRepository.GetAll();
+                    ReservationList = _reservationRepository.GetAll();
+                    Day = _dayRepository.ExtractDaysWithDate();
+                }
+                catch (Exception ex)
+                {
+                    //Erreur interne (Day repository)
+                    result = StatusCode(StatusCodes.Status500InternalServerError);
+                    _logger.LogCritical("Erreur interne avec le Day repository.\n" + ex);
+                }
             }
 
             return result;

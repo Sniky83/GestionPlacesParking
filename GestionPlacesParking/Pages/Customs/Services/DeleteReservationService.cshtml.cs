@@ -14,30 +14,30 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
             _repository = repository;
         }
 
+        public override BadRequestObjectResult BadRequest(object error)
+        {
+            return base.BadRequest(new { message = error });
+        }
+
         public IActionResult OnPost([FromBody] DeleteOneReservationDto DeleteOneReservationDto)
         {
             IActionResult result = Page();
 
             string errorMessage = "Problème lors de la suppression de la réservation. Veuillez réessayer ultérieurement.";
 
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
+
+            DeleteOneReservationDto.UserId = userId;
+            DeleteOneReservationDto.IsAdmin = (isAdmin == 1) ? true : false;
+
             try
             {
-                int? userId = HttpContext.Session.GetInt32("UserId");
-                int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
-
-                DeleteOneReservationDto.UserId = userId;
-                DeleteOneReservationDto.IsAdmin = (isAdmin == 1) ? true : false;
-
-                int rowAffected = _repository.DeleteReservation(DeleteOneReservationDto);
-
-                if (rowAffected < 1)
-                {
-                    result = BadRequest(new { message = errorMessage });
-                }
+                _repository.DeleteOne(DeleteOneReservationDto);
             }
             catch (Exception)
             {
-                result = BadRequest(new { message = errorMessage });
+                result = BadRequest(errorMessage);
             }
 
             return result;
