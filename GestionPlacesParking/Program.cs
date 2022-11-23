@@ -1,4 +1,4 @@
-using GestionPlacesParking.Core.Application.Repositories;
+ï»¿using GestionPlacesParking.Core.Application.Repositories;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
 using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-// Injections de dépendances
+// Injections de dÃ©pendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -71,7 +71,7 @@ app.UseAuthorization();
 
 app.UseSession();
 
-// Implémentation des Customs Middlewares
+// ImplÃ©mentation des Customs Middlewares
 app.UseRedirectIfNotConnected();
 app.UseRedirectIfNotAdmin();
 
