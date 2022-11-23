@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/mssql/server:latest
 RUN mkdir /tmp/project
-COPY createUser.sql /tmp/project
-COPY createDB.sql /tmp/project
-COPY functionCreate.sh /tmp/project
+COPY DevOps/mssql/createUser.sql /tmp/project
+COPY DevOps/mssql/createDB.sql /tmp/project
+COPY DevOps/mssql/functionCreate.sh /tmp/project
