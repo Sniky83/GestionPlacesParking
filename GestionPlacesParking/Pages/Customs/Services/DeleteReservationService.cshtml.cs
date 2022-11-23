@@ -1,4 +1,4 @@
-using GestionPlacesParking.Core.Interfaces.Repositories;
+ï»¿using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,7 +23,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
         {
             IActionResult result = Page();
 
-            string errorMessage = "Problème lors de la suppression de la réservation. Veuillez réessayer ultérieurement.";
+            string errorMessage = "ProblÃ¨me lors de la suppression de la rÃ©servation. Veuillez rÃ©essayer ultÃ©rieurement.";
 
             int? userId = HttpContext.Session.GetInt32("UserId");
             int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
