@@ -1,0 +1,94 @@
+﻿@page "/callback"
+@model GestionPlacesParking.Web.UI.Pages.Customs.CallbackModel
+@{
+    ViewBag.Title = "User Infos";
+}
+<h2>@ViewBag.Title</h2>
+<div>
+    <h4>Keycloak User Info</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.PreferredUsername)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.PreferredUsername)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Locale)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Locale)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.GivenName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.GivenName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.PhoneNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.PhoneNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.MobileNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.MobileNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.FamilyName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.FamilyName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.EmailVerified)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.EmailVerified)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserInfo.Roles)
+        </dt>
+
+        <dd>
+            @Model.UserInfo.Roles[2];
+        </dd>
+
+    </dl>
+</div>
+
+<p>Use this area to provide additional information.</p>

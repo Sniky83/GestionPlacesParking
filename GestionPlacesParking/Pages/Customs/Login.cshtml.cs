@@ -1,5 +1,6 @@
 ﻿using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
+using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -16,6 +17,20 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         public LoginModel(IUserRepository repository)
         {
             _repository = repository;
+        }
+
+        public IActionResult OnGet()
+        {
+            try
+            {
+                var keycloakManager = new WebManager();
+                var url = keycloakManager.GenerateLoginUri();
+                return Redirect(url.ToString());
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("CallbackError", new { error = $"Exception while calling Keycloak. Exception {ex.Message}" });
+            }
         }
 
         public IActionResult OnPost()

@@ -1,10 +1,9 @@
 ﻿using GestionPlacesParking.Core.Application.Repositories;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
-using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
-using GestionPlacesParking.Web.UI.Utils;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-string connectionString = ConnectionStringUtil.GetConnectionString();
+string connectionString = ConnectionStringEnv.ConnectionString;
 
 // Add context
 builder.Services.AddDbContext<ParkingDbContext>(options =>
@@ -20,7 +19,7 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-// Injections de dépendances
+// Injections de d�pendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -71,9 +70,9 @@ app.UseAuthorization();
 
 app.UseSession();
 
-// Implémentation des Customs Middlewares
-app.UseRedirectIfNotConnected();
-app.UseRedirectIfNotAdmin();
+// Impl�mentation des Customs Middlewares
+//app.UseRedirectIfNotConnected();
+//app.UseRedirectIfNotAdmin();
 
 app.MapRazorPages();
 
