@@ -1,11 +1,14 @@
 FROM mcr.microsoft.com/mssql/server:latest
 
-# Create a config directory user&group to execute
-RUN groupadd -r mssql && adduser -r -g mssql mssql
+# Create a config directory
 RUN mkdir -p /usr/config
 WORKDIR /usr/config
 
 # Bundle config source
-COPY --chown=mssql:mssql DevOps/mssql/config/ /usr/config
+COPY DevOps/mssql/config/ /usr/config
+
+# Grant permissions for to our scripts to be executable
+RUN chmod +x /usr/config/entrypoint.sh
+RUN chmod +x /usr/config/configure-db.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
