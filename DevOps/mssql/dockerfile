@@ -7,6 +7,6 @@ RUN mkdir -p /usr/config
 WORKDIR /usr/config
 
 # Bundle config source
-COPY --chown=mssql DevOps/mssql/config/ /usr/config
+COPY DevOps/mssql/config/ /usr/config
 
 ENTRYPOINT ["./entrypoint.sh"]
