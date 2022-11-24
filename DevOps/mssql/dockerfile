@@ -1,4 +1,10 @@
 FROM mcr.microsoft.com/mssql/server:latest
-RUN mkdir /tmp/project
-COPY DevOps/mssql/createUser.sql /tmp/project
-COPY DevOps/mssql/createDB.sql /tmp/project
+
+#Creattion dossier execution
+RUN mkdir -p /usr/config
+WORKDIR /usr/config
+
+# Copie + permission script BDD APP
+COPY --chown=mssql:mssql DevOps/mssql/config/ /usr/config
+
+ENTRYPOINT ["./entrypoint.sh"]
