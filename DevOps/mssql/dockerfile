@@ -1,7 +1,8 @@
 FROM mcr.microsoft.com/mssql/server:latest
 
 # Create a config directory
-#RUN groupadd -r mssql && adduser -r -g mssql mssql
+USER root
+RUN groupadd -r mssql && adduser -r -g mssql mssql
 RUN mkdir -p /usr/config
 WORKDIR /usr/config
 
