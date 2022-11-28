@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 
 namespace KeycloakCore.Keycloak
 {
@@ -16,7 +15,7 @@ namespace KeycloakCore.Keycloak
         public bool EmailVerified { get; set; }
 
         [JsonProperty("roles")]
-        public string[] Roles { get; set; }
+        public List<string> Roles { get; set; }
 
         [JsonProperty("preferred_username")]
         public string PreferredUsername { get; set; }

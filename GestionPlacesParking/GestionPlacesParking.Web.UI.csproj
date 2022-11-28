@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="keycloak.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Settings\keycloak.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNet.Security.OpenIdConnect.Extensions" Version="2.0.0" />
     <PackageReference Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0" />
     <PackageReference Include="AspNet.Security.OpenIdConnect.Server" Version="2.0.0" />

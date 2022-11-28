@@ -1,13 +1,21 @@
-﻿@page "/callback"
+﻿@page "/API/LoginCallback"
 @model GestionPlacesParking.Web.UI.Pages.Customs.CallbackModel
 @{
-    ViewBag.Title = "User Infos";
 }
-<h2>@ViewBag.Title</h2>
+<h2>User Infos</h2>
 <div>
     <h4>Keycloak User Info</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            (ID USER)
+            @Html.DisplayNameFor(model => model.UserInfo.Sub)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserInfo.Sub)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.UserInfo.PreferredUsername)
         </dt>
@@ -85,10 +93,7 @@
         </dt>
 
         <dd>
-            @Model.UserInfo.Roles[2];
+            @Html.DisplayFor(model => model.UserInfo.Roles)
         </dd>
-
     </dl>
 </div>
-
-<p>Use this area to provide additional information.</p>

@@ -1,11 +1,6 @@
 ﻿using GestionPlacesParking.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfigurations
 {
@@ -18,7 +13,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfiguration
             builder.Property(item => item.ReservationDate).HasColumnType("Date");
             builder.Property(item => item.ReservingName).IsRequired(true);
             builder.Property(item => item.ReservingName).HasMaxLength(50);
-            builder.Property(item => item.ProprietaireId);
+            builder.Property(item => item.ProprietaireId).HasMaxLength(36);
         }
     }
 }

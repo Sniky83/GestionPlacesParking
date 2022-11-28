@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 {
@@ -19,7 +13,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var userId = context.Session.GetInt32("UserId");
+            var userId = context.Session.GetString("UserId");
             var isAdmin = context.Session.GetInt32("IsAdmin");
             bool isHistorique = context.Request.Path.Value.ToLower().Contains("historique");
 

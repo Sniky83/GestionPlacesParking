@@ -19,6 +19,10 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             _repository = repository;
         }
 
+        /// <summary>
+        /// Connexion via le SSO Keycloak
+        /// </summary>
+        /// <returns></returns>
         public IActionResult OnGet()
         {
             try
@@ -29,10 +33,14 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             }
             catch (Exception ex)
             {
-                return RedirectToAction("CallbackError", new { error = $"Exception while calling Keycloak. Exception {ex.Message}" });
+                return RedirectToAction("CallbackError", new { error = $"Erreur lors de l'appel à Keycloak. Exception {ex.Message}" });
             }
         }
 
+        /// <summary>
+        /// Connexion sans SSO
+        /// </summary>
+        /// <returns></returns>
         public IActionResult OnPost()
         {
             IActionResult result = Page();
@@ -52,6 +60,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                         }
 
                         HttpContext.Session.SetInt32("UserId", user.Id);
+
                         result = RedirectToPage("/Index");
                     }
                 }

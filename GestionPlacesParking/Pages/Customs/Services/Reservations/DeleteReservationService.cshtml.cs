@@ -25,7 +25,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
 
             string errorMessage = "Problème lors de la suppression de la réservation. Veuillez réessayer ultérieurement.";
 
-            int? userId = HttpContext.Session.GetInt32("UserId");
+            string? userId = HttpContext.Session.GetString("UserId");
             int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
 
             DeleteOneReservationDto.UserId = userId;

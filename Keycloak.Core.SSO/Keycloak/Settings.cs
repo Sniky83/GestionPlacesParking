@@ -1,38 +1,73 @@
-﻿using KeycloakCore.Keycloak;
+﻿using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using KeycloakCore.Keycloak;
 using Newtonsoft.Json;
 
 namespace Keycloak.Core.SSO.Keycloak
 {
     internal class Settings
     {
-        public string KeycloakUrl = string.Empty;
-        public string Realm = string.Empty;
-        public string ClientId = string.Empty;
-        public string ClientSecret = string.Empty;
-        public string BaseUri = string.Empty;
-        public string CallbackUrl = string.Empty;
+        public class JsonSettings
+        {
+            [JsonProperty("auth-server-url")]
+            public string KeycloakUrl { get; set; } = string.Empty;
+            [JsonProperty("realm")]
+            public string Realm { get; set; } = string.Empty;
+            [JsonProperty("resource")]
+            public string ClientId { get; set; } = string.Empty;
+            [JsonProperty("credentials")]
+            public JsonCredentials Credentials { get; set; }
+        }
+
+        public class JsonCredentials
+        {
+            [JsonProperty("secret")]
+            public string ClientSecret { get; set; } = string.Empty;
+        }
+        public JsonSettings JSettings { get; set; }
+        public SingleSignOnSettings SsoSettings { get; set; }
 
         public Settings()
         {
-            //ReadJson();
+            ReadJson();
+            FillSsoSettings();
         }
 
-        private static void ReadJson()
+        private void ReadJson()
         {
-            string path = new DirectoryInfo(Environment.CurrentDirectory).Parent.FullName + "\\Keycloak.Core.SSO\\Keycloak\\" + "keycloak.Development.json";
-            StreamReader r = new StreamReader(path);
+            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            string keycloakPath = string.Empty;
+            string keycloakFile = string.Empty;
+
+            if (isDevelopment)
+            {
+                keycloakFile = "keycloak.Development.json";
+                keycloakPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings", keycloakFile);
+            }
+            else
+            {
+                keycloakFile = "keycloak.Production.json";
+                keycloakPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings", keycloakFile);
+            }
+            StreamReader r = new StreamReader(keycloakPath);
             string json = r.ReadToEnd();
-            JsonConvert.DeserializeObject<Settings>(json);
+            JSettings = JsonConvert.DeserializeObject<JsonSettings>(json);
         }
 
-        public readonly SingleSignOnSettings SsoSettings = new SingleSignOnSettings()
+        private void FillSsoSettings()
         {
-            KeycloakUrl = "https://keycloak.indus.aix.apsdigit.lan/auth",
-            Realm = "gestionPDP",
-            ClientId = "gestionPDP",
-            ClientSecret = "c4e66325-eb1e-4e14-9b9a-ab630e8468d0",
-            BaseUri = "https://localhost:7041/",
-            CallbackUrl = "https://localhost:7041/Callback"
-        };
+            string uriPath = "/API/LoginCallback";
+            string baseUri = WebsiteUriEnv.WebsiteUri;
+            string callbackUrl = WebsiteUriEnv.WebsiteUri + uriPath;
+
+            SsoSettings = new SingleSignOnSettings()
+            {
+                KeycloakUrl = JSettings.KeycloakUrl.Remove(JSettings.KeycloakUrl.Length - 1),
+                Realm = JSettings.Realm,
+                ClientId = JSettings.ClientId,
+                ClientSecret = JSettings.Credentials.ClientSecret,
+                BaseUri = baseUri,
+                CallbackUrl = callbackUrl
+            };
+        }
     }
 }

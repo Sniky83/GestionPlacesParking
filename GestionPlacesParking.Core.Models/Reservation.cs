@@ -16,7 +16,7 @@ namespace GestionPlacesParking.Core.Models
         public string ReservingName { get; set; } = string.Empty;
         public bool IsDeleted { get; set; }
         //Ne fait référence a aucune table interne puisque la donnée provient de Keycloak
-        public int ProprietaireId { get; set; }
+        public string ProprietaireId { get; set; } = string.Empty;
         public DateTime ReservationDate { get; set; }
     }
 }
