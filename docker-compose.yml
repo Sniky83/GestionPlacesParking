@@ -1,0 +1,33 @@
+services:
+  app:
+    image: mcr.microsoft.com/dotnet/aspnet:6.0
+    container_name: parcindusapp
+    ports:
+      - 8080:80
+    networks:
+      - parcindus
+    volumes:
+      - app:/app
+    depends_on:
+      - "builder"
+  builder:
+    image: crosoftdotnetbuild
+    container_name: parcindusapp
+    networks:
+      - parcindus
+    depends_on:
+      - "BDD"
+  BDD:
+    image: mssqlparcindus
+    ports:
+    - 1433:1433
+    volumes:
+    - bdd:/usr/bdd
+    command: command
+
+networks:
+  parcindus:
+volumes:
+  app: 
+  src:
+  bdd:     
