@@ -15,10 +15,12 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         [BindProperty]
         public new AuthenticationUserDto? User { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
+        private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(IUserRepository repository)
+        public LoginModel(IUserRepository repository, ILogger<LoginModel> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -37,6 +39,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogCritical("Impossible de se connecter à Keycloak.\n{ex}", ex);
                     return RedirectToAction("CallbackError", new { error = $"Erreur lors de l'appel à Keycloak. Exception {ex.Message}" });
                 }
             }
