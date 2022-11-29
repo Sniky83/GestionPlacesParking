@@ -6,6 +6,7 @@ using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,9 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+
+// Custom Logger
+builder.Logging.AddProvider(new CustomLoggerProvider());
 
 // Injections de dépendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
