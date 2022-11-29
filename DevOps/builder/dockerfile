@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
-COPY ./projet-parking-indus/ /src/myWebApp
+COPY . /src/myWebApp
 RUN mkdir /app
 ENV ParkingContextConnectionString='Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
 RUN dotnet tool install -g dotnet-ef
