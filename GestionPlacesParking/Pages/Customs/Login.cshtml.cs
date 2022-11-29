@@ -1,4 +1,5 @@
-﻿using GestionPlacesParking.Core.Interfaces.Repositories;
+﻿using GestionPlacesParking.Core.Global.Consts;
+using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc;
@@ -56,10 +57,10 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                     {
                         if (user.IsAdmin == true)
                         {
-                            HttpContext.Session.SetInt32("IsAdmin", 1);
+                            HttpContext.Session.SetInt32(SessionConst.IsAdmin, 1);
                         }
 
-                        HttpContext.Session.SetInt32("UserId", user.Id);
+                        HttpContext.Session.SetInt32(SessionConst.UserId, user.Id);
 
                         result = RedirectToPage("/Index");
                     }

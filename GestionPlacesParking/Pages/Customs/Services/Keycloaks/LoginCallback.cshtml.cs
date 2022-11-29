@@ -1,3 +1,4 @@
+using GestionPlacesParking.Core.Global.Consts;
 using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,18 +17,18 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
             if (userInfo != null)
             {
-                bool hasAdminRole = userInfo.Roles.Find(x => x.Contains("Admin")) != null ? true : false;
+                bool hasAdminRole = userInfo.Roles.Any(x => x.ToLower() == GroupConst.Admin.ToLower());
 
                 if (hasAdminRole == true)
                 {
-                    HttpContext.Session.SetInt32("IsAdmin", 1);
+                    HttpContext.Session.SetInt32(SessionConst.IsAdmin, 1);
                 }
 
                 //On converti le GUID en string pour la session
-                HttpContext.Session.SetString("UserId", userInfo.Sub.ToString());
+                HttpContext.Session.SetString(SessionConst.UserId, userInfo.Sub.ToString());
 
                 //Prenom + Nom
-                HttpContext.Session.SetString("FullName", userInfo.Name);
+                HttpContext.Session.SetString(SessionConst.FullName, userInfo.Name);
 
                 UserInfo = userInfo;
             }

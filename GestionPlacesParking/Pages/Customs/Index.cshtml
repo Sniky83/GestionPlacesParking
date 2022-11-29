@@ -1,10 +1,11 @@
 ﻿@page "/Index"
+@using GestionPlacesParking.Core.Global.Consts
 @model GestionPlacesParking.Web.UI.Pages.Customs.IndexModel
 @inject LinkGenerator linkGenerator
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
-    int? isAdmin = HttpContext.Session.GetInt32("IsAdmin");
-    string? userId = HttpContext.Session.GetString("UserId");
+    int? isAdmin = HttpContext.Session.GetInt32(SessionConst.IsAdmin);
+    string? userId = HttpContext.Session.GetString(SessionConst.UserId);
 
     if (isAdmin == 1)
     {
