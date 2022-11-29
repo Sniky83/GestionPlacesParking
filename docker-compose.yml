@@ -1,0 +1,38 @@
+services:
+  app:
+    image: mcr.microsoft.com/dotnet/aspnet:6.0
+    container_name: parcindusapp
+    ports:
+      - 80:80
+    networks:
+      - parcindus
+    volumes:
+      - app:/app
+    command: ["dotnet", "/app/publish/GestionPlacesParking.Web.UI.dll"]
+    depends_on:
+      - "builder"
+  builder:
+    image: crosoftdotnetbuild
+    container_name: parcindusapp
+    volumes:
+      - app:/app
+    networks:
+      - parcindus
+    depends_on:
+      - "bdd"
+  bdd:
+    image: mssqlcusto
+    ports:
+    - 1433:1433
+    environment:
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=!@pside2022!
+    - MSSQL_PID=Express
+    networks:
+      - parcindus
+networks:
+  parcindus:
+    external: true
+volumes:
+  app: 
+    external: true     
