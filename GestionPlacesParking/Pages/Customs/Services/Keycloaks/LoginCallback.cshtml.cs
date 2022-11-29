@@ -7,9 +7,6 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 {
     public class CallbackModel : PageModel
     {
-        [BindProperty]
-        public UserInfo UserInfo { get; set; } = null;
-
         public IActionResult OnGet()
         {
             var keycloakManager = new WebManager();
@@ -29,8 +26,6 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
                 //Prenom + Nom
                 HttpContext.Session.SetString(SessionConst.FullName, userInfo.Name);
-
-                UserInfo = userInfo;
             }
 
             return RedirectToPage("/Customs/Index");
