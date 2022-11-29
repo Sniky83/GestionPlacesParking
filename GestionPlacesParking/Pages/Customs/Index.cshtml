@@ -92,7 +92,7 @@
             let nbReservations = null;
 
             async function checkDifferencesReservation() {
-                const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/GetReservationsService")';
+                const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/Reservations/GetReservationsService")';
 
                 const response = await fetch(url);
                 const json = await response.json();
@@ -127,7 +127,7 @@
             const proprietaireId = getIdClickedBtn.split('_')[3];
 
             //Si on est le propriétaire de la réservation
-            if (@userId == proprietaireId) {
+            if ("@userId" == proprietaireId) {
                 modalBody.innerHTML = "Voulez vous supprimer votre réservation de la place <b>" + currentParkingSlot + "</b> du <b>" + currentDay + " " + currentDate + "</b> ?";
             }
             else {
@@ -144,10 +144,10 @@
         }
 
         async function newReservation() {
-            const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/MakeReservationService")';
+            const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/Reservations/MakeReservationService")';
 
             const reservingName = document.getElementById('reservingName').value;
-            const proprietaireId = parseInt('@userId') || 0;
+            const proprietaireId = '@userId' || 0;
             const reservationDateString = getIdClickedBtn.split('_')[0];
             const parkingSlotId = parseInt(getIdClickedBtn.split('_')[1]);
 
@@ -190,7 +190,7 @@
         }
 
         async function deleteOneReservation() {
-            const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/DeleteReservationService")';
+            const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/Reservations/DeleteReservationService")';
 
             const reservationId = parseInt(getIdClickedBtn.split('_')[4]);
 
