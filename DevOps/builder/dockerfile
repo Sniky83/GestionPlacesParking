@@ -2,9 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0
 COPY ./projet-parking-indus/ /src/myWebApp
 RUN mkdir /app
 ENV ParkingContextConnectionString='Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
-ENV WebsiteUri = 'https://localhost:7041'
 RUN dotnet tool install -g dotnet-ef
-RUN dotnet dev-certs https --trust
 ENV PATH="$PATH:/root/.dotnet/tools"
 WORKDIR /src/myWebApp
 RUN dotnet restore /src/myWebApp/GestionPlacesParking/GestionPlacesParking.Web.UI.csproj
