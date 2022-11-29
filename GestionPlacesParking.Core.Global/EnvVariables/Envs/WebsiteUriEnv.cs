@@ -1,6 +1,6 @@
 ﻿namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
 {
-    public class WebsiteUriEnv
+    public static class WebsiteUriEnv
     {
         public static readonly string WebsiteUri = GetWebsiteUriEnv();
         private static string GetWebsiteUriEnv()

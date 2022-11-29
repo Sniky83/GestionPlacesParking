@@ -10,10 +10,18 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         public IActionResult OnGet()
         {
             HttpContext.Session.Clear();
-            var keycloakManager = new WebManager();
-            string redirectUri = WebsiteUriEnv.WebsiteUri + "/login";
 
-            return Redirect(keycloakManager.UserLogoutUri(redirectUri).ToString());
+            if (IsSsoEnv.IsSso)
+            {
+                var keycloakManager = new WebManager();
+                string redirectUri = WebsiteUriEnv.WebsiteUri + "/login";
+
+                return Redirect(keycloakManager.UserLogoutUri(redirectUri).ToString());
+            }
+            else
+            {
+                return RedirectToPage("./Login");
+            }
         }
     }
 }

@@ -55,7 +55,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 throw new DateNotInRangeException(nameof(reservation.ReservationDate));
             }
 
-            var insertOne = _dataLayer.AddOne(reservation);
+            int insertOne = _dataLayer.AddOne(reservation);
 
             //Si la reservation est null
             if (insertOne == 0)

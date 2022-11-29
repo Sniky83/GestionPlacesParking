@@ -1,4 +1,5 @@
 ﻿using GestionPlacesParking.Core.Global.Consts;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using KeycloakCore.Keycloak;
@@ -13,7 +14,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
 
         [BindProperty]
         public new AuthenticationUserDto? User { get; set; }
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         public LoginModel(IUserRepository repository)
         {
@@ -26,16 +27,21 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         /// <returns></returns>
         public IActionResult OnGet()
         {
-            try
+            if (IsSsoEnv.IsSso)
             {
-                var keycloakManager = new WebManager();
-                var url = keycloakManager.GenerateLoginUri();
-                return Redirect(url.ToString());
+                try
+                {
+                    var keycloakManager = new WebManager();
+                    var url = keycloakManager.GenerateLoginUri();
+                    return Redirect(url.ToString());
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("CallbackError", new { error = $"Erreur lors de l'appel à Keycloak. Exception {ex.Message}" });
+                }
             }
-            catch (Exception ex)
-            {
-                return RedirectToAction("CallbackError", new { error = $"Erreur lors de l'appel à Keycloak. Exception {ex.Message}" });
-            }
+
+            return Page();
         }
 
         /// <summary>
@@ -60,7 +66,8 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                             HttpContext.Session.SetInt32(SessionConst.IsAdmin, 1);
                         }
 
-                        HttpContext.Session.SetInt32(SessionConst.UserId, user.Id);
+                        //Pour que ce soit compatible lors de l'insert de la réservation en BDD
+                        HttpContext.Session.SetString(SessionConst.UserId, user.Id.ToString());
 
                         result = RedirectToPage("/Index");
                     }
