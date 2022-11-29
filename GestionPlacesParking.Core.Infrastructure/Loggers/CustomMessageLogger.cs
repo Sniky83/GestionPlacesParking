@@ -1,9 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SelfieAWookie.Core.Selfies.Infrastructures.Loggers
 {
@@ -22,7 +17,16 @@ namespace SelfieAWookie.Core.Selfies.Infrastructures.Loggers
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            Console.WriteLine($"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}");
+            string customMessage = $"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}";
+            Console.WriteLine(customMessage);
+
+            //On log que les erreurs et les warnings dans le fichier
+            if (logLevel >= LogLevel.Warning)
+            {
+                using StreamWriter w = File.AppendText("log.txt");
+
+                w.WriteLine(customMessage);
+            }
         }
         #endregion
     }
