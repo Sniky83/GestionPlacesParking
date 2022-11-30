@@ -10,18 +10,19 @@ services:
       - app:/app
     command: ["dotnet", "/app/publish/GestionPlacesParking.Web.UI.dll"]
     depends_on:
-      - "builder"
+      - builder
   builder:
-    image: crosoftdotnetbuild
-    container_name: parcindusapp
+    image: buildparcindus:latest
+    container_name: parcindusbuilder
     volumes:
       - app:/app
     networks:
       - parcindus
     depends_on:
-      - "bdd"
+      - bdd
   bdd:
-    image: mssqlcusto
+    container_name: mssql1 
+    image: mssqlcusto:latest
     ports:
     - 1433:1433
     environment:
