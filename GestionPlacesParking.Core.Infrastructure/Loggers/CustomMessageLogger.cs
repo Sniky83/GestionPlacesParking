@@ -17,12 +17,10 @@ namespace SelfieAWookie.Core.Selfies.Infrastructures.Loggers
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            string customMessage = $"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}\n";
-            Console.WriteLine(customMessage);
-
             //On log que les erreurs et les warnings dans le fichier
             if (logLevel >= LogLevel.Warning)
             {
+                string customMessage = $"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}\n";
                 string fullPath = "./logs/errorLog.txt";
                 string folderPath = "./logs";
 
