@@ -1,4 +1,6 @@
-﻿namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
+﻿using GestionPlacesParking.Core.Global.EnvVariables.Envs;
+
+namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
 {
     public static class WebsiteUriEnv
     {
@@ -9,7 +11,7 @@
 
             if (websiteUriEnv == null)
             {
-                bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+                bool isDevelopment = IsDevelopmentEnv.IsDevelopment;
 
                 if (isDevelopment)
                 {
