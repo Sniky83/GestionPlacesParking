@@ -1,4 +1,6 @@
-﻿namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
+﻿using GestionPlacesParking.Core.Global.EnvVariables.Envs;
+
+namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
 {
     public static class WebsiteUriEnv
     {
@@ -9,6 +11,13 @@
 
             if (websiteUriEnv == null)
             {
+                bool isDevelopment = IsDevelopmentEnv.IsDevelopment;
+
+                if (isDevelopment)
+                {
+                    websiteUriEnv = "https://localhost:7041";
+                }
+
                 throw new ArgumentNullException(nameof(websiteUriEnv));
             }
 

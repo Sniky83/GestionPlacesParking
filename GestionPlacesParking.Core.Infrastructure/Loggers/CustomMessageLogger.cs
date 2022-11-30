@@ -17,17 +17,21 @@ namespace SelfieAWookie.Core.Selfies.Infrastructures.Loggers
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            string customMessage = $"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}";
-            Console.WriteLine(customMessage);
-
             //On log que les erreurs et les warnings dans le fichier
             if (logLevel >= LogLevel.Warning)
             {
-                using StreamWriter w = File.AppendText("log.txt");
+                string customMessage = $"[{DateTime.Now}]: #{logLevel}# {formatter(state, exception)}\n";
+                string fullPath = "./logs/errorLog.txt";
+                string folderPath = "./logs";
 
-                w.WriteLine(customMessage);
+                Directory.CreateDirectory(folderPath);
+
+                using (StreamWriter w = File.AppendText(fullPath))
+                {
+                    w.WriteLine(customMessage);
+                }
             }
         }
-        #endregion
     }
+    #endregion
 }

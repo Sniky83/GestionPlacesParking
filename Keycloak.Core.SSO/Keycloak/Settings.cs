@@ -1,4 +1,5 @@
 ﻿using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using GestionPlacesParking.Core.Global.EnvVariables.Envs;
 using KeycloakCore.Keycloak;
 using Newtonsoft.Json;
 
@@ -34,20 +35,20 @@ namespace Keycloak.Core.SSO.Keycloak
 
         private void ReadJson()
         {
-            bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-            string keycloakPath = string.Empty;
+            bool isDevelopment = IsDevelopmentEnv.IsDevelopment;
             string keycloakFile = string.Empty;
 
             if (isDevelopment)
             {
                 keycloakFile = "keycloak.Development.json";
-                keycloakPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings", keycloakFile);
             }
             else
             {
                 keycloakFile = "keycloak.Production.json";
-                keycloakPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings", keycloakFile);
             }
+
+            string keycloakPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings", keycloakFile);
+
             StreamReader r = new StreamReader(keycloakPath);
             string json = r.ReadToEnd();
             JSettings = JsonConvert.DeserializeObject<JsonSettings>(json);
