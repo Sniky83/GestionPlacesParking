@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0
 COPY . /src/myWebApp
 RUN mkdir /app
 ENV ParkingContextConnectionString='Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
-ENV IsSso=1
-ENV WebSiteUri='http:/localhost'
+ENV WebsiteUri='http://localhost'
+RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
 RUN dotnet tool install -g dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
 WORKDIR /src/myWebApp

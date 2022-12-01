@@ -1,15 +1,4 @@
 services:
-  # bdd:
-  #   container_name: mssql1 
-  #   image: mssqlcusto:latest
-  #   ports:
-  #   - 1433:1433
-  #   environment:
-  #   - ACCEPT_EULA=Y
-  #   - SA_PASSWORD=!@pside2022!
-  #   - MSSQL_PID=Express
-  #   networks:
-  #     - parcindus
   builder:
     image: buildparcindus:latest
     container_name: parcindusbuilder
@@ -17,8 +6,6 @@ services:
       - app:/app
     networks:
       - parcindus
-    # depends_on:
-    # - bdd  
   app:
     image: mcr.microsoft.com/dotnet/aspnet:6.0
     environment:
