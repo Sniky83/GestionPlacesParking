@@ -11,7 +11,7 @@ services:
     environment:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
-      - WebSiteUri=http:/localhost
+      - WebsiteUri=http:/localhost
     container_name: parcindusapp
     ports:
       - 80:80
