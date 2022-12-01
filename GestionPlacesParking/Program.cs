@@ -34,7 +34,11 @@ builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
 builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
-builder.Services.AddScoped<IDayRepository, DayRepository>();
+builder.Services.AddScoped<IDayLocalDataLayer, DayLocalDataLayer>();
+builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
+
+builder.Services.AddScoped<IHistoryLocalDataLayer, SqlServerHistoryLocalDataLayer>();
+builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
 
 // Config de la session
 builder.Services.AddDistributedMemoryCache();

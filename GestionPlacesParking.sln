@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionPlacesParking.Core.Global", "GestionPlacesParking.Core.Global\GestionPlacesParking.Core.Global.csproj", "{DE139F9B-3727-4946-B077-80A7AF89D968}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Keycloak.Core.SSO", "Keycloak.Core.SSO\Keycloak.Core.SSO.csproj", "{98949F8B-E614-4CC5-B430-4B4D0558AC15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Keycloak.Core.SSO", "Keycloak.Core.SSO\Keycloak.Core.SSO.csproj", "{98949F8B-E614-4CC5-B430-4B4D0558AC15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

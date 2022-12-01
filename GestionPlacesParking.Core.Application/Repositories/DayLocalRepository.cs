@@ -1,13 +1,21 @@
 ﻿using GestionPlacesParking.Core.Application.Exceptions;
 using GestionPlacesParking.Core.Global.BusinessLogics;
+using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.Locals;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
-    public class DayRepository : IDayRepository
+    public class DayLocalRepository : IDayLocalRepository
     {
-        public Day ExtractDaysWithDate()
+        private readonly IDayLocalDataLayer _dataLayer;
+
+        public DayLocalRepository(IDayLocalDataLayer dataLayer)
+        {
+            _dataLayer = dataLayer;
+        }
+
+        public DayLocal GetDaysWithDate()
         {
             int daysToDeduce = 0;
             int dayOfWeek = (int)DateTime.Today.DayOfWeek;
@@ -50,23 +58,37 @@ namespace GestionPlacesParking.Core.Application.Repositories
             int numberDaysInWeek = 7;
             int maxMonths = 12;
             bool isNextMonth = false;
+            bool isPreviousMonth = false;
+            int dayToday = DateTime.Today.Day;
+            int lastMonth = DateTime.Now.Month - 1;
 
-            int firstDayOfTheWeek = (DateTime.Today.Day - daysToDeduce);
+            int firstDayOfTheWeek = (dayToday - daysToDeduce);
 
-            Day day = new Day();
+            //firstDayOfTheWeek doit au moins être = à 1
+            if (dayToday <= daysToDeduce)
+            {
+                //Si le mois actuel == 1 (Janvier)
+                if (DateTime.Now.Month == 1)
+                    //Mois précédent == 12 (Décembre)
+                    lastMonth = 12;
+
+                int lastMonthDays = DateTime.DaysInMonth(DateTime.Now.Year, lastMonth);
+
+                firstDayOfTheWeek = ((dayToday + lastMonthDays) - daysToDeduce);
+                isPreviousMonth = true;
+            }
 
             //Règle métier: Si on est vendredi >= à 11h00
             if (ReservationBusinessLogic.IsEndReservationsCurrentWeek())
             {
                 //On passe au lundi d'après
                 firstDayOfTheWeek += 7;
-                day.IsNextWeek = true;
             }
 
             int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
+            int currentMonth = (isPreviousMonth == true ? lastMonth : DateTime.Now.Month);
             int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
-            string dateFormat = "yyyy/MM/dd";
+            string dateFormat = "dd/MM/yyyy";
 
             List<string> dateForeachDaysList = new List<string>();
 
@@ -82,7 +104,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
                         }
 
                         firstDayOfTheWeek = 1;
-                        currentMonth += 1;
+                        currentMonth = (currentMonth == 12 ? 1 : currentMonth + 1);
                         isNextMonth = true;
                     }
                 }
@@ -94,18 +116,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 dateForeachDaysList.Add(date);
             }
 
-            day.DaysOfTheWeek = new Dictionary<string, string>()
-            {
-                { "Lundi", dateForeachDaysList[0] },
-                { "Mardi", dateForeachDaysList[1] },
-                { "Mercredi", dateForeachDaysList[2] },
-                { "Jeudi", dateForeachDaysList[3] },
-                { "Vendredi", dateForeachDaysList[4] },
-                { "Samedi", dateForeachDaysList[5] },
-                { "Dimanche", dateForeachDaysList[6] }
-            };
-
-            return day;
+            return _dataLayer.ExtractDaysWithDate(dateForeachDaysList);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿@page
+@using GestionPlacesParking.Web.UI.CustomMethods
 @model GestionPlacesParking.Web.UI.Pages.Errors._500Model
 @{
+    Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 }
 
-<h1 class="text-center">Erreur 500 : Problème interne. Veuillez contacter un ADMIN !</h1>
+<h1 class="text-center display-6">Erreur 500 : Problème interne. Veuillez contacter un ADMIN !</h1>

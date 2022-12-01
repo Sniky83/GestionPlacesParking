@@ -9,7 +9,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
     {
         private readonly IReservationRepository _reservationRepository;
 
-        public GetReservationsService(IReservationRepository reservationRepository, IDayRepository dayRepository)
+        public GetReservationsService(IReservationRepository reservationRepository)
         {
             _reservationRepository = reservationRepository;
         }
