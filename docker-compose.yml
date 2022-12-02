@@ -1,6 +1,6 @@
 services:
   builder:
-    image: dotnetbuildparcindus:${VERSION}
+    image: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus
     container_name: parcindusbuilder
     volumes:
       - appparcindus:/app
