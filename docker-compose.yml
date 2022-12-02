@@ -1,9 +1,9 @@
 services:
   builder:
-    image: buildparcindus:latest
+    image: dotnetbuildparcindus:latest
     container_name: parcindusbuilder
     volumes:
-      - app:/app
+      - appparcindus:/app
     networks:
       - parcindus
   app:
@@ -18,7 +18,7 @@ services:
     networks:
       - parcindus
     volumes:
-      - app:/app
+      - appparcindus:/app
     working_dir: /app
     command: ["dotnet", "GestionPlacesParking.Web.UI.dll"]
     depends_on:
