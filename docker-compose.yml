@@ -1,6 +1,6 @@
 services:
   builder:
-    image: dotnetbuildparcindus:latest
+    image: dotnetbuildparcindus:${VERSION}
     container_name: parcindusbuilder
     volumes:
       - appparcindus:/app
