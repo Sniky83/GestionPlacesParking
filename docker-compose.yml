@@ -27,5 +27,5 @@ networks:
   parcindus:
     external: true
 volumes:
-  app: 
+  appparcindus: 
     external: true     
