@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
-COPY . /src/myWebApp
+COPY projet-parking-indus/ /src/myWebApp
 RUN mkdir /app
 ENV ParkingContextConnectionString='Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
 ENV WebsiteUri='http://localhost'
