@@ -38,7 +38,12 @@ pipeline {
                         sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
                         sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
                         sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        } 
+                        }
+                    if (VERSION == 'devops') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        }      
                 }
             }
             
