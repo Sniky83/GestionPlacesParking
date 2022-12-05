@@ -11,16 +11,21 @@ services:
     environment:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
-      - WebsiteUri=http://localhost
+      - WebsiteUri=http://Parking.indus.aix.apsdigit.lan
     container_name: parcindusapp
-    ports:
-      - 8086:80
     networks:
       - parcindus
     volumes:
       - appparcindus:/app
     working_dir: /app
     command: ["dotnet", "GestionPlacesParking.Web.UI.dll"]
+    labels:
+      - "traefik.http.services.Parking.LoadBalancer.server.port=443"
+      - "traefik.http.routers.Parking.rule=Host(`prevol-dev-front.deploy.indus.aix.apsdigit.lan`)"
+      - "traefik.http.routers.Parking.entrypoints=http,https"
+      - "traefik.http.routers.Parking.service=Parking"
+      - "traefik.http.routers.Parking.tls=true"
+      - "traefik.http.services.Parking.loadbalancer.server.scheme=https"
     depends_on:
       - builder
 networks:

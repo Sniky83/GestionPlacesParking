@@ -62,7 +62,7 @@ pipeline {
                     sh "docker pull ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
                     sh "ls -a"
                     sh "mv projet-parking-indus/docker-compose.yml ${WORKSPACE}/docker-compose.yml"
-                    sh "docker compose --project-name 'appparkingindus' up -d"
+                    sh "docker compose up -d"
             }
         }      
     }
