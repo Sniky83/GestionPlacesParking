@@ -42,6 +42,7 @@
                             x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
                             x.ParkingSlotId == i
                         );
+
                         var findParkingSlot = Model.ParkingSlotList.Find(
                             x => x.Id == i
                         );

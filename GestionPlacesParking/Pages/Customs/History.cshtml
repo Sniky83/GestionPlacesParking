@@ -9,15 +9,15 @@
 
 <form method="POST">
     <div class="form-group row mb-auto mt-3">
-        <label class="col-md-1 mt-2">Mois</label>
-        <div class="col-md-2">
-            <select asp-for="HistoryFilterDto.Month" asp-items="Html.GetEnumSelectList<HistoryLocal.Months>()" class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
         <label class="col-md-1 mt-2">Trimestre</label>
         <div class="col-md-2">
             <select asp-for="HistoryFilterDto.Quarter" asp-items="Html.GetEnumSelectList<HistoryLocal.Quarters>()" class="form-select">
+                <option value=""></option>
+            </select>
+        </div>
+        <label class="col-md-1 mt-2">Mois</label>
+        <div class="col-md-2">
+            <select asp-for="HistoryFilterDto.Month" asp-items="Html.GetEnumSelectList<HistoryLocal.Months>()" class="form-select">
                 <option value=""></option>
             </select>
         </div>
@@ -33,5 +33,17 @@
             </div>
         </div>
     </div>
+    <table class="table mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Mois</th>
+                <th scope="col">Utilisateur</th>
+                <th scope="col">Jours réservés</th>
+                <th scope="col">Moyenne réservations /mois</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </form>
 
