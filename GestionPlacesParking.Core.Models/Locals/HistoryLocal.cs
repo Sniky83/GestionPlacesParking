@@ -1,4 +1,6 @@
-﻿namespace GestionPlacesParking.Core.Models.Locals
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace GestionPlacesParking.Core.Models.Locals
 {
     public class HistoryLocal
     {
@@ -24,10 +26,6 @@
             Second = 2,
             Troisième = 3
         }
-        public List<int> Years { get; set; }
-
-        public int Month { get; set; }
-        public int Quarter { get; set; }
-        public int Year { get; set; }
+        public List<SelectListItem> Years { get; set; }
     }
 }

@@ -11,19 +11,19 @@
     <div class="form-group row mb-auto mt-3">
         <label class="col-md-1 mt-2">Mois</label>
         <div class="col-md-2">
-            <select asp-for="HistoryLocal.Month" asp-items="Html.GetEnumSelectList<HistoryLocal.Months>()" class="form-select">
+            <select asp-for="HistoryFilterDto.Month" asp-items="Html.GetEnumSelectList<HistoryLocal.Months>()" class="form-select">
                 <option value=""></option>
             </select>
         </div>
         <label class="col-md-1 mt-2">Trimestre</label>
         <div class="col-md-2">
-            <select asp-for="HistoryLocal.Quarter" asp-items="Html.GetEnumSelectList<HistoryLocal.Quarters>()" class="form-select">
+            <select asp-for="HistoryFilterDto.Quarter" asp-items="Html.GetEnumSelectList<HistoryLocal.Quarters>()" class="form-select">
                 <option value=""></option>
             </select>
         </div>
         <label class="col-md-1 mt-2">Année</label>
         <div class="col-md-2">
-            <select class="form-select">
+            <select asp-for="HistoryFilterDto.Year" asp-items="Model.HistoryLocal.Years" class="form-select">
                 <option value=""></option>
             </select>
         </div>

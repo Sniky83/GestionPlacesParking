@@ -1,5 +1,6 @@
 ﻿using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -12,9 +13,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
             _dataLayer = dataLayer;
         }
 
-        public List<int> GetYears()
+        public List<SelectListItem> GetYears()
         {
-            List<int> yearsList = _dataLayer.ExtractYears();
+            List<SelectListItem> yearsList = _dataLayer.ExtractYears();
 
             if (yearsList.Count == 0)
             {

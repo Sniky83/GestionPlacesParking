@@ -1,7 +1,9 @@
-﻿namespace GestionPlacesParking.Core.Interfaces.Repositories
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace GestionPlacesParking.Core.Interfaces.Repositories
 {
     public interface IHistoryLocalRepository
     {
-        List<int> GetYears();
+        List<SelectListItem> GetYears();
     }
 }
