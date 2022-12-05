@@ -14,7 +14,7 @@ services:
       - WebsiteUri=http://localhost
     container_name: parcindusapp
     ports:
-      - 80:80
+      - 8086:80
     networks:
       - parcindus
     volumes:
