@@ -1,9 +1,11 @@
 services:
   builder:
     image: buildparcindus:latest
+    ##harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:${VERSION}
     container_name: parcindusbuilder
     volumes:
       - app:/app
+      ##- appparcindus:/app
     networks:
       - parcindus
   app:
@@ -11,14 +13,16 @@ services:
     environment:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
-      - WebsiteUri=http:/localhost
+      - WebsiteUri=http://localhost
     container_name: parcindusapp
     ports:
-      - 80:80
+    - 80:80
+      #- 8086:80
     networks:
       - parcindus
     volumes:
       - app:/app
+##- appparcindus:/app
     working_dir: /app
     command: ["dotnet", "GestionPlacesParking.Web.UI.dll"]
     depends_on:
@@ -27,5 +31,7 @@ networks:
   parcindus:
     external: true
 volumes:
-  app: 
-    external: true     
+  app:
+    external: true    
+##  appparcindus: 
+ 
