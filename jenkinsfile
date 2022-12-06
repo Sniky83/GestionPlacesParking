@@ -25,26 +25,26 @@ pipeline {
             }
             steps{
                 unstash 'projet'
-                sh 'echo $Harbor_CREDENTIALS_PSW | docker login ${Url_Harbor} -u $Harbor_CREDENTIALS_USR --password-stdin'
-                sh "docker build --no-cache -f ${WORKSPACE}/projet-parking-indus/dockerfile -t ${Url_Harbor}/${Project_Harbor}/${Name_Project} ."
+                // sh 'echo $Harbor_CREDENTIALS_PSW | docker login ${Url_Harbor} -u $Harbor_CREDENTIALS_USR --password-stdin'
+                // sh "docker build --no-cache -f ${WORKSPACE}/projet-parking-indus/dockerfile -t ${Url_Harbor}/${Project_Harbor}/${Name_Project} ."
                 stash includes: 'projet-parking-indus/docker-compose.yml', name:'compose'
-                script{
-                    if (VERSION == 'master') {
-                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        }
-                    if (VERSION == 'develop') {
-                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        }
-                    if (VERSION == 'devops') {
-                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
-                        }      
-                }
+                // script{
+                //     if (VERSION == 'master') {
+                //         sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         }
+                //     if (VERSION == 'develop') {
+                //         sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         }
+                //     if (VERSION == 'devops') {
+                //         sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                //         }      
+                // }
             }
             
         }
