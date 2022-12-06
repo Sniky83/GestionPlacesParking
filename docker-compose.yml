@@ -25,7 +25,7 @@ services:
       - "traefik.http.routers.parking.entrypoints=http,https"
       - "traefik.http.routers.parking.service=parking"  
       - "traefik.http.routers.parking.tls=true"
-      - "traefik.http.services.parking.loadbalancer.server.scheme=https"
+      #- "traefik.http.services.parking.loadbalancer.server.scheme=https"
     expose:
       - 80
     depends_on:
