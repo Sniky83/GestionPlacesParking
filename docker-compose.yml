@@ -11,7 +11,7 @@ services:
     environment:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
-      - WebsiteUri=https://parcindusapp.deploy.aix.apsdigit.lan
+      - WebsiteUri=https://parcindusapp.deploy.indus.aix.apsdigit.lan
       # - ASPNETCORE_HTTPS_PORT=443
     container_name: parcindusapp
     networks:
