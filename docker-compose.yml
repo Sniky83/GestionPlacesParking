@@ -12,6 +12,7 @@ services:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
       - WebsiteUri=https://parcindusapp.deploy.aix.apsdigit.lan
+      - ASPNETCORE_HTTPS_PORT=80
     container_name: parcindusapp
     networks:
       - parcindus
