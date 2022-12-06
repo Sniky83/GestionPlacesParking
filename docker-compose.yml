@@ -9,7 +9,7 @@ services:
   app:
     image: mcr.microsoft.com/dotnet/aspnet:6.0
     environment:
-      - parkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
+      - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
       - WebsiteUri=http://parking.indus.aix.apsdigit.lan
     container_name: parcindusapp
@@ -26,9 +26,9 @@ services:
       - "traefik.http.routers.parking.service=parking"
       - "traefik.http.routers.parking.tls=true"
       - "traefik.http.services.parking.loadbalancer.server.scheme=https"
-    # expose:
-    #   - 80
-    #   - 443
+    expose:
+      - 80
+      - 443
     depends_on:
       - builder
 networks:
