@@ -29,7 +29,6 @@ services:
       #- "traefik.http.services.parking.loadbalancer.server.scheme=https"
     expose:
       - 80
-      - 443
     depends_on:
       - builder
 networks:
