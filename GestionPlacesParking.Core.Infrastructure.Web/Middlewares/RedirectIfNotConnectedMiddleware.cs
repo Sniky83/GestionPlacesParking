@@ -18,6 +18,8 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
             var userId = context.Session.GetString(SessionConst.UserId);
             bool isLoginPage = context.Request.Path.Value.ToLower().Contains("login");
 
+            Console.WriteLine("\n\nDEBUG" + userId + "\n\n" + isLoginPage + "\n\n");
+
             if (userId == null && !isLoginPage)
             {
                 context.Response.Redirect("/Login");
