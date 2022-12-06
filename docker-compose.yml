@@ -21,7 +21,7 @@ services:
     command: ["dotnet","GestionPlacesParking.Web.UI.dll"]
     labels:
       - "traefik.http.services.parking.LoadBalancer.server.port=80"
-      - "traefik.http.routers.parking.rule=Host(`parking.indus.aix.apsdigit.lan`)"
+      - "traefik.http.routers.parking.rule=Host(`parcindusapp.indus.aix.apsdigit.lan`)"
       - "traefik.http.routers.parking.entrypoints=http,https"
       - "traefik.http.routers.parking.service=parking"
       - "traefik.http.routers.parking.tls=true"
