@@ -1,7 +1,7 @@
 ﻿using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models.Locals;
 
-namespace GestionPlacesParking.Core.Infrastructure.DataLayers
+namespace GestionPlacesParking.Core.Infrastructure.LocalDataLayers
 {
     public class DayLocalDataLayer : IDayLocalDataLayer
     {

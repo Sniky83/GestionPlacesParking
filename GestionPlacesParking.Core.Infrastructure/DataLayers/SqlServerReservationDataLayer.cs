@@ -2,6 +2,8 @@
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
+using GestionPlacesParking.Core.Models.Locals.History;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 {
@@ -23,14 +25,17 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return -1;
             }
 
-            Context?.Reservations.Add(reservation);
+            //Unicité des reserving name
+            reservation.ReservingName = reservation.ReservingName.ToUpper().Trim();
+
+            Context.Reservations.Add(reservation);
 
             return Context.SaveChanges();
         }
 
         public int DeleteOne(DeleteOneReservationDto deleteOneReservationDto)
         {
-            IQueryable<Reservation> findCurrentReservationQuery = null;
+            IQueryable<Reservation> findCurrentReservationQuery;
 
             if (deleteOneReservationDto.IsAdmin)
             {
@@ -63,7 +68,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             DateTime thisMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date;
             DateTime thisFriday = thisMonday.AddDays(4).Date;
 
-            return Context?.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
+            return Context.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
         }
 
         public List<Reservation> GetAllReservationsNextWeek()
@@ -71,7 +76,38 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             //On prends les réservations de la semaine prochaine
             DateTime nextMonday = DateTime.Now.AddDays((DayOfWeek.Monday - DateTime.Now.DayOfWeek) + 7).Date;
 
-            return Context?.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
+            return Context.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
+        }
+
+        public List<SelectListItem> ExtractYears()
+        {
+            //Récupère la liste des années des réservations
+            return Context.Reservations
+            .Where(r => r.IsDeleted == false)
+            .Select(r =>
+                new SelectListItem
+                {
+                    Value = r.ReservationDate.Year.ToString(),
+                    Text = r.ReservationDate.Year.ToString()
+                }
+            ).Distinct().ToList();
+        }
+
+        public List<HistoryListLocal> GetAllCurrentMonth()
+        {
+            //Attention: Si pour le même ID le ReservingName change, il y aura des données split
+            return Context.Reservations.Where(
+                r => r.ReservationDate.Month == DateTime.Now.Month &&
+                r.ReservationDate.Year == DateTime.Now.Year)
+            .Where(r => r.IsDeleted == false)
+            .GroupBy(r => new { r.ProprietaireId, r.ReservingName })
+            .Select(h =>
+                new HistoryListLocal
+                {
+                    Utilisateur = h.Key.ReservingName,
+                    NbReservations = h.Count()
+                }
+            ).ToList();
         }
     }
 }

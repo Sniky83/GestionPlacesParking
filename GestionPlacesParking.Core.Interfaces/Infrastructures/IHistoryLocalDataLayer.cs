@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using GestionPlacesParking.Core.Models.Locals.History;
 
 namespace GestionPlacesParking.Core.Interfaces.Infrastructures
 {
     public interface IHistoryLocalDataLayer
     {
-        List<SelectListItem> ExtractYears();
+        HistoryLocal ExtractInfos();
     }
 }

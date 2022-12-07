@@ -52,20 +52,26 @@
                             string style = (findReservation.ProprietaireId == userId) ? "btn-orange-apside" : "btn-danger";
                             string isOwner = (findReservation.ProprietaireId == userId || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
 
-                            string formatStringForJs = String.Format("{0}_{1}_{2}_{3}_{4}", findReservation.ProprietaireId, findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, findReservation.Id);
+                            if(findParkingSlot != null)
+                            {
+                                string formatStringForJs = String.Format("{0}_{1}_{2}_{3}_{4}", findReservation.ProprietaireId, findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, findReservation.Id);
 
-                            <td class="col-md-2 justify-content-center text-center">
-                                @*On inject l'ID de la réservation pour pouvoir ensuite la supprimer*@
-                                <button id="@formatStringForJs" class="btn @style" onClick="@isOwner">
-                                    @findReservation.ReservingName
-                                </button>
-                            </td>
+                                <td class="col-md-2 justify-content-center text-center">
+                                    @*On inject l'ID de la réservation pour pouvoir ensuite la supprimer*@
+                                    <button id="@formatStringForJs" class="btn @style" onClick="@isOwner">
+                                        @findReservation.ReservingName
+                                    </button>
+                                </td>
+                            }
                         }
                         else
                         {
-                            string dayAndReservationId = String.Format("{0}_{1}_{2}_{3}", findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, i);
-                            @*On inject un ID pour le récupérer facilement dans le JS pour faire la requete de création d'une réservation*@
-                            <td class="col-md-2 justify-content-center text-center"><button id="@dayAndReservationId" class="btn bg-success p-3" onClick="openMakeReservationModal(event)"></button></td>
+                            if (findParkingSlot != null)
+                            {
+                                string dayAndReservationId = String.Format("{0}_{1}_{2}_{3}", findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, i);
+                                @*On inject un ID pour le récupérer facilement dans le JS pour faire la requete de création d'une réservation*@
+                                <td class="col-md-2 justify-content-center text-center"><button id="@dayAndReservationId" class="btn bg-success p-3" onClick="openMakeReservationModal(event)"></button></td>
+                            }
                         }
                     }
                 </tr>

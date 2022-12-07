@@ -1,9 +1,4 @@
 ﻿using GestionPlacesParking.Core.Infrastructure.Databases;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 {
@@ -14,7 +9,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
     public abstract class BaseSqlServerDataLayer
     {
         #region Fields
-        private readonly ParkingDbContext? _context = null;
+        private readonly ParkingDbContext _context;
         #endregion
 
         #region Constructors
@@ -25,7 +20,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
         #endregion
 
         #region Properties
-        protected ParkingDbContext? Context { get => _context; }
+        protected ParkingDbContext Context { get => _context; }
         #endregion
     }
 }
