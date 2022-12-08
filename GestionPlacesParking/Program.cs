@@ -10,9 +10,10 @@ using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
 using System.Globalization;
 
 //Utile pour les DateTime
-CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
+
 
 var builder = WebApplication.CreateBuilder(args);
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
