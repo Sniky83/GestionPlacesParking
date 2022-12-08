@@ -2,7 +2,6 @@
 using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
-using GestionPlacesParking.Core.Infrastructure.LocalDataLayers;
 using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
@@ -35,10 +34,10 @@ builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
 builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
-builder.Services.AddScoped<IDayLocalDataLayer, DayLocalDataLayer>();
+//Pas de dataLayer car en Local
 builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
 
-builder.Services.AddScoped<IHistoryLocalDataLayer, HistoryLocalDataLayer>();
+//Utilise le dataLayer de Réservation
 builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
 
 // Config de la session
