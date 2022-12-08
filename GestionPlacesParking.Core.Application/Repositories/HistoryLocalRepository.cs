@@ -17,7 +17,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
         public HistoryLocal GetAllCurrentMonth()
         {
-            List<HistoryListLocal> historyLocalList = _dataLayer.GetAllCurrentMonth();
+            List<HistoryListLocal> historyListLocal = _dataLayer.GetAllCurrentMonth();
 
             string trimestre = string.Empty;
 
@@ -85,13 +85,20 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             HistoryLocal historyLocal = new HistoryLocal();
 
-            historyLocal.HistoryListLocal = historyLocalList;
+            historyLocal.HistoryListLocal = historyListLocal;
             historyLocal.Mois = mois;
             historyLocal.Annee = DateTime.Now.Year;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = Queryable.Average(historyLocalList.Select(h => h.NbReservations).AsQueryable());
+            historyLocal.MoyenneReservations = Queryable.Average(historyListLocal.Select(h => h.NbReservations).AsQueryable());
 
             return historyLocal;
+        }
+
+        public HistoryLocal GetAllSeveralMonths()
+        {
+            //List<HistoryListLocal> historyListLocal = _dataLayer.GetAllSeveralMonths();
+
+            return new HistoryLocal();
         }
 
         public List<SelectListItem> GetYears()

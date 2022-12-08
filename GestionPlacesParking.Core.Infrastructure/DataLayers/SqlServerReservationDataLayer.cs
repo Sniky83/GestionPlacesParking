@@ -109,5 +109,10 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 }
             ).ToList();
         }
+
+        public List<HistoryListLocal> GetAllSeveralMonths()
+        {
+            return new List<HistoryListLocal>();
+        }
     }
 }

@@ -2,8 +2,9 @@
 {
     public class HistoryFilterDto
     {
-        public int Month { get; set; }
-        public int Quarter { get; set; }
-        public int Year { get; set; }
+        public int Mois { get; set; }
+        public int Trimestre { get; set; }
+        public int Annee { get; set; }
+        public int Choix { get; set; }
     }
 }

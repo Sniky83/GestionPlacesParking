@@ -7,25 +7,29 @@
 
 <h1 class="display-6">Historique des places réservées</h1>
 
-@if (Model.HistoryLocal != null)
+@if (Model.HistoryLocal == null)
+{
+    <h4 class="text-danger text-center mt-2 mb-4">@Model.ErrorMessage</h4>
+}
+else
 {
     <form method="POST">
         <div class="form-group row mb-auto mt-3">
             <label class="col-md-1 mt-2">Trimestre</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Quarter" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
+                <select asp-for="HistoryFilterDto.Trimestre" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
                     <option value=""></option>
                 </select>
             </div>
             <label class="col-md-1 mt-2">Mois</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Month" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
+                <select asp-for="HistoryFilterDto.Mois" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
                     <option value=""></option>
                 </select>
             </div>
             <label class="col-md-1 mt-2">Année</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Year" asp-items="Model.HistoryFilterLocal.Annee" class="form-select">
+                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select">
                     <option value=""></option>
                 </select>
             </div>
@@ -55,11 +59,13 @@
                     <td>@historyLocal.NbReservations</td>
                     <td>@historyLocal.MoyenneAnnee</td>
                 </tr>
+
+                //On ajoute les subrows sur l'utilisateur
+                @if(Model.HistoryFilterDto.Choix > (int)HistoryLocal.Choix.Mois)
+                {
+                    
+                }
             }
         </tbody>
     </table>
-}
-else
-{
-    <h4 class="text-danger text-center mt-2 mb-4">@Model.ErrorMessage</h4>
 }

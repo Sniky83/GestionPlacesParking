@@ -36,5 +36,18 @@ namespace GestionPlacesParking.Web.UI.Customs
 
             return Page();
         }
+
+        public IActionResult OnPost()
+        {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Veuillez sélectionner un filtre existant.";
+            }
+            return Page();
+        }
     }
 }
