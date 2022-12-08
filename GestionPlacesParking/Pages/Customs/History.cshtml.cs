@@ -1,5 +1,6 @@
 ﻿using GestionPlacesParking.Core.Interfaces.Repositories;
-using GestionPlacesParking.Core.Models.Locals;
+using GestionPlacesParking.Core.Models.DTOs;
+using GestionPlacesParking.Core.Models.Locals.History;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -10,16 +11,29 @@ namespace GestionPlacesParking.Web.UI.Customs
         private readonly IHistoryLocalRepository _historyLocalRepository;
 
         [BindProperty]
+        public HistoryFilterDto HistoryFilterDto { get; set; }
+        public HistoryFilterLocal HistoryFilterLocal { get; set; }
         public HistoryLocal HistoryLocal { get; set; }
+        public string ErrorMessage { get; set; }
 
         public HistoriqueModel(IHistoryLocalRepository historyLocalRepository)
         {
             _historyLocalRepository = historyLocalRepository;
+            HistoryFilterLocal = new HistoryFilterLocal();
         }
 
         public IActionResult OnGet()
         {
-            //HistoryLocal.Years = _historyLocalRepository.GetYears();
+            try
+            {
+                HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
+                HistoryLocal = _historyLocalRepository.GetAllCurrentMonth();
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Aucune réservation n'est enregistrée dans la base de données.";
+            }
+
             return Page();
         }
     }

@@ -1,8 +1,10 @@
-﻿namespace GestionPlacesParking.Core.Models.Locals
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace GestionPlacesParking.Core.Models.Locals.History
 {
-    public class HistoryLocal
+    public class HistoryFilterLocal
     {
-        public enum Months
+        public enum Mois
         {
             Janvier = 1,
             Février = 2,
@@ -18,16 +20,14 @@
             Décembre = 12
         }
 
-        public enum Quarters
+        public enum Trimestre
         {
             Premier = 1,
             Second = 2,
-            Troisième = 3
+            Troisième = 3,
+            Quatrième = 4
         }
-        public List<int> Years { get; set; }
 
-        public int Month { get; set; }
-        public int Quarter { get; set; }
-        public int Year { get; set; }
+        public List<SelectListItem> Annee { get; set; }
     }
 }

@@ -9,10 +9,12 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
     public class DeleteReservationServiceModel : PageModel
     {
         private readonly IReservationRepository _repository;
+        private readonly ILogger<DeleteReservationServiceModel> _logger;
 
-        public DeleteReservationServiceModel(IReservationRepository repository)
+        public DeleteReservationServiceModel(IReservationRepository repository, ILogger<DeleteReservationServiceModel> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public override BadRequestObjectResult BadRequest(object error)
@@ -36,9 +38,10 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
             {
                 _repository.DeleteOne(DeleteOneReservationDto);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result = BadRequest(errorMessage);
+                _logger.LogError("Erreur lors de la supression d'une réservation.\nUserId : {userId}\n{ex}", userId, ex);
             }
 
             return result;

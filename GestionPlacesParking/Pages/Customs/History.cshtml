@@ -1,5 +1,5 @@
 ﻿@page "/Historique"
-@using GestionPlacesParking.Core.Models.Locals
+@using GestionPlacesParking.Core.Models.Locals.History
 @model GestionPlacesParking.Web.UI.Customs.HistoriqueModel
 @{
     Layout = "_AdminLayout";
@@ -7,31 +7,59 @@
 
 <h1 class="display-6">Historique des places réservées</h1>
 
-<form method="POST">
-    <div class="form-group row mb-auto mt-3">
-        <label class="col-md-1 mt-2">Mois</label>
-        <div class="col-md-2">
-            <select asp-for="HistoryLocal.Month" asp-items="Html.GetEnumSelectList<HistoryLocal.Months>()" class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
-        <label class="col-md-1 mt-2">Trimestre</label>
-        <div class="col-md-2">
-            <select asp-for="HistoryLocal.Quarter" asp-items="Html.GetEnumSelectList<HistoryLocal.Quarters>()" class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
-        <label class="col-md-1 mt-2">Année</label>
-        <div class="col-md-2">
-            <select class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <div class="btn btn-orange-apside">
-                <i class="fa-solid fa-filter text-white"></i>
+@if (Model.HistoryLocal != null)
+{
+    <form method="POST">
+        <div class="form-group row mb-auto mt-3">
+            <label class="col-md-1 mt-2">Trimestre</label>
+            <div class="col-md-2">
+                <select asp-for="HistoryFilterDto.Quarter" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
+                    <option value=""></option>
+                </select>
+            </div>
+            <label class="col-md-1 mt-2">Mois</label>
+            <div class="col-md-2">
+                <select asp-for="HistoryFilterDto.Month" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
+                    <option value=""></option>
+                </select>
+            </div>
+            <label class="col-md-1 mt-2">Année</label>
+            <div class="col-md-2">
+                <select asp-for="HistoryFilterDto.Year" asp-items="Model.HistoryFilterLocal.Annee" class="form-select">
+                    <option value=""></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="btn btn-orange-apside">
+                    <i class="fa-solid fa-filter text-white"></i>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
+    <h1 class="display-6 mt-5">Tableau des réservations du mois de @Model.HistoryLocal.Mois @Model.HistoryLocal.Annee</h1>
+    <span class="text-dark">Moyenne des réservations /mois : <b>@Model.HistoryLocal.MoyenneReservations</b> jours</span>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Utilisateur</th>
+                <th scope="col">Nombre de jours réservés</th>
+                <th scope="col">Moyenne réservations /année</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var historyLocal in Model.HistoryLocal.HistoryListLocal)
+            {
+                <tr>
+                    <td>@historyLocal.Utilisateur</td>
+                    <td>@historyLocal.NbReservations</td>
+                    <td>@historyLocal.MoyenneAnnee</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h4 class="text-danger text-center mt-2 mb-4">@Model.ErrorMessage</h4>
+}

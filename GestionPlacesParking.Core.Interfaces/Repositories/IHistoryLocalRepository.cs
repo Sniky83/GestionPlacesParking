@@ -1,7 +1,11 @@
-﻿namespace GestionPlacesParking.Core.Interfaces.Repositories
+﻿using GestionPlacesParking.Core.Models.Locals.History;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace GestionPlacesParking.Core.Interfaces.Repositories
 {
     public interface IHistoryLocalRepository
     {
-        List<int> GetYears();
+        List<SelectListItem> GetYears();
+        HistoryLocal GetAllCurrentMonth();
     }
 }

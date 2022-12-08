@@ -10,10 +10,12 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
     public class MakeReservationServiceModel : PageModel
     {
         private readonly IReservationRepository _reservationRepository;
+        private readonly ILogger<MakeReservationServiceModel> _logger;
 
-        public MakeReservationServiceModel(IReservationRepository reservationRepository)
+        public MakeReservationServiceModel(IReservationRepository reservationRepository, ILogger<MakeReservationServiceModel> logger)
         {
             _reservationRepository = reservationRepository;
+            _logger = logger;
         }
 
         public override BadRequestObjectResult BadRequest(object error)
@@ -39,9 +41,10 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
 
                     _reservationRepository.AddOne(Reservation);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     result = BadRequest(errorMessage);
+                    _logger.LogError("Erreur lors de l'ajout d'une réservation.\nUserId : {userId}\n{ex}", Reservation.ProprietaireId, ex);
                 }
             }
             else

@@ -7,6 +7,10 @@ using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
+using System.Globalization;
+
+//Utile pour les DateTime
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +38,10 @@ builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
 builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
-builder.Services.AddScoped<IDayLocalDataLayer, DayLocalDataLayer>();
+//Pas de dataLayer car en Local
 builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
 
-builder.Services.AddScoped<IHistoryLocalDataLayer, SqlServerHistoryLocalDataLayer>();
+//Utilise le dataLayer de Réservation
 builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
 
 // Config de la session
