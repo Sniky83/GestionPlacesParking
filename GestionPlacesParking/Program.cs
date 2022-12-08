@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
 using System.Globalization;
 
+var builder = WebApplication.CreateBuilder(args);
+
 //Utile pour les DateTime
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
-
-var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
