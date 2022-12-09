@@ -2,7 +2,8 @@
 {
     public class HistoryListLocal
     {
-        public string Utilisateur { get; set; } = string.Empty;
+        public string ProprietaireId { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
         //Vide si plusieurs mois
         //Utile si un seul mois
         public int NbReservations { get; set; }

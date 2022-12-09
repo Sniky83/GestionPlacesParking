@@ -95,16 +95,15 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<HistoryListLocal> GetAllCurrentMonth()
         {
-            //Attention: Si pour le même ID le ReservingName change, il y aura des données split
             return Context.Reservations.Where(
                 r => r.ReservationDate.Month == DateTime.Now.Month &&
-                r.ReservationDate.Year == DateTime.Now.Year)
-            .Where(r => r.IsDeleted == false)
-            .GroupBy(r => new { r.ProprietaireId, r.ReservingName })
+                r.ReservationDate.Year == DateTime.Now.Year &&
+                r.IsDeleted == false)
+            .GroupBy(r => new { r.ProprietaireId })
             .Select(h =>
                 new HistoryListLocal
                 {
-                    Utilisateur = h.Key.ReservingName,
+                    ProprietaireId = h.Key.ProprietaireId,
                     NbReservations = h.Count()
                 }
             ).ToList();
@@ -112,7 +111,17 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<HistoryListLocal> GetAllSeveralMonths()
         {
-            return new List<HistoryListLocal>();
+            return Context.Reservations.Where(
+                r => r.ReservationDate.Year == DateTime.Now.Year &&
+                r.IsDeleted == false)
+            .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
+            .Select(h =>
+                new HistoryListLocal
+                {
+                    ProprietaireId = h.Key.ProprietaireId,
+                    NbReservations = h.Count()
+                }
+            ).ToList();
         }
     }
 }

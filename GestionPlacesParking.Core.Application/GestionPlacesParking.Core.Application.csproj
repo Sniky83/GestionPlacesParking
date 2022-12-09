@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GestionPlacesParking.Core.Global\GestionPlacesParking.Core.Global.csproj" />
     <ProjectReference Include="..\GestionPlacesParking.Core.Interfaces\GestionPlacesParking.Core.Interfaces.csproj" />
+    <ProjectReference Include="..\Keycloak.Core.SSO\Keycloak.Core.SSO.csproj" />
   </ItemGroup>
 
 </Project>

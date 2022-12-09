@@ -13,5 +13,6 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
         int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
         List<SelectListItem> ExtractYears();
         List<HistoryListLocal> GetAllCurrentMonth();
+        List<HistoryListLocal> GetAllSeveralMonths();
     }
 }

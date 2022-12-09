@@ -2,7 +2,13 @@
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.Locals.History;
+using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -18,6 +24,34 @@ namespace GestionPlacesParking.Core.Application.Repositories
         public HistoryLocal GetAllCurrentMonth()
         {
             List<HistoryListLocal> historyListLocal = _dataLayer.GetAllCurrentMonth();
+            List<HistoryListLocal> historyListSeveralMonthLocal = _dataLayer.GetAllSeveralMonths();
+
+            var webManager = new WebManager();
+            var userInfojson = webManager.GetAllUserInfo();
+
+            dynamic jsonObject = JArray.Parse(userInfojson);
+
+            //On prends les données keycloak pour remplir le nom prenom de l'user
+            foreach (var oneHistoryLocal in historyListLocal)
+            {
+                foreach(var jsonObj in jsonObject)
+                {
+                    string proprietaireId = jsonObj.id;
+
+                    if(oneHistoryLocal.ProprietaireId == proprietaireId)
+                    {
+                        string fullName = jsonObj.firstName + " " + jsonObj.lastName;
+                        oneHistoryLocal.FullName = fullName;
+                        break;
+                    }
+                }
+
+                oneHistoryLocal.MoyenneAnnee = Queryable.Average(
+                    historyListSeveralMonthLocal.
+                    Where(h => h.ProprietaireId == oneHistoryLocal.ProprietaireId).
+                    Select(h => h.NbReservations).AsQueryable()
+                );
+            }
 
             string trimestre = string.Empty;
 

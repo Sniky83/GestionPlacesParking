@@ -7,5 +7,6 @@ namespace GestionPlacesParking.Core.Interfaces.Repositories
     {
         List<SelectListItem> GetYears();
         HistoryLocal GetAllCurrentMonth();
+        HistoryLocal GetAllSeveralMonths();
     }
 }

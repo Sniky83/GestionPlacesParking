@@ -12,7 +12,7 @@
     string? userId = HttpContext.Session.GetString(SessionConst.UserId);
     string? fullName = HttpContext.Session.GetString(SessionConst.FullName);
 
-    int MinId = Model.ParkingSlotList.First().Id;
+    int firstId = Model.ParkingSlotList.First().Id;
     var requestToken = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
 }
 
@@ -35,7 +35,7 @@
             {
                 <tr>
                     <td class="col-md-1">@DayOfTheWeek.Key</td>
-                    @for (int i = MinId; i < (MinId + Model.ParkingSlotList.Count); i++)
+                    @for (int i = firstId; i < (firstId + Model.ParkingSlotList.Count); i++)
                     {
                         @*Si le jour actuel + la place de parking est = à la donnée en cours alors on affiche le nom dans la case*@
                         var findReservation = Model.ReservationList.Find(

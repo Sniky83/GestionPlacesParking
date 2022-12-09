@@ -55,13 +55,13 @@ else
             @foreach (var historyLocal in Model.HistoryLocal.HistoryListLocal)
             {
                 <tr>
-                    <td>@historyLocal.Utilisateur</td>
+                    <td>@historyLocal.FullName</td>
                     <td>@historyLocal.NbReservations</td>
                     <td>@historyLocal.MoyenneAnnee</td>
                 </tr>
 
                 //On ajoute les subrows sur l'utilisateur
-                @if(Model.HistoryFilterDto.Choix > (int)HistoryLocal.Choix.Mois)
+                @if(Model.HistoryFilterDto != null && (Model.HistoryFilterDto.Choix > (int)HistoryLocal.Choix.Mois))
                 {
                     
                 }
