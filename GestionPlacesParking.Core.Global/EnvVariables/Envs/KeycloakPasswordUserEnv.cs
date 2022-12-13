@@ -15,7 +15,7 @@ namespace GestionPlacesParking.Core.Global.EnvironmentVariables.Envs
 
                 if (isDevelopment)
                 {
-                    return KeycloakPasswordUserEnv = "pass";
+                    return KeycloakPasswordUserEnv = "pyLcVV$tAFRaNv3J";
                 }
 
                 throw new ArgumentNullException(nameof(KeycloakPasswordUserEnv));

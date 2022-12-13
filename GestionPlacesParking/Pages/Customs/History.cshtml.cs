@@ -27,7 +27,7 @@ namespace GestionPlacesParking.Web.UI.Customs
             try
             {
                 HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
-                HistoryLocal = _historyLocalRepository.GetAllCurrentMonth();
+                HistoryLocal = _historyLocalRepository.GetAll();
             }
             catch (Exception)
             {
@@ -41,7 +41,17 @@ namespace GestionPlacesParking.Web.UI.Customs
         {
             try
             {
+                HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
 
+                if (HistoryFilterDto != null && (HistoryFilterDto.Mois >= 1 || HistoryFilterDto.Trimestre >= 1 || HistoryFilterDto.Annee >= 1))
+                {
+                    HistoryLocal = _historyLocalRepository.GetAll(HistoryFilterDto);
+                }
+                else
+                {
+                    //Get current Month
+                    HistoryLocal = _historyLocalRepository.GetAll();
+                }
             }
             catch (Exception)
             {
