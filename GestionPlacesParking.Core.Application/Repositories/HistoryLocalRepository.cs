@@ -1,4 +1,4 @@
-﻿using GestionPlacesParking.Core.Application.Exceptions;
+﻿using GestionPlacesParking.Core.Application.Utils;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
@@ -18,105 +18,6 @@ namespace GestionPlacesParking.Core.Application.Repositories
             _dataLayer = dataLayer;
         }
 
-        private string ExtractMonthDisplayName(int month)
-        {
-            string displayMonth = string.Empty;
-
-            switch (month)
-            {
-                case 1:
-                    displayMonth = "Janvier";
-                    break;
-                case 2:
-                    displayMonth = "Février";
-                    break;
-                case 3:
-                    displayMonth = "Mars";
-                    break;
-                case 4:
-                    displayMonth = "Avril";
-                    break;
-                case 5:
-                    displayMonth = "Mai";
-                    break;
-                case 6:
-                    displayMonth = "Juin";
-                    break;
-                case 7:
-                    displayMonth = "Juillet";
-                    break;
-                case 8:
-                    displayMonth = "Août";
-                    break;
-                case 9:
-                    displayMonth = "Septembre";
-                    break;
-                case 10:
-                    displayMonth = "Octobre";
-                    break;
-                case 11:
-                    displayMonth = "Novembre";
-                    break;
-                case 12:
-                    displayMonth = "Décembre";
-                    break;
-                default:
-                    throw new NotFoundException(nameof(displayMonth));
-            }
-
-            return displayMonth;
-        }
-
-        private string ExtractQuarterDisplayNameFromMonth(int month)
-        {
-            string displayQuarter = string.Empty;
-
-            switch (month)
-            {
-                case <= 3:
-                    displayQuarter = "Premier";
-                    break;
-                case <= 6:
-                    displayQuarter = "Second";
-                    break;
-                case <= 9:
-                    displayQuarter = "Troisième";
-                    break;
-                case <= 12:
-                    displayQuarter = "Quatrième";
-                    break;
-                default:
-                    throw new NotFoundException(nameof(displayQuarter));
-            }
-
-            return displayQuarter;
-        }
-
-        private string ExtractQuarterDisplayNameFromQuarter(int quarter)
-        {
-            string displayQuarter = string.Empty;
-
-            switch (quarter)
-            {
-                case 1:
-                    displayQuarter = "Premier";
-                    break;
-                case 2:
-                    displayQuarter = "Second";
-                    break;
-                case 3:
-                    displayQuarter = "Troisième";
-                    break;
-                case 4:
-                    displayQuarter = "Quatrième";
-                    break;
-                default:
-                    throw new NotFoundException(nameof(displayQuarter));
-            }
-
-            return displayQuarter;
-        }
-
         /// <summary>
         /// Récupère les statistiques des réservations par utilisateur /1 mois donné
         /// Fait également la moyenne des réservations /1 an par utilisateur
@@ -124,7 +25,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
         /// </summary>
         /// <param name="historyFilterDto"></param>
         /// <returns></returns>
-        public HistoryLocal GetAll(HistoryFilterDto? historyFilterDto = null)
+        public HistoryLocal GetAll(FilterHistoryDto? historyFilterDto = null)
         {
             List<HistoryUserLocal> historyUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
             //Sert pour faire la moyenne des réservations /1 an
@@ -167,9 +68,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
             int quarterCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DateTime.Now.Month : historyFilterDto.Trimestre);
             int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
-            string mois = ExtractMonthDisplayName(monthCondition);
+            string mois = DisplayNameUtil.GetMonthDisplayNameByMonth(monthCondition);
 
-            string trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? ExtractQuarterDisplayNameFromMonth(monthCondition) : ExtractQuarterDisplayNameFromQuarter(historyFilterDto.Trimestre));
+            string trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DisplayNameUtil.GetQuarterDisplayNameByMonth(monthCondition) : DisplayNameUtil.GetQuarterDisplayNameByQuarter(historyFilterDto.Trimestre));
 
             HistoryLocal historyLocal = new HistoryLocal();
 
@@ -191,7 +92,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             //Pour récupérer les réservations sur plusieurs mois
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)
             {
-                oneUserMonthsReservationList.MoisString = ExtractMonthDisplayName(oneUserMonthsReservationList.Mois);
+                oneUserMonthsReservationList.MoisString = DisplayNameUtil.GetMonthDisplayNameByMonth(oneUserMonthsReservationList.Mois);
 
                 historyLocal.HistoryUserMonthsListLocal.Add(oneUserMonthsReservationList);
             }

@@ -43,6 +43,7 @@ builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
 
 //Utilise le dataLayer de Réservation
 builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
+builder.Services.AddScoped<IProfileLocalRepository, ProfileLocalRepository>();
 
 // Config de la session
 builder.Services.AddDistributedMemoryCache();

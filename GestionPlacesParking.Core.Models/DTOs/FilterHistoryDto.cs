@@ -1,6 +1,6 @@
 ﻿namespace GestionPlacesParking.Core.Models.DTOs
 {
-    public class HistoryFilterDto
+    public class FilterHistoryDto
     {
         public int Mois { get; set; }
         public int Trimestre { get; set; }

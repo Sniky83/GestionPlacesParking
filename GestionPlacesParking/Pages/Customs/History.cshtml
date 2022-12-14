@@ -73,7 +73,7 @@ else
         <h1 class="display-6 mt-5">Tableau des réservations de l'année @Model.HistoryLocal.Annee</h1>
     }
 
-    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@string.Format("{0:F1}", Model.HistoryLocal.MoyenneReservations)</b> jours</span>
+    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@string.Format("{0:F1}", Model.HistoryLocal.MoyenneReservations)</b> j</span>
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -92,7 +92,7 @@ else
                         <tr>
                             <td><b>@historyLocal.FullName</b></td>
                             <td class="text-center">@historyLocal.NbReservations</td>
-                            <td class="text-center">@historyLocal.MoyenneAnnee</td>
+                            <td class="text-center">@string.Format("{0:F1}", historyLocal.MoyenneAnnee)</td>
                         </tr>
                     }
                 }
@@ -114,7 +114,7 @@ else
                             <tr class="table-active">
                                 <td><b>@historyLocal.FullName</b></td>
                                 <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
-                                <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
+                                <td class="text-center"><b>@string.Format("{0:F1}", historyLocal.MoyenneAnnee)</b></td>
                             </tr>
 
                             @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserMonthsListLocal)

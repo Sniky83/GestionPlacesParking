@@ -3,6 +3,7 @@ using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.History;
+using GestionPlacesParking.Core.Models.Locals.Profile;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GestionPlacesParking.Core.Infrastructure.DataLayers
@@ -13,7 +14,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public int AddOne(Reservation reservation)
         {
-            var checkDuplicateReservation = Context.Reservations.Where(
+            var checkDuplicateReservation = Context.Reservations
+            .Where(
                 r => r.IsDeleted == false &&
                 r.ReservationDate == reservation.ReservationDate &&
                 r.ParkingSlotId == reservation.ParkingSlotId
@@ -25,7 +27,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return -1;
             }
 
-            var checkDoubleReservation = Context.Reservations.Where(
+            var checkDoubleReservation = Context.Reservations
+            .Where(
                 r => r.IsDeleted == false &&
                 r.ReservationDate == reservation.ReservationDate &&
                 r.ProprietaireId == reservation.ProprietaireId
@@ -105,13 +108,14 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             ).Distinct().ToList();
         }
 
-        public List<HistoryUserLocal> GetNumberReservationsSpecificMonth(HistoryFilterDto historyFilterDto)
+        public List<HistoryUserLocal> GetNumberReservationsSpecificMonth(FilterHistoryDto historyFilterDto)
         {
             int monthCondition = (historyFilterDto == null || historyFilterDto.Mois == 0 ? DateTime.Now.Month : historyFilterDto.Mois);
             int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
             //Récupère le nombre de réservations par personne sur un mois donné
-            return Context.Reservations.Where(
+            return Context.Reservations
+            .Where(
                 r => r.ReservationDate.Month == monthCondition &&
                 r.ReservationDate.Year == yearCondition &&
                 r.IsDeleted == false)
@@ -125,7 +129,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             ).ToList();
         }
 
-        public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(HistoryFilterDto historyFilterDto)
+        public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(FilterHistoryDto historyFilterDto)
         {
             int startingMonth = 0;
 
@@ -150,7 +154,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
             int yearCondition = (historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
-            return Context.Reservations.Where(
+            return Context.Reservations
+            .Where(
                 r =>
                 (
                     //Trimestre
@@ -170,13 +175,14 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             ).ToList();
         }
 
-        public List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(HistoryFilterDto historyFilterDto)
+        public List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto historyFilterDto)
         {
             int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
             //Récupère le nombre de réservations par personne sur une année
             //Utile également pour calculer la moyenne des réservations /1 année
-            return Context.Reservations.Where(
+            return Context.Reservations
+            .Where(
                 r => r.ReservationDate.Year == yearCondition &&
                 r.IsDeleted == false)
             .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
@@ -185,6 +191,41 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 {
                     ProprietaireId = h.Key.ProprietaireId,
                     NbReservations = h.Count()
+                }
+            ).ToList();
+        }
+
+        public List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto getProfileDto)
+        {
+            return Context.Reservations
+            .Where(
+                r => r.ReservationDate.Year == DateTime.Now.Year &&
+                r.IsDeleted == false &&
+                r.ProprietaireId == getProfileDto.UserId)
+            .GroupBy(r => new { r.ReservationDate.Month })
+            .OrderBy(r => r.Key.Month)
+            .Select(p =>
+                new ProfileUserMonthsLocal
+                {
+                    Mois = p.Key.Month,
+                    NbReservations = p.Count()
+                }
+            ).ToList();
+        }
+
+        public List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths(GetProfileDto profileDto)
+        {
+            return Context.Reservations
+            .Where(
+                r => r.ReservationDate.Year == DateTime.Now.Year &&
+                r.IsDeleted == false)
+            .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
+            .OrderBy(r => r.Key.Month)
+            .Select(p =>
+                new ProfileAllUserMonthsLocal
+                {
+                    Mois = p.Key.Month,
+                    NbReservations = p.Count()
                 }
             ).ToList();
         }

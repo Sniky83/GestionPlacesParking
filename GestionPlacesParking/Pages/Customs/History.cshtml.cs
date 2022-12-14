@@ -11,7 +11,7 @@ namespace GestionPlacesParking.Web.UI.Customs
         private readonly IHistoryLocalRepository _historyLocalRepository;
 
         [BindProperty]
-        public HistoryFilterDto HistoryFilterDto { get; set; }
+        public FilterHistoryDto HistoryFilterDto { get; set; }
         public HistoryFilterLocal HistoryFilterLocal { get; set; }
         public HistoryLocal HistoryLocal { get; set; }
         public string ErrorMessage { get; set; }
@@ -57,6 +57,7 @@ namespace GestionPlacesParking.Web.UI.Customs
             {
                 ErrorMessage = "Veuillez sélectionner un filtre existant.";
             }
+
             return Page();
         }
     }

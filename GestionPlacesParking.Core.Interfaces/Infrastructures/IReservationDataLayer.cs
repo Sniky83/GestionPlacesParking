@@ -1,6 +1,7 @@
 ﻿using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.History;
+using GestionPlacesParking.Core.Models.Locals.Profile;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GestionPlacesParking.Core.Interfaces.Infrastructures
@@ -12,8 +13,10 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
         int AddOne(Reservation reservation);
         int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
         List<SelectListItem> ExtractYears();
-        List<HistoryUserLocal> GetNumberReservationsSpecificMonth(HistoryFilterDto historyFilterDto);
-        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(HistoryFilterDto historyFilterDto);
-        List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(HistoryFilterDto historyFilterDto);
+        List<HistoryUserLocal> GetNumberReservationsSpecificMonth(FilterHistoryDto historyFilterDto);
+        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(FilterHistoryDto historyFilterDto);
+        List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto historyFilterDto);
+        List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto profileDto);
+        List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths(GetProfileDto profileDto);
     }
 }
