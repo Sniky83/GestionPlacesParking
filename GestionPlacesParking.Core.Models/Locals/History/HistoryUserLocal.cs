@@ -8,5 +8,6 @@
         //Utile si un seul mois
         public int NbReservations { get; set; }
         public double MoyenneAnnee { get; set; }
+        public int TotalReservations { get; set; }
     }
 }

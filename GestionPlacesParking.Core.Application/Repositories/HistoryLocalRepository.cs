@@ -126,9 +126,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
         /// <returns></returns>
         public HistoryLocal GetAll(HistoryFilterDto? historyFilterDto = null)
         {
-            List<HistoryUserLocal> historyListLocal = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
+            List<HistoryUserLocal> historyUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
             //Sert pour faire la moyenne des réservations /1 an
-            List<HistoryUserLocal> userYearReservationList = _dataLayer.GetNumberReservationsSpecificYearForAverage(historyFilterDto);
+            List<HistoryUserLocal> userYearOrQuarterReservationList = _dataLayer.GetNumberReservationsSpecificYearForAverage(historyFilterDto);
 
             List<HistoryUserMonthsLocal> userMonthsReservationList = new List<HistoryUserMonthsLocal>();
             if (historyFilterDto != null && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
@@ -142,23 +142,23 @@ namespace GestionPlacesParking.Core.Application.Repositories
             dynamic jsonObject = JArray.Parse(userInfojson);
 
             //On prends les données keycloak pour remplir le nom prenom de l'user
-            foreach (var oneHistoryLocal in historyListLocal)
+            foreach (var oneHistoryUser in historyUserList)
             {
                 foreach (var jsonObj in jsonObject)
                 {
                     string proprietaireId = jsonObj.id;
 
-                    if (oneHistoryLocal.ProprietaireId == proprietaireId)
+                    if (oneHistoryUser.ProprietaireId == proprietaireId)
                     {
                         string fullName = jsonObj.firstName + " " + jsonObj.lastName;
-                        oneHistoryLocal.FullName = fullName;
+                        oneHistoryUser.FullName = fullName;
                         break;
                     }
                 }
 
-                oneHistoryLocal.MoyenneAnnee = Queryable.Average(
-                    userYearReservationList.
-                    Where(h => h.ProprietaireId == oneHistoryLocal.ProprietaireId).
+                oneHistoryUser.MoyenneAnnee = Queryable.Average(
+                    userYearOrQuarterReservationList.
+                    Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
                     Select(h => h.NbReservations).AsQueryable()
                 );
             }
@@ -173,11 +173,20 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             HistoryLocal historyLocal = new HistoryLocal();
 
-            historyLocal.HistoryUserListLocal = historyListLocal;
+            foreach (var oneHistoryUserLocal in historyUserList)
+            {
+                oneHistoryUserLocal.TotalReservations = Queryable.Sum(
+                    userYearOrQuarterReservationList.
+                    Where(h => h.ProprietaireId == oneHistoryUserLocal.ProprietaireId).
+                    Select(h => h.NbReservations).AsQueryable()
+                );
+            }
+
+            historyLocal.HistoryUserListLocal = historyUserList;
             historyLocal.Mois = mois;
             historyLocal.Annee = yearCondition;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = Queryable.Average(historyListLocal.Select(h => h.NbReservations).AsQueryable());
+            historyLocal.MoyenneReservations = Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable());
 
             //Pour récupérer les réservations sur plusieurs mois
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)
