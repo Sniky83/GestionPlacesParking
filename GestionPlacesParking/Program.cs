@@ -14,12 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 //Utile pour les DateTime
 
 
-<<<<<<< HEAD
 var builder = WebApplication.CreateBuilder(args);
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
-=======
->>>>>>> develop
 // Add services to the container.
 builder.Services.AddRazorPages();
 
