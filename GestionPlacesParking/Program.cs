@@ -9,12 +9,17 @@ using Microsoft.EntityFrameworkCore;
 using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
 using System.Globalization;
 
+var builder = WebApplication.CreateBuilder(args);
+
 //Utile pour les DateTime
 
 
+<<<<<<< HEAD
 var builder = WebApplication.CreateBuilder(args);
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
+=======
+>>>>>>> develop
 // Add services to the container.
 builder.Services.AddRazorPages();
 
@@ -44,6 +49,7 @@ builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
 
 //Utilise le dataLayer de Réservation
 builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
+builder.Services.AddScoped<IProfileLocalRepository, ProfileLocalRepository>();
 
 // Config de la session
 builder.Services.AddDistributedMemoryCache();

@@ -1,9 +1,12 @@
-﻿using Keycloak.Core.SSO.Keycloak;
+﻿using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using Keycloak.Core.SSO.Keycloak;
+using Keycloak.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -26,7 +29,8 @@ namespace KeycloakCore.Keycloak
 
         public WebManager()
         {
-            SsoSettings = new Settings().SsoSettings;
+            var settings = new Settings();
+            SsoSettings = settings.SsoSettings;
             Metadata = RefreshMetadata();
         }
 
@@ -86,6 +90,45 @@ namespace KeycloakCore.Keycloak
         public Uri UserLogoutUri(string redirectUri)
         {
             return new Uri(Metadata.EndSessionEndpoint, "?redirect_uri=" + redirectUri);
+        }
+
+        /// <summary>
+        /// Get ADMIN token to grant ALL ACCESS to API
+        /// </summary>
+        /// <returns></returns>
+        private string ConnectAsAdmin()
+        {
+            string username = "all_access_user";
+            string password = KeycloakPasswordUserEnv.KeycloakPasswordUser;
+            string grant_type = "password";
+
+            List<string> parameters = new List<string>()
+            {
+                $"{OpenIdConnectParameterNames.GrantType}={grant_type}",
+                $"{OpenIdConnectParameterNames.Username}={username}",
+                $"{OpenIdConnectParameterNames.Password}={password}",
+                $"{OpenIdConnectParameterNames.ClientId}={SsoSettings.ClientId}",
+                $"{OpenIdConnectParameterNames.ClientSecret}={SsoSettings.ClientSecret}"
+            };
+
+            string json_result = SendHttpPostRequest(Metadata.TokenEndpoint, parameters, null);
+
+            dynamic obj = JsonConvert.DeserializeObject(json_result);
+            string token = obj.access_token;
+
+            return token;
+        }
+
+        /// <summary>
+        /// As ADMIN Get All User Info asking Keycloak API
+        /// </summary>
+        /// <returns></returns>
+        public string GetAllUserInfo()
+        {
+            string adminToken = ConnectAsAdmin();
+            string res = HttpApiGet(Metadata.AdminUserInfoEndpoint, adminToken);
+
+            return res;
         }
 
         /// <summary>
@@ -226,6 +269,8 @@ namespace KeycloakCore.Keycloak
                         new Uri(json[OpenIdProviderMetadataNames.UserInfoEndpoint].ToString());
                     metadata.EndSessionEndpoint =
                         new Uri(json[OpenIdProviderMetadataNames.EndSessionEndpoint].ToString());
+                    metadata.AdminUserInfoEndpoint =
+                        new Uri(SsoSettings.KeycloakUrl + "/admin/realms/gestionPDP/users");
 
                     // Check for values
                     if (metadata.AuthorizationEndpoint == null || metadata.TokenEndpoint == null ||
@@ -258,7 +303,7 @@ namespace KeycloakCore.Keycloak
         /// </summary>
         /// <param name="uri">The Uri</param>
         /// <returns></returns>
-        private string HttpApiGet(Uri uri)
+        private string HttpApiGet(Uri uri, string token = null)
         {
             try
             {
@@ -266,6 +311,9 @@ namespace KeycloakCore.Keycloak
                 clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
                 var webClient = new HttpClient(clientHandler);
+
+                if (!string.IsNullOrEmpty(token))
+                    webClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                 HttpResponseMessage response = Task.Run(async () => await webClient.GetAsync(uri)).Result;
                 response.EnsureSuccessStatusCode();
@@ -289,6 +337,7 @@ namespace KeycloakCore.Keycloak
             public Uri JwksEndpoint;
             public Uri TokenEndpoint;
             public Uri UserInfoEndpoint;
+            public Uri AdminUserInfoEndpoint;
         }
     }
 }

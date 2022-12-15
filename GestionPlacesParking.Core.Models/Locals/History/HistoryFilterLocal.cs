@@ -28,6 +28,6 @@ namespace GestionPlacesParking.Core.Models.Locals.History
             Quatrième = 4
         }
 
-        public List<SelectListItem> Annee { get; set; }
+        public List<SelectListItem> Annee { get; set; } = new List<SelectListItem>();
     }
 }

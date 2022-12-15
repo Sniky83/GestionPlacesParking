@@ -11,7 +11,7 @@ namespace GestionPlacesParking.Web.UI.Customs
         private readonly IHistoryLocalRepository _historyLocalRepository;
 
         [BindProperty]
-        public HistoryFilterDto HistoryFilterDto { get; set; }
+        public FilterHistoryDto HistoryFilterDto { get; set; }
         public HistoryFilterLocal HistoryFilterLocal { get; set; }
         public HistoryLocal HistoryLocal { get; set; }
         public string ErrorMessage { get; set; }
@@ -27,11 +27,35 @@ namespace GestionPlacesParking.Web.UI.Customs
             try
             {
                 HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
-                HistoryLocal = _historyLocalRepository.GetAllCurrentMonth();
+                HistoryLocal = _historyLocalRepository.GetAll();
             }
             catch (Exception)
             {
                 ErrorMessage = "Aucune réservation n'est enregistrée dans la base de données.";
+            }
+
+            return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            try
+            {
+                HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
+
+                if (HistoryFilterDto != null && (HistoryFilterDto.Mois >= 1 || HistoryFilterDto.Trimestre >= 1 || HistoryFilterDto.Annee >= 1))
+                {
+                    HistoryLocal = _historyLocalRepository.GetAll(HistoryFilterDto);
+                }
+                else
+                {
+                    //Get current Month
+                    HistoryLocal = _historyLocalRepository.GetAll();
+                }
+            }
+            catch (Exception)
+            {
+                ErrorMessage = "Veuillez sélectionner un filtre existant.";
             }
 
             return Page();

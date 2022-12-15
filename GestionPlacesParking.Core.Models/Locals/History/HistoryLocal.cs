@@ -6,6 +6,9 @@
         public string Trimestre { get; set; } = string.Empty;
         public int Annee { get; set; } = DateTime.Now.Year;
         public double MoyenneReservations { get; set; } = 0;
-        public List<HistoryListLocal> HistoryListLocal { get; set; } = new List<HistoryListLocal>();
+        public List<HistoryUserLocal> HistoryUserListLocal { get; set; } = new List<HistoryUserLocal>();
+        //Vide si un seul mois
+        //Utile si plusieurs mois
+        public List<HistoryUserMonthsLocal> HistoryUserMonthsListLocal { get; set; } = new List<HistoryUserMonthsLocal>();
     }
 }

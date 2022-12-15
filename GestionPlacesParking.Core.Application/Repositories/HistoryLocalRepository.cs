@@ -1,8 +1,11 @@
-﻿using GestionPlacesParking.Core.Application.Exceptions;
+﻿using GestionPlacesParking.Core.Application.Utils;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
+using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.History;
+using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json.Linq;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -15,81 +18,84 @@ namespace GestionPlacesParking.Core.Application.Repositories
             _dataLayer = dataLayer;
         }
 
-        public HistoryLocal GetAllCurrentMonth()
+        /// <summary>
+        /// Récupère les statistiques des réservations par utilisateur /1 mois donné
+        /// Fait également la moyenne des réservations /1 an par utilisateur
+        /// Par défaut la fonction prend l'année et le mois courant
+        /// </summary>
+        /// <param name="historyFilterDto"></param>
+        /// <returns></returns>
+        public HistoryLocal GetAll(FilterHistoryDto? historyFilterDto = null)
         {
-            List<HistoryListLocal> historyLocalList = _dataLayer.GetAllCurrentMonth();
+            List<HistoryUserLocal> historyUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
+            //Sert pour faire la moyenne des réservations /1 an
+            List<HistoryUserLocal> userYearOrQuarterReservationList = _dataLayer.GetNumberReservationsSpecificYearForAverage(historyFilterDto);
 
-            string trimestre = string.Empty;
-
-            switch (DateTime.Now.Month)
+            List<HistoryUserMonthsLocal> userMonthsReservationList = new List<HistoryUserMonthsLocal>();
+            if (historyFilterDto != null && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
             {
-                case <= 3:
-                    trimestre = "Premier";
-                    break;
-                case <= 6:
-                    trimestre = "Second";
-                    break;
-                case <= 9:
-                    trimestre = "Troisième";
-                    break;
-                case <= 12:
-                    trimestre = "Quatrième";
-                    break;
-                default:
-                    throw new NotFoundException(nameof(trimestre));
+                userMonthsReservationList = _dataLayer.GetNumberReservationsSpecificTrimesterOrYear(historyFilterDto);
             }
 
-            string mois = string.Empty;
+            var webManager = new WebManager();
+            var userInfojson = webManager.GetAllUserInfo();
 
-            switch (DateTime.Now.Month)
+            dynamic jsonObject = JArray.Parse(userInfojson);
+
+            //On prends les données keycloak pour remplir le nom prenom de l'user
+            foreach (var oneHistoryUser in historyUserList)
             {
-                case 1:
-                    mois = "Janvier";
-                    break;
-                case 2:
-                    mois = "Février";
-                    break;
-                case 3:
-                    mois = "Mars";
-                    break;
-                case 4:
-                    mois = "Avril";
-                    break;
-                case 5:
-                    mois = "Mai";
-                    break;
-                case 6:
-                    mois = "Juin";
-                    break;
-                case 7:
-                    mois = "Juillet";
-                    break;
-                case 8:
-                    mois = "Août";
-                    break;
-                case 9:
-                    mois = "Septembre";
-                    break;
-                case 10:
-                    mois = "Octobre";
-                    break;
-                case 11:
-                    mois = "Novembre";
-                    break;
-                case 12:
-                    mois = "Décembre";
-                    break;
-                default:
-                    throw new NotFoundException(nameof(mois));
+                foreach (var jsonObj in jsonObject)
+                {
+                    string proprietaireId = jsonObj.id;
+
+                    if (oneHistoryUser.ProprietaireId == proprietaireId)
+                    {
+                        string fullName = jsonObj.firstName + " " + jsonObj.lastName;
+                        oneHistoryUser.FullName = fullName;
+                        break;
+                    }
+                }
+
+                oneHistoryUser.MoyenneAnnee = Queryable.Average(
+                    userYearOrQuarterReservationList.
+                    Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
+                    Select(h => h.NbReservations).AsQueryable()
+                );
             }
+
+            int monthCondition = (historyFilterDto == null || historyFilterDto.Mois == 0 ? DateTime.Now.Month : historyFilterDto.Mois);
+            int quarterCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DateTime.Now.Month : historyFilterDto.Trimestre);
+            int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
+
+            string mois = DisplayNameUtil.GetMonthDisplayNameByMonth(monthCondition);
+
+            string trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DisplayNameUtil.GetQuarterDisplayNameByMonth(monthCondition) : DisplayNameUtil.GetQuarterDisplayNameByQuarter(historyFilterDto.Trimestre));
 
             HistoryLocal historyLocal = new HistoryLocal();
 
-            historyLocal.HistoryListLocal = historyLocalList;
+            foreach (var oneHistoryUserLocal in historyUserList)
+            {
+                oneHistoryUserLocal.TotalReservations = Queryable.Sum(
+                    userYearOrQuarterReservationList.
+                    Where(h => h.ProprietaireId == oneHistoryUserLocal.ProprietaireId).
+                    Select(h => h.NbReservations).AsQueryable()
+                );
+            }
+
+            historyLocal.HistoryUserListLocal = historyUserList;
             historyLocal.Mois = mois;
-            historyLocal.Annee = DateTime.Now.Year;
+            historyLocal.Annee = yearCondition;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = Queryable.Average(historyLocalList.Select(h => h.NbReservations).AsQueryable());
+            historyLocal.MoyenneReservations = Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable());
+
+            //Pour récupérer les réservations sur plusieurs mois
+            foreach (var oneUserMonthsReservationList in userMonthsReservationList)
+            {
+                oneUserMonthsReservationList.MoisString = DisplayNameUtil.GetMonthDisplayNameByMonth(oneUserMonthsReservationList.Mois);
+
+                historyLocal.HistoryUserMonthsListLocal.Add(oneUserMonthsReservationList);
+            }
 
             return historyLocal;
         }

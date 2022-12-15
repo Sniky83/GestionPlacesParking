@@ -67,6 +67,11 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 //Si la réservation tente d'être dupliquée
                 throw new DuplicateDataException(nameof(insertOne));
             }
+            else if (insertOne == -2)
+            {
+                //Si le réservataire tente de réserver 2x le même jour
+                throw new MultipleReservationException(nameof(insertOne));
+            }
 
             return insertOne;
         }
