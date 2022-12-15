@@ -1,0 +1,50 @@
+pipeline {
+    agent none
+	parameters {
+	    gitParameter branchFilter: 'origin/(master||develop)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
+        booleanParam description: 'Analyser dans sonar ?', name: 'SONAR', defaultValue: false
+        //booleanParam description: 'Déployer le build ?', name: 'DEPLOY', defaultValue: false
+	}
+    stages{
+        stage('Git'){
+            agent{label 'agent_build'}
+            environment{
+            Gitlab_CREDENTIALS = credentials('jenkinsInGitlab')
+            Lien_Repo="https://gitlab.indus.aix.apsdigit.lan/apside/projet-parking-indus"
+            }
+            steps {
+            git credentialsId: 'jenkinsInGitlab', branch: "${params.BRANCH}", url: Lien_Repo + '.git'
+            sh "git clone https://${Gitlab_CREDENTIALS_USR}:${Gitlab_CREDENTIALS_PSW}@gitlab.indus.aix.apsdigit.lan/apside/projet-parking-indus.git"
+            stash includes: 'DevOps/mssql/', name: 'mssql'
+            }
+        }
+        stage("Build & Push BDD_mssqlparcindus"){
+            agent { label 'agent_docker_build'}
+            environment {
+            Name_Project = "mssqlparcindus"
+            Harbor_CREDENTIALS = credentials('robot_harbor_jenkins')
+            Url_Harbor = "harbor.indus.aix.apsdigit.lan"
+            Project_Harbor = "parcindus"
+            }
+            steps {
+                unstash "mssql"
+                sh "ls -a"
+                sh 'echo $Harbor_CREDENTIALS_PSW | docker login ${Url_Harbor} -u $Harbor_CREDENTIALS_USR --password-stdin'
+                sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}"
+                sh "docker build --no-cache -f ${WORKSPACE}/DevOps/mssql/dockerfile -t ${Url_Harbor}/${Project_Harbor}/${Name_Project} ."
+                script {
+                    if (params.BRANCH == 'master') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        }
+                    if (params.BRANCH == 'develop') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${params.BRANCH}"
+                        }
+                    }
+                }
+            }
+    }
+}
