@@ -213,7 +213,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             ).ToList();
         }
 
-        public List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths(GetProfileDto profileDto)
+        public List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths()
         {
             return Context.Reservations
             .Where(
