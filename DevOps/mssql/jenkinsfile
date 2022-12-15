@@ -1,0 +1,31 @@
+pipeline {
+    agent none
+	parameters {
+        choice(name: 'VERSION', choices: ['master', 'develop'], description: 'Choix de la version')
+	}
+    stages{
+        stage('Harbor Pull'){
+            agent { label 'agent_deploy'}
+            environment {
+            Url_Harbor = "harbor.indus.aix.apsdigit.lan"
+            Harbor_CREDENTIALS = credentials('robot_harbor_jenkins')
+            Name_Project = "mssqlparcindus"
+            Project_Harbor = "parcindus"
+            }
+            steps{
+                sh 'echo $Harbor_CREDENTIALS_PSW | docker login ${Url_Harbor} -u $Harbor_CREDENTIALS_USR --password-stdin'
+                sh 'VERSION=${VERSION}'
+                sh "docker pull ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+            }
+        }    
+        stage("Docker Run MSSQLParcIndus"){
+            agent{label 'agent_deploy'}
+            environment{
+                docker_image= "harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus"
+            }
+            steps{
+                sh "docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=!@pside2022!' -e 'MSSQL_PID=Express' --name mssql1 --network parcindus -v bddParking:/var/opt/mssql/data -p 1433:1433 -d ${docker_image}:${VERSION}"
+            }
+        }
+    }  
+}
