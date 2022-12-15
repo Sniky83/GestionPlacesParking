@@ -4,7 +4,9 @@
 @{
     Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 
-    var test = new Chart();
+    //var tmpProfileUserMonthsLocal = Model.ProfileLocal.ProfileUserMonthsListLocal;
+
+    //string MesReservations = string.Join(", ", tmpProfileUserMonthsLocal.OrderBy(p => p.Mois).Select(p => p.NbReservations));
 }
 
 <h1 class="display-6">Tableau de mes réservations sur l'année </h1>
@@ -34,3 +36,40 @@
         </tr>
     </tbody>
 </table>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                Courbe de mes réservations sur l'année
+            </div>
+            <div class="card-body">
+                <canvas class="my-4 h-25" id="line"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/chart.js/dist/chart.umd.js"></script>
+
+@section scripts {
+    <script>
+        let mois = [];
+        let data = [];
+
+        console.log(data);
+
+        let currentYear = new Date().getFullYear();
+        let lineChart = document.getElementById("line").getContext('2d');
+        let myChart = new Chart(lineChart, {
+            type: "line",
+            data: {
+                labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+                datasets: [{
+                    label: currentYear,
+                    data: data
+                }]
+            }
+        });
+    </script>
+}

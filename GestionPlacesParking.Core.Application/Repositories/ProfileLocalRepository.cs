@@ -17,16 +17,33 @@ namespace GestionPlacesParking.Core.Application.Repositories
         public ProfileLocal GetAll(GetProfileDto getProfileDto)
         {
             List<ProfileUserMonthsLocal> profileUserMonthsList = _dataLayer.GetNumberReservationsThisYear(getProfileDto);
-            List<ProfileAllUserMonthsLocal> profileAllUserMonthsList = _dataLayer.GetNumberReservationsByMonths(getProfileDto);
+            List<ProfileAllUserMonthsLocal> profileAllUserMonthsList = _dataLayer.GetNumberReservationsByMonths();
+
+            for (int i = 0; i < 11; i++)
+            {
+                int currentMonth = i + 1;
+                if (currentMonth != profileUserMonthsList[i].Mois)
+                {
+                    profileUserMonthsList.Add(new ProfileUserMonthsLocal { NbReservations = 0, Mois = currentMonth });
+                }
+            }
+
+            profileUserMonthsList = profileUserMonthsList.OrderBy(p => p.Mois).ToList();
 
             foreach (var oneProfileUserMonths in profileUserMonthsList)
             {
                 oneProfileUserMonths.MoisString = DisplayNameUtil.GetMonthDisplayNameByMonth(oneProfileUserMonths.Mois);
-                oneProfileUserMonths.MoyenneMois = Queryable.Average(profileAllUserMonthsList
-                    .Where(h => h.Mois == oneProfileUserMonths.Mois)
-                    .Select(h => h.NbReservations)
-                    .AsQueryable()
-                );
+
+                bool isReservations = profileAllUserMonthsList.Where(p => p.Mois == oneProfileUserMonths.Mois).Any();
+
+                if (isReservations)
+                {
+                    oneProfileUserMonths.MoyenneMois = Queryable.Average(profileAllUserMonthsList
+                        .Where(h => h.Mois == oneProfileUserMonths.Mois)
+                        .Select(h => h.NbReservations)
+                        .AsQueryable()
+                    );
+                }
             }
 
             ProfileLocal profileLocal = new ProfileLocal();

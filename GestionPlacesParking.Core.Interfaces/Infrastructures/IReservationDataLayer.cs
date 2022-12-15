@@ -17,6 +17,6 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
         List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(FilterHistoryDto historyFilterDto);
         List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto historyFilterDto);
         List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto profileDto);
-        List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths(GetProfileDto profileDto);
+        List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths();
     }
 }
