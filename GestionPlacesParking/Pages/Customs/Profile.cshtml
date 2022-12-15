@@ -20,7 +20,7 @@
     <tbody>
         @foreach (var profileUserMonthsLocal in Model.ProfileLocal.ProfileUserMonthsListLocal)
         {
-            <tr>
+            <tr class="@(profileUserMonthsLocal.NbReservations == 0 ? "table-secondary" : "")">
                 <td class="text-center">@profileUserMonthsLocal.MoisString</td>
                 <td class="text-center">@profileUserMonthsLocal.NbReservations</td>
                 <td class="text-center">@string.Format("{0:F1}", profileUserMonthsLocal.MoyenneMois)</td>
@@ -53,8 +53,6 @@
 @section scripts {
     <script>
         let data = [@MesReservations];
-
-        console.log(data);
 
         let currentYear = new Date().getFullYear();
         let lineChart = document.getElementById("line").getContext('2d');

@@ -51,7 +51,6 @@ namespace GestionPlacesParking.Core.Application.Repositories
             }
 
             int moisStartMoyenne = profileUserMonthsList.Where(p => p.MoyenneMois > 0).Select(p => p.Mois).FirstOrDefault();
-            moisStartMoyenne = 5;
 
             ProfileLocal profileLocal = new ProfileLocal();
 

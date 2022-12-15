@@ -103,7 +103,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 new SelectListItem
                 {
                     Value = r.ReservationDate.Year.ToString(),
-                    Text = r.ReservationDate.Year.ToString()
+                    Text = r.ReservationDate.Year.ToString(),
+                    Selected = (r.ReservationDate.Year == DateTime.Now.Year ? true : false)
                 }
             ).Distinct().ToList();
         }

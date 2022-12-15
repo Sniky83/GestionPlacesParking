@@ -37,10 +37,27 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 userMonthsReservationList = _dataLayer.GetNumberReservationsSpecificTrimesterOrYear(historyFilterDto);
             }
 
+            userMonthsReservationList = userMonthsReservationList.OrderBy(p => p.Mois).ToList();
+
+            //On parcours tous les mois de l'année
+            for (int i = 0; i < 11; i++)
+            {
+                int currentMonth = (i + 1);
+
+                int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth).Select(p => p.Mois).FirstOrDefault();
+
+                if (currentMonth != findMonth)
+                {
+                    userMonthsReservationList.Add(new HistoryUserMonthsLocal { NbReservations = 0, Mois = currentMonth });
+                }
+            }
+
             var webManager = new WebManager();
             var userInfojson = webManager.GetAllUserInfo();
 
             dynamic jsonObject = JArray.Parse(userInfojson);
+
+            //int moisStartMoyenne = userMonthsReservationList.Where(p => p.Mois > 0).Select(p => p.Mois).FirstOrDefault();
 
             //On prends les données keycloak pour remplir le nom prenom de l'user
             foreach (var oneHistoryUser in historyUserList)
@@ -87,7 +104,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             historyLocal.Mois = mois;
             historyLocal.Annee = yearCondition;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable());
+            historyLocal.MoyenneReservations = (historyUserList.Count == 0 ? 0 : Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable()));
 
             //Pour récupérer les réservations sur plusieurs mois
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)

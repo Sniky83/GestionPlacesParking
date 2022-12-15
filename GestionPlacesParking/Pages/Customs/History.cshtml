@@ -48,9 +48,7 @@ else
             </div>
             <label class="col-md-1 mt-2">Année</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select">
-                    <option value=""></option>
-                </select>
+                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select"></select>
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-orange-apside">
@@ -111,7 +109,7 @@ else
 
                         if (findHistoryMonth)
                         {
-                            <tr class="table-active">
+                            <tr class="table-secondary">
                                 <td><b>@historyLocal.FullName</b></td>
                                 <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
                                 <td class="text-center"><b>@string.Format("{0:F1}", historyLocal.MoyenneAnnee)</b></td>

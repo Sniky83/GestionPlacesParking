@@ -8,6 +8,7 @@ namespace GestionPlacesParking.Web.UI.Customs
 {
     public class HistoriqueModel : PageModel
     {
+        private readonly ILogger<HistoriqueModel> _logger;
         private readonly IHistoryLocalRepository _historyLocalRepository;
 
         [BindProperty]
@@ -16,9 +17,10 @@ namespace GestionPlacesParking.Web.UI.Customs
         public HistoryLocal HistoryLocal { get; set; }
         public string ErrorMessage { get; set; }
 
-        public HistoriqueModel(IHistoryLocalRepository historyLocalRepository)
+        public HistoriqueModel(ILogger<HistoriqueModel> logger, IHistoryLocalRepository historyLocalRepository)
         {
             _historyLocalRepository = historyLocalRepository;
+            _logger = logger;
             HistoryFilterLocal = new HistoryFilterLocal();
         }
 
@@ -39,6 +41,8 @@ namespace GestionPlacesParking.Web.UI.Customs
 
         public IActionResult OnPost()
         {
+            IActionResult result = Page();
+
             try
             {
                 HistoryFilterLocal.Annee = _historyLocalRepository.GetYears();
@@ -53,12 +57,13 @@ namespace GestionPlacesParking.Web.UI.Customs
                     HistoryLocal = _historyLocalRepository.GetAll();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ErrorMessage = "Veuillez sélectionner un filtre existant.";
+                result = StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogCritical("Erreur interne avec l'HistoryLocal repository.\n{ex}", ex);
             }
 
-            return Page();
+            return result;
         }
     }
 }
