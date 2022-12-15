@@ -19,10 +19,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
             List<ProfileUserMonthsLocal> profileUserMonthsList = _dataLayer.GetNumberReservationsThisYear(getProfileDto);
             List<ProfileAllUserMonthsLocal> profileAllUserMonthsList = _dataLayer.GetNumberReservationsByMonths();
 
+            //On parcours tous les mois de l'année
             for (int i = 0; i < 11; i++)
             {
-                int currentMonth = i + 1;
-                if (currentMonth != profileUserMonthsList[i].Mois)
+                int currentMonth = (i + 1);
+
+                int findMonth = profileUserMonthsList.Where(p => p.Mois == currentMonth).Select(p => p.Mois).FirstOrDefault();
+
+                if (currentMonth != findMonth)
                 {
                     profileUserMonthsList.Add(new ProfileUserMonthsLocal { NbReservations = 0, Mois = currentMonth });
                 }
@@ -46,12 +50,16 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 }
             }
 
+            int moisStartMoyenne = profileUserMonthsList.Where(p => p.MoyenneMois > 0).Select(p => p.Mois).FirstOrDefault();
+            moisStartMoyenne = 5;
+
             ProfileLocal profileLocal = new ProfileLocal();
 
             profileLocal.ProfileUserMonthsListLocal = profileUserMonthsList;
             profileLocal.TotalReservations = Queryable.Sum(profileUserMonthsList.Select(p => p.NbReservations).AsQueryable());
-            profileLocal.MaMoyenneAnnee = Queryable.Average(profileUserMonthsList.Select(p => p.NbReservations).AsQueryable());
-            profileLocal.MoyenneAnnee = Queryable.Average(profileUserMonthsList.Select(p => p.MoyenneMois).AsQueryable());
+            //Moyenne des réservations sur l'année à partir du mois ou les réservations ont commencés
+            profileLocal.MaMoyenneAnnee = Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.NbReservations).AsQueryable());
+            profileLocal.MoyenneAnnee = Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.MoyenneMois).AsQueryable());
 
             return profileLocal;
         }

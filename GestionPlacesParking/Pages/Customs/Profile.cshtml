@@ -4,9 +4,7 @@
 @{
     Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 
-    //var tmpProfileUserMonthsLocal = Model.ProfileLocal.ProfileUserMonthsListLocal;
-
-    //string MesReservations = string.Join(", ", tmpProfileUserMonthsLocal.OrderBy(p => p.Mois).Select(p => p.NbReservations));
+    string MesReservations = string.Join(", ", Model.ProfileLocal.ProfileUserMonthsListLocal.OrderBy(p => p.Mois).Select(p => p.NbReservations));
 }
 
 <h1 class="display-6">Tableau de mes réservations sur l'année </h1>
@@ -32,7 +30,7 @@
         <tr>
             <td class="text-center"><b>TOTAL</b></td>
             <td class="text-center"><b>@Model.ProfileLocal.TotalReservations</b></td>
-            <td class="text-center"><b>@string.Format("{0:F1}", @Model.ProfileLocal.MoyenneAnnee)</b></td>
+            <td class="text-center"><b>@string.Format("{0:F1}", Model.ProfileLocal.MoyenneAnnee)</b></td>
         </tr>
     </tbody>
 </table>
@@ -54,8 +52,7 @@
 
 @section scripts {
     <script>
-        let mois = [];
-        let data = [];
+        let data = [@MesReservations];
 
         console.log(data);
 
