@@ -47,6 +47,8 @@ namespace GestionPlacesParking.Core.Application.Repositories
                         .Select(h => h.NbReservations)
                         .AsQueryable()
                     );
+
+                    oneProfileUserMonths.MoyenneMois = Math.Round(oneProfileUserMonths.MoyenneMois, 1);
                 }
             }
 
@@ -57,8 +59,8 @@ namespace GestionPlacesParking.Core.Application.Repositories
             profileLocal.ProfileUserMonthsListLocal = profileUserMonthsList;
             profileLocal.TotalReservations = Queryable.Sum(profileUserMonthsList.Select(p => p.NbReservations).AsQueryable());
             //Moyenne des réservations sur l'année à partir du mois ou les réservations ont commencés
-            profileLocal.MaMoyenneAnnee = Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.NbReservations).AsQueryable());
-            profileLocal.MoyenneAnnee = Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.MoyenneMois).AsQueryable());
+            profileLocal.MaMoyenneAnnee = Math.Round(Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.NbReservations).AsQueryable()), 1);
+            profileLocal.MoyenneAnnee = Math.Round(Queryable.Average(profileUserMonthsList.Where(p => p.Mois >= moisStartMoyenne).Select(p => p.MoyenneMois).AsQueryable()), 1);
 
             return profileLocal;
         }

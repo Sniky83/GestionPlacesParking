@@ -79,6 +79,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
                     Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
                     Select(h => h.NbReservations).AsQueryable()
                 );
+
+                //Converti la valeur à 1 chiffre après la virgule
+                oneHistoryUser.MoyenneAnnee = Math.Round(oneHistoryUser.MoyenneAnnee, 1);
             }
 
             int monthCondition = (historyFilterDto == null || historyFilterDto.Mois == 0 ? DateTime.Now.Month : historyFilterDto.Mois);
@@ -104,7 +107,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             historyLocal.Mois = mois;
             historyLocal.Annee = yearCondition;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = (historyUserList.Count == 0 ? 0 : Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable()));
+            historyLocal.MoyenneReservations = (historyUserList.Count == 0 ? 0 : Math.Round(Queryable.Average(historyUserList.Select(h => h.NbReservations).AsQueryable()), 1));
 
             //Pour récupérer les réservations sur plusieurs mois
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)
