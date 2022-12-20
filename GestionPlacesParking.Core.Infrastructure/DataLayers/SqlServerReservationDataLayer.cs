@@ -40,9 +40,6 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return -2;
             }
 
-            //Unicité des reserving name
-            reservation.ReservingName = reservation.ReservingName.ToUpper().Trim();
-
             Context.Reservations.Add(reservation);
 
             return Context.SaveChanges();
