@@ -1,8 +1,8 @@
-﻿using GestionPlacesParking.Core.Application.Utils;
-using GestionPlacesParking.Core.Interfaces.Infrastructures;
+﻿using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.Profile;
+using static GestionPlacesParking.Core.Models.Locals.History.HistoryFilterLocal;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -36,7 +36,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             foreach (var oneProfileUserMonths in profileUserMonthsList)
             {
-                oneProfileUserMonths.MoisString = DisplayNameUtil.GetMonthDisplayNameByMonth(oneProfileUserMonths.Mois);
+                oneProfileUserMonths.MoisString = Enum.GetName(typeof(Mois), oneProfileUserMonths.Mois);
 
                 bool isReservations = profileAllUserMonthsList.Where(p => p.Mois == oneProfileUserMonths.Mois).Any();
 

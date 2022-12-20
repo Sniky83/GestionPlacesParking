@@ -6,6 +6,7 @@ using GestionPlacesParking.Core.Models.Locals.History;
 using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
+using static GestionPlacesParking.Core.Models.Locals.History.HistoryFilterLocal;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -88,9 +89,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
             int quarterCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DateTime.Now.Month : historyFilterDto.Trimestre);
             int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
-            string mois = DisplayNameUtil.GetMonthDisplayNameByMonth(monthCondition);
+            string? mois = Enum.GetName(typeof(Mois), monthCondition);
 
-            string trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DisplayNameUtil.GetQuarterDisplayNameByMonth(monthCondition) : DisplayNameUtil.GetQuarterDisplayNameByQuarter(historyFilterDto.Trimestre));
+            string? trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? DisplayNameUtil.GetQuarterDisplayNameByMonth(monthCondition) : Enum.GetName(typeof(Trimestre), historyFilterDto.Trimestre));
 
             HistoryLocal historyLocal = new HistoryLocal();
 
@@ -112,7 +113,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             //Pour récupérer les réservations sur plusieurs mois
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)
             {
-                oneUserMonthsReservationList.MoisString = DisplayNameUtil.GetMonthDisplayNameByMonth(oneUserMonthsReservationList.Mois);
+                oneUserMonthsReservationList.MoisString = Enum.GetName(typeof(Mois), oneUserMonthsReservationList.Mois);
 
                 historyLocal.HistoryUserMonthsListLocal.Add(oneUserMonthsReservationList);
             }
