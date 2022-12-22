@@ -4,6 +4,8 @@ using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
+using KeycloakCore.Keycloak;
+using Newtonsoft.Json.Linq;
 
 namespace GestionPlacesParking.Core.Application.Repositories
 {
@@ -41,6 +43,27 @@ namespace GestionPlacesParking.Core.Application.Repositories
             else
             {
                 reservationList = _dataLayer.GetAllReservationsCurrentWeek();
+            }
+
+            var webManager = new WebManager();
+            var userInfojson = webManager.GetAllUserInfo();
+
+            dynamic jsonObject = JArray.Parse(userInfojson);
+
+            //On prends les données keycloak pour remplir le nom prenom de l'user
+            foreach (var oneReservation in reservationList)
+            {
+                foreach (var jsonObj in jsonObject)
+                {
+                    string proprietaireId = jsonObj.id;
+
+                    if (oneReservation.ProprietaireId == proprietaireId)
+                    {
+                        string fullName = jsonObj.firstName + " " + jsonObj.lastName;
+                        oneReservation.ReservingName = fullName;
+                        break;
+                    }
+                }
             }
 
             return reservationList;

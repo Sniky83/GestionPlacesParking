@@ -1,4 +1,5 @@
-﻿using GestionPlacesParking.Core.Infrastructure.Databases;
+﻿using GestionPlacesParking.Core.Global.Utils;
+using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
@@ -80,6 +81,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             DateTime thisMonday = DateTime.Now.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date;
             DateTime thisFriday = thisMonday.AddDays(4).Date;
 
+            //var query = Context.Reservations.Include(item => item.UserId).AsQueryable();
             return Context.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
         }
 
@@ -87,7 +89,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
         {
             //On prends les réservations de la semaine prochaine
             DateTime nextMonday = DateTime.Now.AddDays((DayOfWeek.Monday - DateTime.Now.DayOfWeek) + 7).Date;
-
+            //var query = Context.Reservations.Include(item => item.UserId).AsQueryable();
             return Context.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
         }
 
@@ -117,40 +119,24 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 r => r.ReservationDate.Month == monthCondition &&
                 r.ReservationDate.Year == yearCondition &&
                 r.IsDeleted == false)
-            .GroupBy(r => new { r.ProprietaireId })
+            .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
             .Select(h =>
                 new HistoryUserLocal
                 {
                     ProprietaireId = h.Key.ProprietaireId,
-                    NbReservations = h.Count()
+                    NbReservationsMois = h.Count()
                 }
             ).ToList();
         }
 
-        public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(FilterHistoryDto historyFilterDto)
+        public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto historyFilterDto)
         {
-            int startingMonth = 0;
-
-            switch (historyFilterDto.Trimestre)
-            {
-                case 1:
-                    startingMonth = 1;
-                    break;
-                case 2:
-                    startingMonth = 3;
-                    break;
-                case 3:
-                    startingMonth = 6;
-                    break;
-                case 4:
-                    startingMonth = 9;
-                    break;
-            }
+            int startingMonth = QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre);
 
             int endingMonthCondition = (startingMonth == 1 ? startingMonth + 2 : startingMonth + 3);
             endingMonthCondition = (startingMonth == 0 ? 12 : endingMonthCondition);
 
-            int yearCondition = (historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
+            int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 
             return Context.Reservations
             .Where(
@@ -188,7 +174,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 new HistoryUserLocal
                 {
                     ProprietaireId = h.Key.ProprietaireId,
-                    NbReservations = h.Count()
+                    NbReservationsMois = h.Count(),
+                    Mois = h.Key.Month
                 }
             ).ToList();
         }
@@ -226,6 +213,14 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                     NbReservations = p.Count()
                 }
             ).ToList();
+        }
+
+        public int GetFirstMonthReserved(int year)
+        {
+            return Context.Reservations
+            .Where(r => r.ReservationDate.Year == year)
+            .Select(r => r.ReservationDate.Month)
+            .Min();
         }
     }
 }

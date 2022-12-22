@@ -14,13 +14,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
         {
             _dataLayer = dataLayer;
         }
+
         public ProfileLocal GetAll(GetProfileDto getProfileDto)
         {
             List<ProfileUserMonthsLocal> profileUserMonthsList = _dataLayer.GetNumberReservationsThisYear(getProfileDto);
             List<ProfileAllUserMonthsLocal> profileAllUserMonthsList = _dataLayer.GetNumberReservationsByMonths();
 
             //On parcours tous les mois de l'année
-            for (int i = 0; i < 11; i++)
+            for (int i = 0; i < 12; i++)
             {
                 int currentMonth = (i + 1);
 
@@ -52,7 +53,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 }
             }
 
-            int moisStartMoyenne = profileUserMonthsList.Where(p => p.MoyenneMois > 0).Select(p => p.Mois).FirstOrDefault();
+            int moisStartMoyenne = _dataLayer.GetFirstMonthReserved(DateTime.Now.Year);
 
             ProfileLocal profileLocal = new ProfileLocal();
 

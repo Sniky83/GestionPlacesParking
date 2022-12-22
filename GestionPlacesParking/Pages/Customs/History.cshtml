@@ -77,7 +77,7 @@ else
             <tr>
                 <th scope="col" class="text-center">Utilisateur</th>
                 <th scope="col" class="text-center">Nombre de jours réservés</th>
-                <th scope="col" class="text-center">Moyenne réservations /année</th>
+                <th scope="col" class="text-center">Moyenne des réservations /année</th>
             </tr>
         </thead>
         <tbody>
@@ -89,7 +89,7 @@ else
                     {
                         <tr>
                             <td><b>@historyLocal.FullName</b></td>
-                            <td class="text-center">@historyLocal.NbReservations</td>
+                            <td class="text-center">@historyLocal.NbReservationsMois</td>
                             <td class="text-center">@historyLocal.MoyenneAnnee</td>
                         </tr>
                     }
@@ -117,7 +117,7 @@ else
 
                             @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserMonthsListLocal)
                             {
-                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId)
+                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId || historyMonthsLocal.ProprietaireId == "")
                                 {
                                     <tr>
                                         <td> - @historyMonthsLocal.MoisString</td>
