@@ -28,44 +28,33 @@ namespace GestionPlacesParking.Core.Application.Repositories
         /// <returns></returns>
         public HistoryLocal GetAll(FilterHistoryDto? historyFilterDto = null)
         {
-            List<HistoryUserLocal> historyUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
             //Sert pour faire la moyenne des réservations /1 an
             List<HistoryUserLocal> userYearOrQuarterReservationList = _dataLayer.GetNumberReservationsSpecificYearForAverage(historyFilterDto);
 
             List<HistoryUserMonthsLocal> userMonthsReservationList = new List<HistoryUserMonthsLocal>();
 
+            List<HistoryUserLocal> historyUserList = new List<HistoryUserLocal>();
+
+            List<HistoryUserLocal> reservationsByUserList = new List<HistoryUserLocal>();
+
             HistoryLocal historyLocal = new HistoryLocal();
 
-            if (historyFilterDto != null && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
+            //Si on selectionne une année ou un trimestre
+            if (historyFilterDto != null && historyFilterDto.Mois == 0 && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
             {
+                //Récupère les réservations sur un trimestre avec une année selectionnée ou simplement une année
                 userMonthsReservationList = _dataLayer.GetNumberReservationsSpecificTrimesterWithYear(historyFilterDto);
 
-                int iStart = QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre);
-                int iCondition = (historyFilterDto.Trimestre * 3) - 1;
+                //Récupère la liste des users sur l'année selectionnée
+                historyUserList = _dataLayer.GetUsersWhoReservedSpecificYear(historyFilterDto);
 
-                //On parcours tous les mois de l'année
-                for (int i = iStart; i < iCondition; i++)
-                {
-                    int currentMonth = (i + 1);
-
-                    int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth).Select(p => p.Mois).FirstOrDefault();
-
-                    if (currentMonth != findMonth)
-                    {
-                        userMonthsReservationList.Add(new HistoryUserMonthsLocal { NbReservations = 0, Mois = currentMonth });
-                    }
-                }
-
-                userMonthsReservationList = userMonthsReservationList.OrderBy(p => p.Mois).ToList();
+                //Récupère les réservations du mois courant pour effectuer ensuite un calcul de moyenne
+                reservationsByUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
             }
-
-            //Pour récupérer les réservations sur plusieurs mois
-            foreach (var oneUserMonthsReservationList in userMonthsReservationList)
+            else if (historyFilterDto == null || (historyFilterDto.Mois >= 1 || historyFilterDto.Annee >= 1))
             {
-                oneUserMonthsReservationList.MoisString = Enum.GetName(typeof(Mois), oneUserMonthsReservationList.Mois);
-
-                //Alimente l'history local
-                historyLocal.HistoryUserMonthsListLocal.Add(oneUserMonthsReservationList);
+                //Par défaut on prend le mois courant
+                historyUserList = _dataLayer.GetNumberReservationsSpecificMonth(historyFilterDto);
             }
 
             int monthCondition = (historyFilterDto == null || historyFilterDto.Mois == 0 ? DateTime.Now.Month : historyFilterDto.Mois);
@@ -85,8 +74,11 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             List<int> nbReservationsMois = new List<int>();
 
+            int iStart = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 1 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre));
+            int iCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 12 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre + 1) - 1);
+
             //On prends les données keycloak pour remplir le nom prenom de l'user
-            foreach (var oneHistoryUser in historyUserList)
+            foreach (var oneHistoryUser in historyUserList.ToList())
             {
                 foreach (var jsonObj in jsonObject)
                 {
@@ -100,8 +92,21 @@ namespace GestionPlacesParking.Core.Application.Repositories
                     }
                 }
 
+                //Sert à ajouter les mois vide à 0 pour chaque user
+                for (int i = iStart; i <= iCondition; i++)
+                {
+                    int currentMonth = i;
+
+                    int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth && p.ProprietaireId == oneHistoryUser.ProprietaireId).Select(p => p.Mois).FirstOrDefault();
+
+                    if (currentMonth != findMonth)
+                    {
+                        userMonthsReservationList.Add(new HistoryUserMonthsLocal { ProprietaireId = oneHistoryUser.ProprietaireId, NbReservations = 0, Mois = currentMonth });
+                    }
+                }
+
                 //Sert au calcul de la Moyenne
-                for (int i = 1; i < 13; i++)
+                for (int i = 1; i <= 12; i++)
                 {
                     if (i < moisStartMoyenne)
                     {
@@ -120,28 +125,58 @@ namespace GestionPlacesParking.Core.Application.Repositories
                     }
                 }
 
-                oneHistoryUser.MoyenneAnnee = Queryable.Average(nbReservationsMois.AsQueryable());
+                foreach(var oneReservationsByUser in reservationsByUserList)
+                {
+                    if(oneReservationsByUser.ProprietaireId == oneHistoryUser.ProprietaireId)
+                    {
+                        oneHistoryUser.NbReservationsMois = oneReservationsByUser.NbReservationsMois;
+                    }
+                }
 
+                if (historyFilterDto != null && historyFilterDto.Mois == 0 && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
+                {
+                    bool isUser = userMonthsReservationList.Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.NbReservations > 0).Any();
+
+                    if (!isUser)
+                    {
+                        historyUserList.Remove(oneHistoryUser);
+                    }
+
+                    oneHistoryUser.TotalReservations =
+                    userMonthsReservationList
+                    .Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.Mois <= iCondition)
+                    .Sum(u => u.NbReservations);
+                }
+                else
+                {
+                    oneHistoryUser.TotalReservations =
+                    userYearOrQuarterReservationList.
+                    Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
+                    Sum(h => h.NbReservationsMois);
+                }
+
+                oneHistoryUser.MoyenneAnnee = Queryable.Average(nbReservationsMois.AsQueryable());
                 //Converti la valeur à 1 chiffre après la virgule
                 oneHistoryUser.MoyenneAnnee = Math.Round(oneHistoryUser.MoyenneAnnee, 1);
 
                 nbReservationsMois.Clear();
             }
 
-            foreach (var oneHistoryUserLocal in historyUserList)
+            foreach (var oneUserMonthsReservationList in userMonthsReservationList)
             {
-                oneHistoryUserLocal.TotalReservations = Queryable.Sum(
-                    userYearOrQuarterReservationList.
-                    Where(h => h.ProprietaireId == oneHistoryUserLocal.ProprietaireId).
-                    Select(h => h.NbReservationsMois).AsQueryable()
-                );
+                oneUserMonthsReservationList.MoisString = Enum.GetName(typeof(Mois), oneUserMonthsReservationList.Mois);
             }
+
+            //Remet les mois dans l'ordre avant la création de l'objet final
+            userMonthsReservationList = userMonthsReservationList.OrderBy(p => p.Mois).ToList();
+            historyUserList = historyUserList.OrderByDescending(h => h.TotalReservations).ToList();
 
             historyLocal.Mois = mois;
             historyLocal.Annee = yearCondition;
             historyLocal.Trimestre = trimestre;
-            historyLocal.MoyenneReservations = (historyUserList.Count == 0 ? 0 : Math.Round(Queryable.Average(historyUserList.Select(h => h.NbReservationsMois).AsQueryable()), 1));
+            historyLocal.MoyenneReservationsMois = (historyUserList.Count == 0 ? 0 : Math.Round(Queryable.Average(historyUserList.Select(h => h.NbReservationsMois).AsQueryable()), 1));
             historyLocal.HistoryUserListLocal = historyUserList;
+            historyLocal.HistoryUserMonthsListLocal = userMonthsReservationList;
 
             return historyLocal;
         }

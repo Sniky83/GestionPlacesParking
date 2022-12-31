@@ -129,12 +129,27 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             ).ToList();
         }
 
+        public List<HistoryUserLocal> GetUsersWhoReservedSpecificYear(FilterHistoryDto historyFilterDto)
+        {
+            int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
+
+            return Context.Reservations
+            .Where(
+                r => r.ReservationDate.Year == yearCondition &&
+                r.IsDeleted == false)
+            .GroupBy(r => new { r.ProprietaireId })
+            .Select(h =>
+                new HistoryUserLocal
+                {
+                    ProprietaireId = h.Key.ProprietaireId
+                }
+            ).Distinct().ToList();
+        }
+
         public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto historyFilterDto)
         {
-            int startingMonth = QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre);
-
-            int endingMonthCondition = (startingMonth == 1 ? startingMonth + 2 : startingMonth + 3);
-            endingMonthCondition = (startingMonth == 0 ? 12 : endingMonthCondition);
+            int startingMonth = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 1 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre));
+            int endingMonthCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 12 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre + 1) - 1);
 
             int yearCondition = (historyFilterDto == null || historyFilterDto.Annee == 0 ? DateTime.Now.Year : historyFilterDto.Annee);
 

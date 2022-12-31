@@ -22,16 +22,20 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             List<DateTime> weekDates = new List<DateTime>();
 
-            for (int i = 0; i < 7; i++)
-            {
-                weekDates.Add(firstMondayOfWeek.AddDays(i));
-            }
+            int iStartIndex = 0;
+            int iEndIndex = 7;
 
             //Règle métier: Si on est vendredi >= à 11h00
             if (ReservationBusinessLogic.IsEndReservationsCurrentWeek())
             {
                 //On passe au lundi d'après
-                firstMondayOfWeek.AddDays(7);
+                iStartIndex = 7;
+                iEndIndex = 14;
+            }
+
+            for (int i = iStartIndex; i < iEndIndex; i++)
+            {
+                weekDates.Add(firstMondayOfWeek.AddDays(i));
             }
 
             List<string> dateForeachDaysList = new List<string>();
