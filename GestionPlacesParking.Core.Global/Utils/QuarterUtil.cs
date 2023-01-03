@@ -1,6 +1,6 @@
 ﻿namespace GestionPlacesParking.Core.Global.Utils
 {
-    public static class QuarterUtils
+    public static class QuarterUtil
     {
         public static int GetStartingMonthFromQuarter(int quarter)
         {

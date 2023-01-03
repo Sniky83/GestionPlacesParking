@@ -35,10 +35,22 @@
             @*Règle métier: Le samedi et le dimanche on ne fait pas de réservation*@
             @if (DayOfTheWeek.Key != "Samedi" && DayOfTheWeek.Key != "Dimanche")
             {
-                bool isMyReservation = Model.ReservationList.Where(
-                    x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
-                    x.ProprietaireId == userId
-                ).Any();
+                bool isMyReservation = false;
+
+                if(IsSsoEnv.IsSso)
+                {
+                    isMyReservation = Model.ReservationList.Where(
+                        x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
+                        x.ProprietaireId == userId
+                    ).Any();
+                }
+                else
+                {
+                    isMyReservation = Model.ReservationList.Where(
+                        x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
+                        x.UserId == int.Parse(userId)
+                    ).Any();
+                }
 
                 isDayReserved = (isMyReservation) ? true : isDayReserved;
 
@@ -58,12 +70,32 @@
 
                         if (findReservation != null)
                         {
-                            string style = (findReservation.ProprietaireId == userId) ? "btn-orange-apside" : "btn-danger";
-                            string owner = (findReservation.ProprietaireId == userId || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
+                            string style = string.Empty;
+                            string owner = string.Empty;
+
+                            if(IsSsoEnv.IsSso)
+                            {
+                                style = (findReservation.ProprietaireId == userId) ? "btn-orange-apside" : "btn-danger";
+                                owner = (findReservation.ProprietaireId == userId || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
+                            }
+                            else
+                            {
+                                style = (findReservation.UserId == int.Parse(userId)) ? "btn-orange-apside" : "btn-danger";
+                                owner = (findReservation.UserId == int.Parse(userId) || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
+                            }
 
                             if(findParkingSlot != null)
                             {
-                                string formatStringForJs = String.Format("{0}_{1}_{2}_{3}_{4}", findReservation.ProprietaireId, findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, findReservation.Id);
+                                string formatStringForJs = string.Empty;
+
+                                if(IsSsoEnv.IsSso)
+                                {
+                                    formatStringForJs = String.Format("{0}_{1}_{2}_{3}_{4}", findReservation.ProprietaireId, findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, findReservation.Id);
+                                }
+                                else
+                                {
+                                    formatStringForJs = String.Format("{0}_{1}_{2}_{3}_{4}", findReservation.UserId, findParkingSlot.Label, DayOfTheWeek.Key, DayOfTheWeek.Value, findReservation.Id);
+                                }
 
                                 <td class="col-md-2 justify-content-center text-center">
                                     @*On inject l'ID de la réservation pour pouvoir ensuite la supprimer*@
@@ -93,17 +125,7 @@
 </table>
 <input id="XSRF-TOKEN" type="hidden" value="@requestToken" />
 
-@if(IsSsoEnv.IsSso)
-{
-    @*On utilise la modal avec la connexion SSO*@
-    <partial name="Partials/_IndexMakeReservationSsoModal" />
-}
-else
-{
-    @*On utilise la modal sans la connexion SSO*@
-    <partial name="Partials/_IndexMakeReservationNoSsoModal" />
-}
-
+<partial name="Partials/_IndexMakeReservationModal" />
 <partial name="Partials/_IndexDeleteReservationModal" />
 
 @section scripts {
@@ -141,21 +163,13 @@ else
 
         function openMakeReservationModal(event) {
             getIdClickedBtn = event.target.attributes.id.value;
-            const modalSsoBody = document.getElementById("make-sso-body-message");
+            const modalBody = document.getElementById("make-reservation-body-message");
 
             const currentParkingSlot = getIdClickedBtn.split('_')[0];
             const currentDay = getIdClickedBtn.split('_')[1];
             const currentDate = getIdClickedBtn.split('_')[2];
 
-            //Si l'élément existe alors on est sur la modale SSO
-            if (modalSsoBody) {
-                modalSsoBody.innerHTML = "Voulez-vous ajouter une réservation de la place <b>" + currentParkingSlot + "</b> pour le <b>" + currentDay + " " + currentDate + "</b> ?";
-            }
-            else {
-                const modalNoSsoBody = document.getElementById("make-no-sso-body-message");
-
-                modalNoSsoBody.innerHTML = "Vous vous apprêtez à réserver la place <b>" + currentParkingSlot + "</b> pour le <b>" + currentDay + " " + currentDate + "</b>. <br/>Veuillez remplir le champ ci-dessous pour finaliser la réservation.";
-            }
+            modalBody.innerHTML = "Voulez-vous ajouter une réservation de la place <b>" + currentParkingSlot + "</b> pour le <b>" + currentDay + " " + currentDate + "</b> ?";
 
             makeReservationModal.show();
         }
@@ -164,13 +178,13 @@ else
             getIdClickedBtn = event.target.attributes.id.value;
 
             const modalBody = document.getElementById("delete-body-message");
-            const proprietaireId = getIdClickedBtn.split('_')[0];
+            const proprietaireIdOrUserId = getIdClickedBtn.split('_')[0];
             const currentParkingSlot = getIdClickedBtn.split('_')[1];
             const currentDay = getIdClickedBtn.split('_')[2];
             const currentDate = getIdClickedBtn.split('_')[3];
 
             //Si on est le propriétaire de la réservation
-            if (proprietaireId === "@userId") {
+            if (proprietaireIdOrUserId === "@userId") {
                 modalBody.innerHTML = "Voulez-vous supprimer votre réservation de la place <b>" + currentParkingSlot + "</b> du <b>" + currentDay + " " + currentDate + "</b> ?";
             }
             else {
@@ -189,19 +203,7 @@ else
         async function newReservation() {
             const url = '@linkGenerator.GetPathByPage(HttpContext, "./Services/Reservations/MakeReservationService")';
 
-            let reservingName = document.getElementById('reservingName');
-
-            //Si on est pas connecté au SSO
-            if (reservingName) {
-                reservingName = reservingName.value;
-            }
-            else {
-                //On autorise rien, c'est côté back qu'on vérifie la personne
-                //Minimum 3 chars sinon il refuse
-                reservingName = 'useless';
-            }
-
-            const proprietaireId = '@userId' || '0';
+            const proprietaireIdOrUserId = '@userId' || '0';
             const reservationDateString = getIdClickedBtn.split('_')[2];
             const parkingSlotId = parseInt(getIdClickedBtn.split('_')[3]);
 
@@ -209,12 +211,21 @@ else
 
             const reservationDate = new Date(Date.UTC(year, (month - 1), day)).toISOString();
 
-            const bodyParams = {
-                ReservingName: reservingName,
+            let bodyParams = {
                 ReservationDate: reservationDate,
-                ParkingSlotId: parkingSlotId,
-                proprietaireId: proprietaireId
+                ParkingSlotId: parkingSlotId
             };
+
+            const isSso = @IsSsoEnv.IsSso.ToString().ToLower();
+
+            if(isSso)
+            {
+                bodyParams["ProprietaireId"] = proprietaireIdOrUserId;
+            }
+            else
+            {
+                bodyParams["UserId"] = proprietaireIdOrUserId;
+            }
 
             let init = {
                 method: 'POST',

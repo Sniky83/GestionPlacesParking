@@ -74,8 +74,8 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             List<int> nbReservationsMois = new List<int>();
 
-            int iStart = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 1 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre));
-            int iCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 12 : QuarterUtils.GetStartingMonthFromQuarter(historyFilterDto.Trimestre + 1) - 1);
+            int iStart = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 1 : QuarterUtil.GetStartingMonthFromQuarter(historyFilterDto.Trimestre));
+            int iCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 12 : QuarterUtil.GetStartingMonthFromQuarter(historyFilterDto.Trimestre + 1) - 1);
 
             //On prends les données keycloak pour remplir le nom prenom de l'user
             foreach (var oneHistoryUser in historyUserList.ToList())
@@ -125,9 +125,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
                     }
                 }
 
-                foreach(var oneReservationsByUser in reservationsByUserList)
+                foreach (var oneReservationsByUser in reservationsByUserList)
                 {
-                    if(oneReservationsByUser.ProprietaireId == oneHistoryUser.ProprietaireId)
+                    if (oneReservationsByUser.ProprietaireId == oneHistoryUser.ProprietaireId)
                     {
                         oneHistoryUser.NbReservationsMois = oneReservationsByUser.NbReservationsMois;
                     }

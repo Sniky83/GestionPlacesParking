@@ -3,6 +3,7 @@
     public class HistoryUserLocal
     {
         public string ProprietaireId { get; set; } = string.Empty;
+        public int UserId { get; set; }
         public int Mois { get; set; } = 0;
         public string FullName { get; set; } = string.Empty;
         //Vide si plusieurs mois
