@@ -85,10 +85,10 @@ else
             {
                 @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.FullName))
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
                     {
                         <tr>
-                            <td><b>@historyLocal.FullName</b></td>
+                            <td><b>@historyLocal.ReservingName</b></td>
                             <td class="text-center">@historyLocal.NbReservationsMois</td>
                             <td class="text-center">@historyLocal.MoyenneAnnee</td>
                         </tr>
@@ -101,7 +101,7 @@ else
                 //On ajoute les subrows sur l'utilisateur
                 @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.FullName))
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
                     {
                         bool findHistoryMonth = Model.HistoryLocal.HistoryUserMonthsListLocal.Where(
                             h => h.ProprietaireId == historyLocal.ProprietaireId
@@ -110,7 +110,7 @@ else
                         if (findHistoryMonth)
                         {
                             <tr class="table-secondary">
-                                <td><b>@historyLocal.FullName</b></td>
+                                <td><b>@historyLocal.ReservingName</b></td>
                                 <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
                                 <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
                             </tr>

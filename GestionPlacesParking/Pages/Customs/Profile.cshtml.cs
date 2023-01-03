@@ -1,4 +1,5 @@
 using GestionPlacesParking.Core.Global.Consts;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.Profile;
@@ -25,7 +26,15 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
             try
             {
                 GetProfileDto getProfileDto = new GetProfileDto();
-                getProfileDto.UserId = HttpContext.Session.GetString(SessionConst.UserId);
+
+                if (IsSsoEnv.IsSso)
+                {
+                    getProfileDto.ProprietaireId = HttpContext.Session.GetString(SessionConst.UserId);
+                }
+                else
+                {
+                    getProfileDto.UserId = HttpContext.Session.GetInt32(SessionConst.UserId);
+                }
 
                 ProfileLocal = _profileLocalRepository.GetAll(getProfileDto);
             }

@@ -1,4 +1,5 @@
 ﻿using GestionPlacesParking.Core.Global.Consts;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Text;
@@ -15,7 +16,17 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var userId = context.Session.GetString(SessionConst.UserId);
+            dynamic? userId;
+
+            if (IsSsoEnv.IsSso)
+            {
+                userId = context.Session.GetString(SessionConst.UserId);
+            }
+            else
+            {
+                userId = context.Session.GetInt32(SessionConst.UserId);
+            }
+
             bool isLoginPage = context.Request.Path.Value.ToLower().Contains("login");
 
             if (userId == null && !isLoginPage)

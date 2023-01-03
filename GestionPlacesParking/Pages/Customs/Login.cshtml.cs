@@ -69,8 +69,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                             HttpContext.Session.SetInt32(SessionConst.IsAdmin, 1);
                         }
 
-                        //Pour que ce soit compatible lors de l'insert de la réservation en BDD
-                        HttpContext.Session.SetString(SessionConst.UserId, user.Id.ToString());
+                        HttpContext.Session.SetInt32(SessionConst.UserId, user.Id);
 
                         result = RedirectToPage("/Index");
                     }

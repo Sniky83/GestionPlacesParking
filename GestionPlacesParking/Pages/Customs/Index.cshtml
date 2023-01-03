@@ -9,7 +9,17 @@
     Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 
     int? isAdmin = HttpContext.Session.GetInt32(SessionConst.IsAdmin);
-    string? userId = HttpContext.Session.GetString(SessionConst.UserId);
+    dynamic userId;
+
+    if(IsSsoEnv.IsSso)
+    {
+        userId = HttpContext.Session.GetString(SessionConst.UserId);
+    }
+    else
+    {
+        userId = HttpContext.Session.GetInt32(SessionConst.UserId);
+    }
+
     string? fullName = HttpContext.Session.GetString(SessionConst.FullName);
 
     int firstId = Model.ParkingSlotList.First().Id;
@@ -48,7 +58,7 @@
                 {
                     isMyReservation = Model.ReservationList.Where(
                         x => x.ReservationDate == DateTime.Parse(DayOfTheWeek.Value) &&
-                        x.UserId == int.Parse(userId)
+                        x.UserId == userId
                     ).Any();
                 }
 
@@ -80,8 +90,8 @@
                             }
                             else
                             {
-                                style = (findReservation.UserId == int.Parse(userId)) ? "btn-orange-apside" : "btn-danger";
-                                owner = (findReservation.UserId == int.Parse(userId) || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
+                                style = (findReservation.UserId == userId) ? "btn-orange-apside" : "btn-danger";
+                                owner = (findReservation.UserId == userId || isAdmin != null) ? "openDeleteReservationModal(event)" : "";
                             }
 
                             if(findParkingSlot != null)

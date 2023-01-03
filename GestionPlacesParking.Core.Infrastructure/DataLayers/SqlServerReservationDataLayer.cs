@@ -81,7 +81,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 }
                 else
                 {
-                    findCurrentReservationQuery = Context.Reservations.Include(r => r.User).Where(r => r.UserId == deleteOneReservationDto.ReservationId && r.UserId == deleteOneReservationDto.UserId).AsQueryable();
+                    findCurrentReservationQuery = Context.Reservations.Include(r => r.User).Where(r => r.Id == deleteOneReservationDto.ReservationId && r.UserId == deleteOneReservationDto.UserId).AsQueryable();
                 }
             }
 
@@ -107,11 +107,11 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
             if (IsSsoEnv.IsSso)
             {
-                return Context.Reservations.Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
+                return Context.Reservations.Where(r => r.IsDeleted == false && !string.IsNullOrEmpty(r.ProprietaireId) && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
             }
             else
             {
-                return Context.Reservations.Include(r => r.User).Where(r => r.IsDeleted == false && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
+                return Context.Reservations.Include(r => r.User).Where(r => r.IsDeleted == false && r.UserId > 0 && (r.ReservationDate >= thisMonday && r.ReservationDate <= thisFriday)).ToList();
             }
         }
 
@@ -122,11 +122,11 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
             if (IsSsoEnv.IsSso)
             {
-                return Context.Reservations.Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
+                return Context.Reservations.Where(r => r.IsDeleted == false && !string.IsNullOrEmpty(r.ProprietaireId) && r.ReservationDate >= nextMonday).ToList();
             }
             else
             {
-                return Context.Reservations.Include(r => r.User).Where(r => r.IsDeleted == false && r.ReservationDate >= nextMonday).ToList();
+                return Context.Reservations.Include(r => r.User).Where(r => r.IsDeleted == false && r.UserId > 0 && r.ReservationDate >= nextMonday).ToList();
             }
         }
 
@@ -157,6 +157,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 .Where(
                     r => r.ReservationDate.Month == monthCondition &&
                     r.ReservationDate.Year == yearCondition &&
+                    !string.IsNullOrEmpty(r.ProprietaireId) &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
                 .Select(h =>
@@ -170,9 +171,11 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             else
             {
                 return Context.Reservations
+                .Include(r => r.User)
                 .Where(
                     r => r.ReservationDate.Month == monthCondition &&
                     r.ReservationDate.Year == yearCondition &&
+                    r.UserId > 0 &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
                 .OrderBy(r => r.Key.Month)
@@ -180,7 +183,8 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                     new HistoryUserLocal
                     {
                         UserId = h.Key.UserId,
-                        NbReservationsMois = h.Count()
+                        NbReservationsMois = h.Count(),
+                        User = h.First().User
                     }
                 ).ToList();
             }
@@ -195,6 +199,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return Context.Reservations
                 .Where(
                     r => r.ReservationDate.Year == yearCondition &&
+                    !string.IsNullOrEmpty(r.ProprietaireId) &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ProprietaireId })
                 .Select(h =>
@@ -207,14 +212,17 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
             else
             {
                 return Context.Reservations
+                .Include(r => r.User)
                 .Where(
                     r => r.ReservationDate.Year == yearCondition &&
+                    r.UserId > 0 &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.UserId })
                 .Select(h =>
                     new HistoryUserLocal
                     {
-                        UserId = h.Key.UserId
+                        UserId = h.Key.UserId,
+                        User = h.First().User
                     }
                 ).Distinct().ToList();
             }
@@ -238,6 +246,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                         r.ReservationDate.Month <= endingMonthCondition
                     ) &&
                     r.ReservationDate.Year == yearCondition &&
+                    !string.IsNullOrEmpty(r.ProprietaireId) &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
                 .OrderBy(r => r.Key.Month)
@@ -261,6 +270,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                         r.ReservationDate.Month <= endingMonthCondition
                     ) &&
                     r.ReservationDate.Year == yearCondition &&
+                    r.UserId > 0 &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
                 .OrderBy(r => r.Key.Month)
@@ -286,6 +296,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return Context.Reservations
                 .Where(
                     r => r.ReservationDate.Year == yearCondition &&
+                    !string.IsNullOrEmpty(r.ProprietaireId) &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
                 .OrderBy(r => r.Key.Month)
@@ -305,6 +316,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                 return Context.Reservations
                 .Where(
                     r => r.ReservationDate.Year == yearCondition &&
+                    r.UserId > 0 &&
                     r.IsDeleted == false)
                 .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
                 .OrderBy(r => r.Key.Month)
@@ -321,37 +333,78 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto getProfileDto)
         {
-            return Context.Reservations
-            .Where(
-                r => r.ReservationDate.Year == DateTime.Now.Year &&
-                r.IsDeleted == false &&
-                r.ProprietaireId == getProfileDto.UserId)
-            .GroupBy(r => new { r.ReservationDate.Month })
-            .OrderBy(r => r.Key.Month)
-            .Select(p =>
-                new ProfileUserMonthsLocal
-                {
-                    Mois = p.Key.Month,
-                    NbReservations = p.Count()
-                }
-            ).ToList();
+            if (IsSsoEnv.IsSso)
+            {
+                return Context.Reservations
+                .Where(
+                    r => r.ReservationDate.Year == DateTime.Now.Year &&
+                    r.IsDeleted == false &&
+                    r.ProprietaireId == getProfileDto.ProprietaireId)
+                .GroupBy(r => new { r.ReservationDate.Month })
+                .OrderBy(r => r.Key.Month)
+                .Select(p =>
+                    new ProfileUserMonthsLocal
+                    {
+                        Mois = p.Key.Month,
+                        NbReservations = p.Count()
+                    }
+                ).ToList();
+            }
+            else
+            {
+                return Context.Reservations
+                .Where(
+                    r => r.ReservationDate.Year == DateTime.Now.Year &&
+                    r.IsDeleted == false &&
+                    r.UserId == getProfileDto.UserId)
+                .GroupBy(r => new { r.ReservationDate.Month })
+                .OrderBy(r => r.Key.Month)
+                .Select(p =>
+                    new ProfileUserMonthsLocal
+                    {
+                        Mois = p.Key.Month,
+                        NbReservations = p.Count()
+                    }
+                ).ToList();
+            }
         }
 
         public List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths()
         {
-            return Context.Reservations
-            .Where(
-                r => r.ReservationDate.Year == DateTime.Now.Year &&
-                r.IsDeleted == false)
-            .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
-            .OrderBy(r => r.Key.Month)
-            .Select(p =>
-                new ProfileAllUserMonthsLocal
-                {
-                    Mois = p.Key.Month,
-                    NbReservations = p.Count()
-                }
-            ).ToList();
+            if (IsSsoEnv.IsSso)
+            {
+                return Context.Reservations
+                .Where(
+                    r => r.ReservationDate.Year == DateTime.Now.Year &&
+                    !string.IsNullOrEmpty(r.ProprietaireId) &&
+                    r.IsDeleted == false)
+                .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
+                .OrderBy(r => r.Key.Month)
+                .Select(p =>
+                    new ProfileAllUserMonthsLocal
+                    {
+                        Mois = p.Key.Month,
+                        NbReservations = p.Count()
+                    }
+                ).ToList();
+            }
+            else
+            {
+                return Context.Reservations
+                .Where(
+                    r => r.ReservationDate.Year == DateTime.Now.Year &&
+                    r.UserId > 0 &&
+                    r.IsDeleted == false)
+                .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
+                .OrderBy(r => r.Key.Month)
+                .Select(p =>
+                    new ProfileAllUserMonthsLocal
+                    {
+                        Mois = p.Key.Month,
+                        NbReservations = p.Count()
+                    }
+                ).ToList();
+            }
         }
 
         public int GetFirstMonthReserved(int year)

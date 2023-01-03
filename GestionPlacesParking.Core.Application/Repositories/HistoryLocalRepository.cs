@@ -1,11 +1,11 @@
-﻿using GestionPlacesParking.Core.Global.Utils;
+﻿using GestionPlacesParking.Core.Application.Utils;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using GestionPlacesParking.Core.Global.Utils;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.History;
-using KeycloakCore.Keycloak;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
 using static GestionPlacesParking.Core.Models.Locals.History.HistoryFilterLocal;
 
 namespace GestionPlacesParking.Core.Application.Repositories
@@ -65,101 +65,164 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
             string? trimestre = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? "" : Enum.GetName(typeof(Trimestre), historyFilterDto.Trimestre));
 
-            var webManager = new WebManager();
-            var userInfojson = webManager.GetAllUserInfo();
-
-            dynamic jsonObject = JArray.Parse(userInfojson);
-
             int moisStartMoyenne = _dataLayer.GetFirstMonthReserved(yearCondition);
+
+            ReservationUtil.FillAllReservingName(historyUserList);
 
             List<int> nbReservationsMois = new List<int>();
 
             int iStart = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 1 : QuarterUtil.GetStartingMonthFromQuarter(historyFilterDto.Trimestre));
             int iCondition = (historyFilterDto == null || historyFilterDto.Trimestre == 0 ? 12 : QuarterUtil.GetStartingMonthFromQuarter(historyFilterDto.Trimestre + 1) - 1);
 
-            //On prends les données keycloak pour remplir le nom prenom de l'user
-            foreach (var oneHistoryUser in historyUserList.ToList())
+            if (IsSsoEnv.IsSso)
             {
-                foreach (var jsonObj in jsonObject)
+                //On prends les données keycloak pour remplir le nom prenom de l'user
+                foreach (var oneHistoryUser in historyUserList.ToList())
                 {
-                    string proprietaireId = jsonObj.id;
-
-                    if (oneHistoryUser.ProprietaireId == proprietaireId)
+                    //Sert à ajouter les mois vide à 0 pour chaque user
+                    for (int i = iStart; i <= iCondition; i++)
                     {
-                        string fullName = jsonObj.firstName + " " + jsonObj.lastName;
-                        oneHistoryUser.FullName = fullName;
-                        break;
-                    }
-                }
+                        int currentMonth = i;
 
-                //Sert à ajouter les mois vide à 0 pour chaque user
-                for (int i = iStart; i <= iCondition; i++)
-                {
-                    int currentMonth = i;
+                        int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth && p.ProprietaireId == oneHistoryUser.ProprietaireId).Select(p => p.Mois).FirstOrDefault();
 
-                    int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth && p.ProprietaireId == oneHistoryUser.ProprietaireId).Select(p => p.Mois).FirstOrDefault();
-
-                    if (currentMonth != findMonth)
-                    {
-                        userMonthsReservationList.Add(new HistoryUserMonthsLocal { ProprietaireId = oneHistoryUser.ProprietaireId, NbReservations = 0, Mois = currentMonth });
-                    }
-                }
-
-                //Sert au calcul de la Moyenne
-                for (int i = 1; i <= 12; i++)
-                {
-                    if (i < moisStartMoyenne)
-                    {
-                        continue;
+                        if (currentMonth != findMonth)
+                        {
+                            userMonthsReservationList.Add(new HistoryUserMonthsLocal { ProprietaireId = oneHistoryUser.ProprietaireId, NbReservations = 0, Mois = currentMonth });
+                        }
                     }
 
-                    var findMonth = userYearOrQuarterReservationList.Where(p => p.Mois == i && p.ProprietaireId == oneHistoryUser.ProprietaireId).Select(p => new { p.NbReservationsMois, p.Mois }).FirstOrDefault();
-
-                    if (findMonth?.Mois == i)
+                    //Sert au calcul de la Moyenne
+                    for (int i = 1; i <= 12; i++)
                     {
-                        nbReservationsMois.Add(findMonth.NbReservationsMois);
+                        if (i < moisStartMoyenne)
+                        {
+                            continue;
+                        }
+
+                        var findMonth = userYearOrQuarterReservationList.Where(p => p.Mois == i && p.ProprietaireId == oneHistoryUser.ProprietaireId).Select(p => new { p.NbReservationsMois, p.Mois }).FirstOrDefault();
+
+                        if (findMonth?.Mois == i)
+                        {
+                            nbReservationsMois.Add(findMonth.NbReservationsMois);
+                        }
+                        else
+                        {
+                            nbReservationsMois.Add(0);
+                        }
+                    }
+
+                    foreach (var oneReservationsByUser in reservationsByUserList)
+                    {
+                        if (oneReservationsByUser.ProprietaireId == oneHistoryUser.ProprietaireId)
+                        {
+                            oneHistoryUser.NbReservationsMois = oneReservationsByUser.NbReservationsMois;
+                        }
+                    }
+
+                    if (historyFilterDto != null && historyFilterDto.Mois == 0 && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
+                    {
+                        bool isUser = userMonthsReservationList.Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.NbReservations > 0).Any();
+
+                        if (!isUser)
+                        {
+                            historyUserList.Remove(oneHistoryUser);
+                        }
+
+                        oneHistoryUser.TotalReservations =
+                        userMonthsReservationList
+                        .Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.Mois <= iCondition)
+                        .Sum(u => u.NbReservations);
                     }
                     else
                     {
-                        nbReservationsMois.Add(0);
+                        oneHistoryUser.TotalReservations =
+                        userYearOrQuarterReservationList.
+                        Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
+                        Sum(h => h.NbReservationsMois);
                     }
-                }
 
-                foreach (var oneReservationsByUser in reservationsByUserList)
+                    oneHistoryUser.MoyenneAnnee = Queryable.Average(nbReservationsMois.AsQueryable());
+                    //Converti la valeur à 1 chiffre après la virgule
+                    oneHistoryUser.MoyenneAnnee = Math.Round(oneHistoryUser.MoyenneAnnee, 1);
+
+                    nbReservationsMois.Clear();
+                }
+            }
+            else
+            {
+                //On prends les données keycloak pour remplir le nom prenom de l'user
+                foreach (var oneHistoryUser in historyUserList.ToList())
                 {
-                    if (oneReservationsByUser.ProprietaireId == oneHistoryUser.ProprietaireId)
+                    //Sert à ajouter les mois vide à 0 pour chaque user
+                    for (int i = iStart; i <= iCondition; i++)
                     {
-                        oneHistoryUser.NbReservationsMois = oneReservationsByUser.NbReservationsMois;
+                        int currentMonth = i;
+
+                        int findMonth = userMonthsReservationList.Where(p => p.Mois == currentMonth && p.UserId == oneHistoryUser.UserId).Select(p => p.Mois).FirstOrDefault();
+
+                        if (currentMonth != findMonth)
+                        {
+                            userMonthsReservationList.Add(new HistoryUserMonthsLocal { UserId = oneHistoryUser.UserId, NbReservations = 0, Mois = currentMonth });
+                        }
                     }
-                }
 
-                if (historyFilterDto != null && historyFilterDto.Mois == 0 && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
-                {
-                    bool isUser = userMonthsReservationList.Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.NbReservations > 0).Any();
-
-                    if (!isUser)
+                    //Sert au calcul de la Moyenne
+                    for (int i = 1; i <= 12; i++)
                     {
-                        historyUserList.Remove(oneHistoryUser);
+                        if (i < moisStartMoyenne)
+                        {
+                            continue;
+                        }
+
+                        var findMonth = userYearOrQuarterReservationList.Where(p => p.Mois == i && p.UserId == oneHistoryUser.UserId).Select(p => new { p.NbReservationsMois, p.Mois }).FirstOrDefault();
+
+                        if (findMonth?.Mois == i)
+                        {
+                            nbReservationsMois.Add(findMonth.NbReservationsMois);
+                        }
+                        else
+                        {
+                            nbReservationsMois.Add(0);
+                        }
                     }
 
-                    oneHistoryUser.TotalReservations =
-                    userMonthsReservationList
-                    .Where(u => u.ProprietaireId == oneHistoryUser.ProprietaireId && u.Mois <= iCondition)
-                    .Sum(u => u.NbReservations);
-                }
-                else
-                {
-                    oneHistoryUser.TotalReservations =
-                    userYearOrQuarterReservationList.
-                    Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).
-                    Sum(h => h.NbReservationsMois);
-                }
+                    foreach (var oneReservationsByUser in reservationsByUserList)
+                    {
+                        if (oneReservationsByUser.UserId == oneHistoryUser.UserId)
+                        {
+                            oneHistoryUser.NbReservationsMois = oneReservationsByUser.NbReservationsMois;
+                        }
+                    }
 
-                oneHistoryUser.MoyenneAnnee = Queryable.Average(nbReservationsMois.AsQueryable());
-                //Converti la valeur à 1 chiffre après la virgule
-                oneHistoryUser.MoyenneAnnee = Math.Round(oneHistoryUser.MoyenneAnnee, 1);
+                    if (historyFilterDto != null && historyFilterDto.Mois == 0 && (historyFilterDto.Trimestre >= 1 || historyFilterDto.Annee >= 1))
+                    {
+                        bool isUser = userMonthsReservationList.Where(u => u.UserId == oneHistoryUser.UserId && u.NbReservations > 0).Any();
 
-                nbReservationsMois.Clear();
+                        if (!isUser)
+                        {
+                            historyUserList.Remove(oneHistoryUser);
+                        }
+
+                        oneHistoryUser.TotalReservations =
+                        userMonthsReservationList
+                        .Where(u => u.UserId == oneHistoryUser.UserId && u.Mois <= iCondition)
+                        .Sum(u => u.NbReservations);
+                    }
+                    else
+                    {
+                        oneHistoryUser.TotalReservations =
+                        userYearOrQuarterReservationList.
+                        Where(h => h.UserId == oneHistoryUser.UserId).
+                        Sum(h => h.NbReservationsMois);
+                    }
+
+                    oneHistoryUser.MoyenneAnnee = Queryable.Average(nbReservationsMois.AsQueryable());
+                    //Converti la valeur à 1 chiffre après la virgule
+                    oneHistoryUser.MoyenneAnnee = Math.Round(oneHistoryUser.MoyenneAnnee, 1);
+
+                    nbReservationsMois.Clear();
+                }
             }
 
             foreach (var oneUserMonthsReservationList in userMonthsReservationList)

@@ -31,7 +31,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             return deleteOne;
         }
 
-        public List<Reservation> GetAll()
+        public List<Reservation> GetAll(bool isCheckingDiff = false)
         {
             List<Reservation> reservationList;
 
@@ -44,7 +44,10 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 reservationList = _dataLayer.GetAllReservationsCurrentWeek();
             }
 
-            ReservationUtil.FillAllReservingName(reservationList);
+            if (!isCheckingDiff)
+            {
+                ReservationUtil.FillAllReservingName(reservationList);
+            }
 
             return reservationList;
         }
