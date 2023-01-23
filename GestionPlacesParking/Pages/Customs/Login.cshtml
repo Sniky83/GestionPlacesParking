@@ -9,12 +9,12 @@
         <img class="login-img img-fluid" src="~/image/logo-apside.png" alt="logo-apside" width="240px" height="80px" />
         <form method="post">
             <div class="form-floating mb-4">
-                <input asp-for="User.Email" type="email" value="user@apside-groupe.com" class="form-control" autocomplete="email" maxlength="50" />
+                <input asp-for="User.Email" type="email" value="a.bouchet@apside-groupe.com" class="form-control" autocomplete="email" maxlength="50" />
                 <label asp-for="User.Email" class="form-label"></label>
                 <span asp-validation-for="User.Email" class="text-danger"></span>
             </div>
             <div class="form-floating mb-4">
-                <input asp-for="User.Password" type="password" value="apside_user" class="form-control" autocomplete="current-password" maxlength="16" />
+                <input asp-for="User.Password" type="password" value="apside_abouchet" class="form-control" autocomplete="current-password" maxlength="16" />
                 <label asp-for="User.Password" class="form-label"></label>
                 <span asp-validation-for="User.Password" class="text-danger"></span>
                 <span class="text-danger">@Model.ErrorMessage</span>

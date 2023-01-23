@@ -4,21 +4,26 @@
 
 namespace GestionPlacesParking.Core.Infrastructure.Migrations
 {
+    /// <inheritdoc />
     public partial class BasicInserts : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             //Insertions basiques pour la table des places de parking
+            migrationBuilder.Sql("DELETE FROM ParkingSlot", true);
             migrationBuilder.InsertData(table: "ParkingSlot", column: "Label", value: "P1");
             migrationBuilder.InsertData(table: "ParkingSlot", column: "Label", value: "P2");
             migrationBuilder.InsertData(table: "ParkingSlot", column: "Label", value: "P3");
             migrationBuilder.InsertData(table: "ParkingSlot", column: "Label", value: "P4");
 
             //Insertions basiques pour les users
-            migrationBuilder.InsertData(table: "User", columns: new[] { "Email", "Password", "IsAdmin" }, values: new object[] { "user@apside-groupe.com", "25707515faae7c87cf20d7be987c15f5533867ee003f49011d5d2913d3f5ad6b", false }); ;
-            migrationBuilder.InsertData(table: "User", columns: new[] { "Email", "Password", "IsAdmin" }, values: new object[] { "admin@apside-groupe.com", "a5d2db9447f30b6f256a774b034a6c7eb2041824bb8bff84b717db637699e5e5", true });
+            migrationBuilder.Sql("DELETE FROM [User]", true);
+            migrationBuilder.InsertData(table: "User", columns: new[] { "Email", "FirstName", "LastName", "Password", "IsAdmin" }, values: new object[] { "j.martin@apside-groupe.com", "Jérome", "Martin", "25a2a4f0beea2f4a7f3053d235660b66a311c65f9acc5ecbf901e8157c681dd5", false });
+            migrationBuilder.InsertData(table: "User", columns: new[] { "Email", "FirstName", "LastName", "Password", "IsAdmin" }, values: new object[] { "a.bouchet@apside-groupe.com", "Alban", "Bouchet", "e46db4b5ea934713d1d609de5499f411dd7cf98e72f426a98ab985fbf4f6fd06", true });
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
 

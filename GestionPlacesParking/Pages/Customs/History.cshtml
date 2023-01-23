@@ -48,9 +48,7 @@ else
             </div>
             <label class="col-md-1 mt-2">Année</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select">
-                    <option value=""></option>
-                </select>
+                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select"></select>
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-orange-apside">
@@ -73,13 +71,13 @@ else
         <h1 class="display-6 mt-5">Tableau des réservations de l'année @Model.HistoryLocal.Annee</h1>
     }
 
-    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@string.Format("{0:F1}", Model.HistoryLocal.MoyenneReservations)</b> j</span>
+    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@Model.HistoryLocal.MoyenneReservationsMois</b> j</span>
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
                 <th scope="col" class="text-center">Utilisateur</th>
                 <th scope="col" class="text-center">Nombre de jours réservés</th>
-                <th scope="col" class="text-center">Moyenne réservations /année</th>
+                <th scope="col" class="text-center">Moyenne des réservations /année</th>
             </tr>
         </thead>
         <tbody>
@@ -87,12 +85,12 @@ else
             {
                 @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.FullName))
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
                     {
                         <tr>
-                            <td><b>@historyLocal.FullName</b></td>
-                            <td class="text-center">@historyLocal.NbReservations</td>
-                            <td class="text-center">@string.Format("{0:F1}", historyLocal.MoyenneAnnee)</td>
+                            <td><b>@historyLocal.ReservingName</b></td>
+                            <td class="text-center">@historyLocal.NbReservationsMois</td>
+                            <td class="text-center">@historyLocal.MoyenneAnnee</td>
                         </tr>
                     }
                 }
@@ -103,7 +101,7 @@ else
                 //On ajoute les subrows sur l'utilisateur
                 @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.FullName))
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
                     {
                         bool findHistoryMonth = Model.HistoryLocal.HistoryUserMonthsListLocal.Where(
                             h => h.ProprietaireId == historyLocal.ProprietaireId
@@ -111,15 +109,15 @@ else
 
                         if (findHistoryMonth)
                         {
-                            <tr class="table-active">
-                                <td><b>@historyLocal.FullName</b></td>
+                            <tr class="table-secondary">
+                                <td><b>@historyLocal.ReservingName</b></td>
                                 <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
-                                <td class="text-center"><b>@string.Format("{0:F1}", historyLocal.MoyenneAnnee)</b></td>
+                                <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
                             </tr>
 
                             @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserMonthsListLocal)
                             {
-                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId)
+                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId || historyMonthsLocal.ProprietaireId == "")
                                 {
                                     <tr>
                                         <td> - @historyMonthsLocal.MoisString</td>

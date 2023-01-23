@@ -2,6 +2,7 @@
 {
     public class GetProfileDto
     {
-        public string? UserId { get; set; } = string.Empty;
+        public int? UserId { get; set; }
+        public string ProprietaireId { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GestionPlacesParking.Core.Global.Consts;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using GestionPlacesParking.Core.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,19 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
 
             string errorMessage = "Problème lors de la suppression de la réservation. Veuillez réessayer ultérieurement.";
 
-            string? userId = HttpContext.Session.GetString(SessionConst.UserId);
             int? isAdmin = HttpContext.Session.GetInt32(SessionConst.IsAdmin);
 
-            DeleteOneReservationDto.UserId = userId;
+            if (IsSsoEnv.IsSso)
+            {
+                string? proprietaireId = HttpContext.Session.GetString(SessionConst.UserId);
+                DeleteOneReservationDto.ProprietaireId = proprietaireId;
+            }
+            else
+            {
+                int? userId = HttpContext.Session.GetInt32(SessionConst.UserId);
+                DeleteOneReservationDto.UserId = userId;
+            }
+
             DeleteOneReservationDto.IsAdmin = (isAdmin == 1) ? true : false;
 
             try
@@ -41,7 +51,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
             catch (Exception ex)
             {
                 result = BadRequest(errorMessage);
-                _logger.LogError("Erreur lors de la supression d'une réservation.\nUserId : {userId}\n{ex}", userId, ex);
+                _logger.LogError("Erreur lors de la supression d'une réservation.\nUserId : {userId}\n{ex}", HttpContext.Session.GetString(SessionConst.UserId), ex);
             }
 
             return result;

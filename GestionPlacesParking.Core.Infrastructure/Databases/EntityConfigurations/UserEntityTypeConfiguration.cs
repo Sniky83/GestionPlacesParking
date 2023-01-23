@@ -1,11 +1,6 @@
 ﻿using GestionPlacesParking.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfigurations
 {
@@ -16,6 +11,8 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases.EntityConfiguration
             builder.HasKey(item => item.Id);
             builder.ToTable("User");
             builder.Property(item => item.Email).IsRequired(true).HasMaxLength(50);
+            builder.Property(item => item.FirstName).IsRequired(true).HasMaxLength(50);
+            builder.Property(item => item.LastName).IsRequired(true).HasMaxLength(50);
             builder.Property(item => item.Password).IsRequired(true).HasMaxLength(64);
         }
     }

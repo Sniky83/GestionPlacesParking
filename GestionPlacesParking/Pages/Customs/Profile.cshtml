@@ -5,32 +5,34 @@
     Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 
     string MesReservations = string.Join(", ", Model.ProfileLocal.ProfileUserMonthsListLocal.OrderBy(p => p.Mois).Select(p => p.NbReservations));
+    string MoyenneReservations = string.Join(", ", Model.ProfileLocal.ProfileUserMonthsListLocal.OrderBy(p => p.Mois).Select(p => p.MoyenneMois.ToString().Replace(',', '.')));
+    string MaMoyenneReservations = Model.ProfileLocal.MaMoyenneAnnee.ToString().Replace(',', '.');
 }
 
 <h1 class="display-6">Tableau de mes réservations sur l'année </h1>
-<span class="text-dark">Moyenne de mes réservations sur l'année : <b>@string.Format("{0:F1}", Model.ProfileLocal.MaMoyenneAnnee)</b> j/mois</span>
+<span class="text-dark">Moyenne de mes réservations sur l'année : <b>@Model.ProfileLocal.MaMoyenneAnnee</b> j/mois</span>
 <table class="table table-bordered mt-3">
     <thead>
         <tr>
             <th scope="col" class="text-center">Mois</th>
             <th scope="col" class="text-center">Nombre de jours réservés</th>
-            <th scope="col" class="text-center">Moyenne réservations /mois</th>
+            <th scope="col" class="text-center">Moyenne générale des réservations /mois</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var profileUserMonthsLocal in Model.ProfileLocal.ProfileUserMonthsListLocal)
         {
-            <tr>
+            <tr class="@(profileUserMonthsLocal.NbReservations == 0 ? "table-secondary" : "")">
                 <td class="text-center">@profileUserMonthsLocal.MoisString</td>
                 <td class="text-center">@profileUserMonthsLocal.NbReservations</td>
-                <td class="text-center">@string.Format("{0:F1}", profileUserMonthsLocal.MoyenneMois)</td>
+                <td class="text-center">@profileUserMonthsLocal.MoyenneMois</td>
             </tr>
         }
 
         <tr>
             <td class="text-center"><b>TOTAL</b></td>
             <td class="text-center"><b>@Model.ProfileLocal.TotalReservations</b></td>
-            <td class="text-center"><b>@string.Format("{0:F1}", Model.ProfileLocal.MoyenneAnnee)</b></td>
+            <td class="text-center"><b>@Model.ProfileLocal.MoyenneAnnee</b></td>
         </tr>
     </tbody>
 </table>
@@ -52,21 +54,30 @@
 
 @section scripts {
     <script>
-        let data = [@MesReservations];
+        let dataMyReservations = [@MesReservations];
+        let dataMyAverage = @MaMoyenneReservations;
+        let dataAverage = [@MoyenneReservations];
 
-        console.log(data);
-
-        let currentYear = new Date().getFullYear();
         let lineChart = document.getElementById("line").getContext('2d');
-        let myChart = new Chart(lineChart, {
+
+        new Chart(lineChart, {
             type: "line",
             data: {
                 labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
                 datasets: [{
-                    label: currentYear,
-                    data: data
+                    label: "Nombre de jours réservés",
+                    data: dataMyReservations
+                },
+                {
+                    label: "Ma Moyenne annuelle",
+                    data: [...Array(12)].map(x => dataMyAverage)
+                },
+                {
+                    label: "Moyenne générale /mois",
+                    data: dataAverage,
+                    borderDash: [6, 6]
                 }]
-            }
+            },
         });
     </script>
 }

@@ -12,17 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionPlacesParking.Core.Infrastructure.Migrations
 {
     [DbContext(typeof(ParkingDbContext))]
-    [Migration("20221114082818_BasicInserts")]
-    partial class BasicInserts
+    [Migration("20221220135153_AddUserIdIntoReservation")]
+    partial class AddUserIdIntoReservation
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("GestionPlacesParking.Core.Models.ParkingSlot", b =>
                 {
@@ -30,7 +31,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Label")
                         .IsRequired()
@@ -48,7 +49,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -56,20 +57,22 @@ namespace GestionPlacesParking.Core.Infrastructure.Migrations
                     b.Property<int>("ParkingSlotId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProprietaireId")
-                        .HasColumnType("int");
+                    b.Property<string>("ProprietaireId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("Date");
 
-                    b.Property<string>("ReservingName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ParkingSlotId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservation", (string)null);
                 });
@@ -80,15 +83,25 @@ namespace GestionPlacesParking.Core.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -108,7 +121,15 @@ namespace GestionPlacesParking.Core.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GestionPlacesParking.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ParkingSlot");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

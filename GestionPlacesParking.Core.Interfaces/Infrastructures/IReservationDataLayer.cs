@@ -14,9 +14,11 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
         int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
         List<SelectListItem> ExtractYears();
         List<HistoryUserLocal> GetNumberReservationsSpecificMonth(FilterHistoryDto historyFilterDto);
-        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterOrYear(FilterHistoryDto historyFilterDto);
+        List<HistoryUserLocal> GetUsersWhoReservedSpecificYear(FilterHistoryDto historyFilterDto);
+        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto historyFilterDto);
         List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto historyFilterDto);
         List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto profileDto);
         List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths();
+        public int GetFirstMonthReserved(int year);
     }
 }
