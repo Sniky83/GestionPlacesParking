@@ -7,7 +7,7 @@ services:
     networks:
       - parcindus
   parking:
-    image: mcr.microsoft.com/dotnet/aspnet:6.0
+    image: mcr.microsoft.com/dotnet/aspnet:7.0
     environment:
       - ParkingContextConnectionString=Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;
       - IsSso=1
