@@ -1,6 +1,7 @@
 # Made by Apside - 2023
 stages:
   - docker-images
+  - deploy
 
 create-image-sql:
   stage: docker-images
@@ -18,19 +19,19 @@ create-image-sql:
     - "docker build -t $DOCKER_IMAGE -f DevOps/mssql/dockerfile ."
     - docker push $DOCKER_IMAGE
 
-# create-image-builder:
-#     stage: docker-images
-#     image: docker:20.10.16
-#     tags:
-#     - docker
-#     variables:
-#         REGISTRY_USER: $HARBGOR_REGISTRY_USER
-#         REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
-#         REGISTRY_URL: harbor.indus.aix.apsdigit.lan
-#         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
-#     before_script:
-#     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
-#     script:
-#     - docker build -t $DOCKER_IMAGE -f ./DevOps/dockerfile
-#     - docker push $DOCKER_IMAGE
+create-image-builder:
+    stage: docker-images
+    image: docker:20.10.16
+    tags:
+    - docker
+    variables:
+        REGISTRY_USER: $HARBGOR_REGISTRY_USER
+        REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+        REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+        DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
+    before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+    script:
+    - "docker build -t $DOCKER_IMAGE -f /DevOps/builder/dockerfile ."
+    - docker push $DOCKER_IMAGE
     
