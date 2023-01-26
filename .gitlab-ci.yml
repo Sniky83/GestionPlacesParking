@@ -64,32 +64,11 @@ deploy-BDD:
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
     --network=$DOCKER_NETWORK \
-    --env DB_PWD=$DB_PWD \
+    --env SA_PASSWORD=$DB_PWD \
     --env MSSQL_PID=$MSSQL_VERSION \
     --env ACCEPT_EULA=$ACCEPT_CONDITIONS \
-    --env API_TRUSTSTORE_PWD=$API_TRUSTSTORE_PWD \
-    --name $DOCKER_CONTAINER_NAME_SQL"
+      --name $DOCKER_CONTAINER_NAME_SQL"
     - sleep 30
 
-# stop:
-#   stage: deploy
-#   image: docker:20.10.16
-#   allow_failure: true
-#   rules:
-#   - if: $CI_COMMIT_REF_NAME == 'master'
-#     when: manual
-#   tags:
-#     - docker
-#   variables:
-#     DOCKER_CONTAINER_NAME_BACK: prevol-back-$CI_COMMIT_REF_NAME
-#     DOCKER_CONTAINER_NAME_NGINX: prevol-back-nginx-$CI_COMMIT_REF_NAME
-#     DOCKER_NETWORK: prevol-back-network-$CI_COMMIT_REF_NAME
-#   environment:
-#     name: $CI_COMMIT_REF_NAME
-#     action: stop
-#   script:
-#     - docker stop $DOCKER_CONTAINER_NAME_BACK $DOCKER_CONTAINER_NAME_NGINX || true
-#     - docker rm $DOCKER_CONTAINER_NAME_BACK $DOCKER_CONTAINER_NAME_NGINX || true
-#     - docker network rm $DOCKER_NETWORK || true
 
     
