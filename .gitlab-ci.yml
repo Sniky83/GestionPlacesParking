@@ -15,7 +15,7 @@ create-image-sql:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    - sh ls -a
+    - sh ls 
     - docker build -t $DOCKER_IMAGE -f DevOps/mssql/dockerfile
     - docker push $DOCKER_IMAGE
 
