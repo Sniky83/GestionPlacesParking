@@ -67,7 +67,7 @@ deploy-BDD:
     --env SA_PASSWORD=$DB_PWD \
     --env MSSQL_PID=$MSSQL_VERSION \
     --env ACCEPT_EULA=$ACCEPT_CONDITIONS \
-      --name $DOCKER_CONTAINER_NAME_SQL"
+    --name $DOCKER_CONTAINER_NAME_SQL"
     - sleep 30
 
 
