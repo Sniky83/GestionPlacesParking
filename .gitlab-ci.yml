@@ -12,6 +12,7 @@ create-image-sql:
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
+    CI_DEBUG_SERVICES: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
