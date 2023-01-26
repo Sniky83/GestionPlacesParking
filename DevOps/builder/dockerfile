@@ -11,4 +11,5 @@ WORKDIR /src/myWebApp
 RUN dotnet restore /src/myWebApp/GestionPlacesParking/GestionPlacesParking.Web.UI.csproj
 RUN dotnet build /src/myWebApp/GestionPlacesParking/GestionPlacesParking.Web.UI.csproj -c Release -o /app/
 RUN dotnet publish /src/myWebApp/GestionPlacesParking/GestionPlacesParking.Web.UI.csproj -c Release -o /app/
+EXPOSE 1433
 CMD  ["bash","/src/myWebApp/DevOps/builder/migration.sh"]
