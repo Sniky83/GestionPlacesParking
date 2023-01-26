@@ -46,10 +46,8 @@ deploy-BDD:
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_SQL: mssql:$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: BDDparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
-    ACCEPT_CONDITIONS: $ACCEPT_EULA
-    DB_PWD: $SA_PASSWORD
-    MSSQL_VERSION: $MSSQL_PID
     CI_DEBUG_TRACE: "true"
   # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
@@ -59,14 +57,17 @@ deploy-BDD:
     - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
     - docker network rm $DOCKER_NETWORK || true
+    - docker volume rm $DOCKER_VOLUME || true
     # Create the network
     - docker network create $DOCKER_NETWORK || true
+    - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
+    --env ACCEPT_EULA=$ACCEPT_EULA \
+    --env SA_PASSWORD=$SA_PASSWORD \
+    --env MSSQL_PID=$MSSQL_PID \
+    --mount=$DOCKER_VOLUME:/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
-    --env SA_PASSWORD=$DB_PWD \
-    --env MSSQL_PID=$MSSQL_VERSION \
-    --env ACCEPT_EULA=$ACCEPT_CONDITIONS \
     --name $DOCKER_CONTAINER_NAME_SQL"
     - sleep 30
 
