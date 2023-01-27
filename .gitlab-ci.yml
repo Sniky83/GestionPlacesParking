@@ -40,7 +40,6 @@ deploy-BDD:
   image: docker:20.10.16
   tags:
     - docker
-    - mssqlserver2017
   variables:
     REGISTRY_USER: $HARBGOR_REGISTRY_USER
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
@@ -75,7 +74,6 @@ deploy-BDD:
 #   image: docker:20.10.16
 #   tags:
 #     - docker
-#     - dotnetbuilder
 #   variables:
 #     REGISTRY_USER: $HARBGOR_REGISTRY_USER
 #     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
