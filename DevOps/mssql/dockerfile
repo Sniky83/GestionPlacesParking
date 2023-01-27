@@ -11,4 +11,6 @@ COPY DevOps/mssql/config/ /usr/config
 RUN chmod +x /usr/config/entrypoint.sh
 RUN chmod +x /usr/config/configure-db.sh
 
+EXPOSE 1433
+
 ENTRYPOINT ["./entrypoint.sh"]
