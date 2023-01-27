@@ -66,9 +66,9 @@ deploy-BDD:
     --env ACCEPT_EULA=Y \
     --env SA_PASSWORD=!@pside2022! \
     --env MSSQL_PID=Express\
-    --mount 'type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data' \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
-    --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL"
+    --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
     - sleep 30
 
 
