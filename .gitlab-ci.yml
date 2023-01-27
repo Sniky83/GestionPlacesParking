@@ -45,10 +45,10 @@ deploy-BDD:
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
-    DOCKER_CONTAINER_NAME_SQL: mssql:$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_SQL: mssqlparcindus:$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: BDDparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
-    CI_DEBUG_TRACE: "true"
+    # CI_DEBUG_TRACE: "true"
   # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -66,7 +66,7 @@ deploy-BDD:
     --env ACCEPT_EULA=$ACCEPT_EULA \
     --env SA_PASSWORD=$SA_PASSWORD \
     --env MSSQL_PID=$MSSQL_PID \
-    --mount=$DOCKER_VOLUME:/var/opt/mssql/data \
+    --mount 'type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data' \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL"
     - sleep 30
