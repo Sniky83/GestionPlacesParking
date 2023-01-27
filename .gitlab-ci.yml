@@ -63,12 +63,12 @@ deploy-BDD:
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
-    --env ACCEPT_EULA=$ACCEPT_EULA \
-    --env SA_PASSWORD=$SA_PASSWORD \
-    --env MSSQL_PID=$MSSQL_PID \
+    --env ACCEPT_EULA=Y \
+    --env SA_PASSWORD=!@pside2022! \
+    --env MSSQL_PID=Express\
     --mount 'type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data' \
     --network=$DOCKER_NETWORK \
-    --name $DOCKER_CONTAINER_NAME_SQL"
+    --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL"
     - sleep 30
 
 
