@@ -46,7 +46,7 @@ deploy-BDD:
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_SQL: mssqlparcindus:$CI_COMMIT_REF_NAME
-    DOCKER_VOLUME: BDDparcindus$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
     # CI_DEBUG_TRACE: "true"
   # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
@@ -65,7 +65,7 @@ deploy-BDD:
     - "docker run -d --rm \
     --env ACCEPT_EULA=Y \
     --env SA_PASSWORD=!@pside2022! \
-    --env MSSQL_PID=Express\
+    --env MSSQL_PID=Express \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
