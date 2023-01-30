@@ -57,7 +57,7 @@ deploy-BDD:
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_VOLUME || true
-    # Create the network
+    # Create the volume
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
@@ -90,8 +90,7 @@ deploy-Builder:
     - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker volume rm $DOCKER_VOLUME || true
-    # Create the network
-    - docker network create $DOCKER_NETWORK || true
+    # Create the volume
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
