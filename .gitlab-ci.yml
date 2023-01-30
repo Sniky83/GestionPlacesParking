@@ -95,7 +95,7 @@ deploy-Builder:
     REGISTRY_USER: $HARBGOR_REGISTRY_USER
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
-    DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetparcindus:$CI_COMMIT_REF_NAME
+    DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
