@@ -1,4 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0
+ARG parking_connexion
+ARG keycloak_pwd
+ARG uri
+ENV ParkingContextConnectionString=$parking_connexion
+ENV KeycloakPasswordUser=$keycloak
+ENV WebsiteUri= $uri
 COPY . /src/myWebApp
 RUN mkdir /app
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
