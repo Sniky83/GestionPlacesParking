@@ -41,9 +41,7 @@ create-image-builder:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
       # Build image builder
-    - echo "$BDD_HOST"
-    - echo "$BDD_PWD"
-    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg bdd_host=$BDD_HOST --build-arg bdd_pwd=$BDD_PWD --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI ." 
+    - docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg bdd_host=$BDD_HOST --build-arg bdd_pwd=$BDD_PWD --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI . 
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -96,7 +94,7 @@ deploy-BDD:
     # First run the back, with little sleep after it to let it some time
     - echo "$ACCEPT"
     - echo "$BDD_VERSION"
-    - echo "BDD_PWD"
+    - echo "$BDD_PWD"
     - "docker run -d --rm \
     --env ACCEPT_EULA=$ACCEPT \
     --env SA_PASSWORD=$BDD_PWD \
@@ -156,8 +154,6 @@ deploy-app:
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     # Run APP
-    - echo "$BDD_PWD"
-    - echo ""
     - "docker run -d --rm \
     --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;' \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
