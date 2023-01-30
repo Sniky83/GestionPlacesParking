@@ -3,7 +3,7 @@ ARG parking_connexion
 ARG keycloak_pwd
 ARG uri
 COPY . /src/myWebApp
-ENV ParkingContextConnectionString=$parking_connexion
+ENV ParkingContextConnectionString='Server=mssql;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
 ENV KeycloakPasswordUser=$keycloak
 ENV WebsiteUri=$uri
 RUN mkdir /app
