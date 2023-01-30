@@ -4,7 +4,7 @@ ARG bdd_pwd
 ARG keycloak_pwd
 ARG uri
 COPY . /src/myWebApp
-ENV ParkingContextConnectionString= 'Server=mssqlparcindus_cicd;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
+ENV ParkingContextConnectionString='Server=mssqlparcindus_cicd;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
 ENV KeycloakPasswordUser='pyLcVV$tAFRaNv3J'
 ENV WebsiteUri='https://parking.deploy.indus.aix.apsdigit.lan'
 RUN echo $bdd_host
