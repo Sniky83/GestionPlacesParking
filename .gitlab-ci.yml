@@ -35,6 +35,23 @@ create-image-builder:
     - "docker build -t $DOCKER_IMAGE -f DevOps/builder/dockerfile ."
     - docker push $DOCKER_IMAGE
 
+create-image-app:
+   stage: docker-images
+    image: docker:20.10.16
+    tags:
+    - docker
+    variables:
+        REGISTRY_USER: $HARBGOR_REGISTRY_USER
+        REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+        REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+        DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+    before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+    script:
+    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile ."
+    - docker push $DOCKER_IMAGE
+
+
 deploy-BDD:
   stage: deploy
   image: docker:20.10.16
@@ -79,7 +96,7 @@ deploy-Builder:
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetparcindus:$CI_COMMIT_REF_NAME
-    DOCKER_CONTAINER_NAME_build: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
 # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
@@ -98,5 +115,33 @@ deploy-Builder:
     --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --network=$DOCKER_NETWORK \
-    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_SQL "
-    
+    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+deploy-app:
+  stage: deploy
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
+    DOCKER_NETWORK: parcindus
+    DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    #  Stop and remove the container if it exists
+    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    - "docker run -d --rm \
+    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
+    -l traefik.http.services.parking.LoadBalancer.server.port=80 \
+    -l traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`) \
+    -l traefik.http.routers.parking.entrypoints=http,https \
+    -l traefik.http.routers.parking.service=parking  \
+    -l traefik.http.routers.parking.tls=true \
+    --network=$DOCKER_NETWORK \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
