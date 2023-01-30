@@ -1,6 +1,7 @@
 # Made by Apside - 2023
 stages:
   - docker-images
+  - deploy-bdd
   - deploy
 
 create-image-sql:
@@ -31,14 +32,14 @@ create-image-builder:
         REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
         REGISTRY_URL: harbor.indus.aix.apsdigit.lan
         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
-        PARKING_CONNEXION: 'Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
+        PARKING_CONNEXION: "\"Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;\""
         KEYCLOAK_PWD: 'pyLcVV$tAFRaNv3J'
         URI: 'https://parking.deploy.indus.aix.apsdigit.lan'
     before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
       # Build image builder
-    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI ." 
+    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg parking_connexion=$PARKING_CONNEXION --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI ." 
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -60,9 +61,9 @@ create-image-app:
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
-
+# séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
 deploy-BDD:
-  stage: deploy
+  stage: deploy-bdd
   image: docker:20.10.16
   tags:
     - docker
@@ -88,9 +89,9 @@ deploy-BDD:
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
-    --env ACCEPT_EULA=Y \
-    --env SA_PASSWORD=!@pside2022! \
-    --env MSSQL_PID=Express \
+    --env ACCEPT_EULA=$ACCEPT \
+    --env SA_PASSWORD=$BDD_PWD \
+    --env MSSQL_PID=$BDD_VERSION \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
@@ -143,7 +144,7 @@ deploy-app:
     - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     - "docker run -d --rm \
-    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;' \
+    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;' \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
