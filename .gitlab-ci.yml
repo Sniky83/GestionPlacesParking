@@ -29,10 +29,16 @@ create-image-builder:
         REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
         REGISTRY_URL: harbor.indus.aix.apsdigit.lan
         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
+        PARKING_CONNEXION: 'Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
+        KEYCLOAK_PWD: 'pyLcVV$tAFRaNv3J'
+        URI: 'https://parking.deploy.indus.aix.apsdigit.lan'
     before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
-    - "docker build -t $DOCKER_IMAGE -f DevOps/builder/dockerfile ."
+    - "docker build -t $DOCKER_IMAGE -f DevOps/builder/dockerfile \
+    --build-arg parking_connexion=$PARKING_CONNEXION \
+    --build-arg keycloak_pwd=$KEYCLOAK_PWD \
+    --build-arg uri=$URI ." 
     - docker push $DOCKER_IMAGE
 
 create-image-app:
@@ -110,9 +116,6 @@ deploy-Builder:
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
     - "docker run -d --rm \
-    --env KeycloakPasswordUser='pyLcVV$tAFRaNv3J'
-    --env WebsiteUri='https://parking.deploy.indus.aix.apsdigit.lan'
-    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
