@@ -57,7 +57,7 @@ deploy-BDD:
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_VOLUME || true
-    # Create the volume
+    # Create the volumeBDD&network
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
@@ -90,9 +90,8 @@ deploy-Builder:
     - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker volume rm $DOCKER_VOLUME || true
-    # Create the volume
+    # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
-    # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
     --env KeycloakPasswordUser='pyLcVV$tAFRaNv3J'
     --env WebsiteUri='https://parking.deploy.indus.aix.apsdigit.lan'
@@ -100,5 +99,4 @@ deploy-Builder:
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_SQL "
-    - sleep 30
     
