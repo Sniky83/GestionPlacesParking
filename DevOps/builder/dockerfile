@@ -1,11 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0
-ARG parking_connexion
+ARG bdd_host
+ARG bdd_pwd
 ARG keycloak_pwd
 ARG uri
 COPY . /src/myWebApp
-ENV ParkingContextConnectionString=$parking_connexion
+ENV ParkingContextConnectionString='Server=$bdd_host;Database=parcIndus;User Id=parcadmin;Password=$bdd_pwd;'
 ENV KeycloakPasswordUser=$keycloak
 ENV WebsiteUri=$uri
+RUN echo $ParkingContextConnectionString
+RUN echo $bdd_host
+RUN echo $bdd_pwd
+RUN echo $keycloak_pwd
+RUN echo $uri
 RUN mkdir /app
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
 RUN dotnet tool install -g dotnet-ef
