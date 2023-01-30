@@ -69,34 +69,37 @@ deploy-BDD:
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
     - sleep 10
-# deploy-Builder:
-#   stage: deploy
-#   image: docker:20.10.16
-#   tags:
-#     - docker
-#   variables:
-#     REGISTRY_USER: $HARBGOR_REGISTRY_USER
-#     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
-#     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
-#     DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetparcindus:$CI_COMMIT_REF_NAME
-#     DOCKER_CONTAINER_NAME_build: buildparcindus_$CI_COMMIT_REF_NAME
-#     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
-#     DOCKER_NETWORK: parcindus
-# # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
-#   before_script:
-#     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
-#   script:
-#     # Stop and remove the container if it exists
-#     - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
-#     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
-#     - docker volume rm $DOCKER_VOLUME || true
-#     # Create the network
-#     - docker network create $DOCKER_NETWORK || true
-#     - docker volume create $DOCKER_VOLUME || true
-#     # First run the back, with little sleep after it to let it some time
-#     - "docker run -d --rm \
-#     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
-#     --network=$DOCKER_NETWORK \
-#     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_SQL "
-#     - sleep 30
+deploy-Builder:
+  stage: deploy
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetparcindus:$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_build: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
+    DOCKER_NETWORK: parcindus
+# To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Stop and remove the container if it exists
+    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker volume rm $DOCKER_VOLUME || true
+    # Create the network
+    - docker network create $DOCKER_NETWORK || true
+    - docker volume create $DOCKER_VOLUME || true
+    # First run the back, with little sleep after it to let it some time
+    - "docker run -d --rm \
+    --env KeycloakPasswordUser='pyLcVV$tAFRaNv3J'
+    --env WebsiteUri='https://parking.deploy.indus.aix.apsdigit.lan'
+    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --network=$DOCKER_NETWORK \
+    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_SQL "
+    - sleep 30
     
