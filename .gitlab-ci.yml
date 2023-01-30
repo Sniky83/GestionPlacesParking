@@ -36,18 +36,18 @@ create-image-builder:
     - docker push $DOCKER_IMAGE
 
 create-image-app:
-   stage: docker-images
-    image: docker:20.10.16
-    tags:
+  stage: docker-images
+  image: docker:20.10.16
+  tags:
     - docker
-    variables:
-        REGISTRY_USER: $HARBGOR_REGISTRY_USER
-        REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
-        REGISTRY_URL: harbor.indus.aix.apsdigit.lan
-        DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
-    before_script:
+  variables:
+      REGISTRY_USER: $HARBGOR_REGISTRY_USER
+      REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+      REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+      DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+  before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
-    script:
+  script:
     - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile ."
     - docker push $DOCKER_IMAGE
 
