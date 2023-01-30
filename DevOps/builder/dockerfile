@@ -4,7 +4,7 @@ ARG keycloak_pwd
 ARG uri
 ENV ParkingContextConnectionString=$parking_connexion
 ENV KeycloakPasswordUser=$keycloak
-ENV WebsiteUri= $uri
+ENV WebsiteUri=$uri
 COPY . /src/myWebApp
 RUN mkdir /app
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
