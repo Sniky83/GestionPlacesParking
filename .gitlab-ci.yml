@@ -92,9 +92,6 @@ deploy-BDD:
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
-    - echo "$ACCEPT"
-    - echo "$BDD_VERSION"
-    - echo "$BDD_PWD"
     - "docker run -d --rm \
     --env ACCEPT_EULA=$ACCEPT \
     --env SA_PASSWORD=$BDD_PWD \
@@ -155,7 +152,7 @@ deploy-app:
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     # Run APP
     - "docker run -d --rm \
-    --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;' \
+    --env ParkingContextConnectionString='Server=mssqlparcindus_cicd;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;' \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
