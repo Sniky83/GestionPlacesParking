@@ -7,12 +7,6 @@ COPY . /src/myWebApp
 ENV ParkingContextConnectionString='Server=$bdd_host;Database=parcIndus;User Id=parcadmin;Password=$bdd_pwd;'
 ENV KeycloakPasswordUser=$keycloak
 ENV WebsiteUri=$uri
-RUN echo "$bdd_host"
-RUN echo "$bdd_pwd"
-RUN echo "$uri"
-RUn echo "$keycloak_pwd"
-RUN echo "$ParkingContextConnectionString"
-RUN echo "$KeycloakPasswordUser"
 RUN mkdir /app
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
 RUN dotnet tool install -g dotnet-ef
