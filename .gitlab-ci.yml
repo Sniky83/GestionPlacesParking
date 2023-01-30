@@ -34,6 +34,7 @@ create-image-builder:
         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
         KEYCLOAK_PWD: 'pyLcVV$tAFRaNv3J'
         URI: 'https://parking.deploy.indus.aix.apsdigit.lan'
+        BDD_HOST: mssqlparcindus_$CI_COMMIT_REF_NAME
     before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
@@ -118,6 +119,7 @@ deploy-Builder:
     - docker volume rm $DOCKER_VOLUME || true
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
+    # RUN builder pour migrations de BDD & liaison dossier /app
     - "docker run -d --rm \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --network=$DOCKER_NETWORK \
@@ -140,8 +142,9 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     #  Stop and remove the container if it exists
-    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
-    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker stop $DOCKER_CONTAINER_NAME_APP  || true
+    - docker rm $DOCKER_CONTAINER_NAME_APP || true
+    # 
     - "docker run -d --rm \
     --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;' \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
