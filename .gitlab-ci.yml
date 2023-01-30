@@ -14,6 +14,7 @@ create-image-sql:
     REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
+    CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
@@ -35,10 +36,13 @@ create-image-builder:
         KEYCLOAK_PWD: 'pyLcVV$tAFRaNv3J'
         URI: 'https://parking.deploy.indus.aix.apsdigit.lan'
         BDD_HOST: mssqlparcindus_$CI_COMMIT_REF_NAME
+        CI_DEBUG_TRACE: "true"
     before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
       # Build image builder
+    - echo "$BDD_HOST"
+    - echo "$BDD_PWD"
     - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg bdd_host=$BDD_HOST --build-arg bdd_pwd=$BDD_PWD --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI ." 
     # Push Image to docker
     - docker push $DOCKER_IMAGE
@@ -53,6 +57,7 @@ create-image-app:
       REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
       REGISTRY_URL: harbor.indus.aix.apsdigit.lan
       DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+      CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
@@ -75,6 +80,7 @@ deploy-BDD:
     DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
+    CI_DEBUG_TRACE: "true"
   # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -88,6 +94,9 @@ deploy-BDD:
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
+    - echo "$ACCEPT"
+    - echo "$BDD_VERSION"
+    - echo "BDD_PWD"
     - "docker run -d --rm \
     --env ACCEPT_EULA=$ACCEPT \
     --env SA_PASSWORD=$BDD_PWD \
@@ -109,6 +118,7 @@ deploy-Builder:
     DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
+    CI_DEBUG_TRACE: "true"
 # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -138,13 +148,16 @@ deploy-app:
     DOCKER_NETWORK: parcindus
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
     TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
+    CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     #  Stop and remove the container if it exists
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
-    # 
+    # Run APP
+    - echo "$BDD_PWD"
+    - echo ""
     - "docker run -d --rm \
     --env ParkingContextConnectionString='Server=mssqlparcindus_$CI_COMMIT_REF_NAME;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;' \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
