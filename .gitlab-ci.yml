@@ -88,6 +88,8 @@ deploy-BDD:
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_BUILDER: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
     BBD_PWD: $BDD_PWD
@@ -101,6 +103,10 @@ deploy-BDD:
     # Stop and remove the container if it exists
     - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
+    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker stop $DOCKER_CONTAINER_NAME_APP  || true
+    - docker rm $DOCKER_CONTAINER_NAME_APP || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_VOLUME || true
     # Create the volumeBDD&network
@@ -133,9 +139,7 @@ deploy-Builder:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # Stop and remove the container if it exists
-    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
-    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    # remove volume if it exists
     - docker volume rm $DOCKER_VOLUME || true
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
@@ -164,9 +168,6 @@ deploy-app:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    #  Stop and remove the container if it exists
-    - docker stop $DOCKER_CONTAINER_NAME_APP  || true
-    - docker rm $DOCKER_CONTAINER_NAME_APP || true
     # Run APP
     - "docker run -d --rm \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
