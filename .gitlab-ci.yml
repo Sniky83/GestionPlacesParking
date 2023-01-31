@@ -107,7 +107,7 @@ deploy-BDD:
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
-    - "docker run -d --rm \
+    - "docker run -d -p 1433:1433 --rm \
     --env ACCEPT_EULA=$EULA \
     --env SA_PASSWORD=$BDD_PWD \
     --env MSSQL_PID=$BDD_VERSION \
