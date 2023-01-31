@@ -33,19 +33,21 @@ create-image-builder:
         REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
         REGISTRY_URL: harbor.indus.aix.apsdigit.lan
         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
-        KEYCLOAK_PWD: 'pyLcVV$tAFRaNv3J'
-        URI: 'https://parking.deploy.indus.aix.apsdigit.lan'
-        BDD_HOST: mssqlparcindus_$CI_COMMIT_REF_NAME
+        KEYCLOAK_PWD: $KC_PWD
+        URI: $WBURI
+        BDD_HOST: $BDD_HOST
         BDD_PWD: $BDD_PWD
-        KEYCLOAK_PWD: $KEYCLOAK_PWD
-        URI: $WebsiteURI
         CI_DEBUG_TRACE: "true"
     before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
       # Build image builder
     - echo "KEYCLOAK_PWD"
-    - docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE --build-arg bdd_host=$BDD_HOST --build-arg bdd_pwd=$BDD_PWD --build-arg keycloak_pwd=$KEYCLOAK_PWD --build-arg uri=$URI . 
+    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE \
+    --build-arg bdd_host=$BDD_HOST \
+    --build-arg bdd_pwd=$BDD_PWD \
+    --build-arg keycloak_pwd=$KEYCLOAK_PWD \
+    --build-arg uri=$URI . "
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -59,12 +61,18 @@ create-image-app:
       REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
       REGISTRY_URL: harbor.indus.aix.apsdigit.lan
       DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+      BDD_HOST: $BDD_HOST
+      BDD_PWD: $BDD_PWD
+      URI: $WBURI
       CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Build image runner
-    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile ."
+    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile \
+    --build-arg bdd_host=$BDD_HOST \
+    --build-arg bdd_pwd=$BDD_PWD \
+    --build-arg uri=$URI ."
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -150,6 +158,8 @@ deploy-app:
     DOCKER_NETWORK: parcindus
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
     TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
+    BDD_PWD: $BDD_PWD
+    BDD_HOST: $BDD_HOST
     CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -159,7 +169,7 @@ deploy-app:
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     # Run APP
     - "docker run -d --rm \
-    --env ParkingContextConnectionString='Server=mssqlparcindus_cicd;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;' \
+    --build-arg  \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
