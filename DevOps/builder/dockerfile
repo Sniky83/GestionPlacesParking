@@ -4,7 +4,7 @@ ARG bdd_pwd
 ARG keycloak_pwd
 ARG uri
 COPY . /src/myWebApp
-ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;"
+ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};Trusted_Connection=True;TrustServerCertificate=true;"
 ENV KeycloakPasswordUser=$keycloak_pwd
 ENV WebsiteUri=$uri
 RUN mkdir /app
