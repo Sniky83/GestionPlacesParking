@@ -114,7 +114,7 @@ deploy-BDD:
     --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
-    - sleep 10
+    - sleep 60
 deploy-Builder:
   stage: deploy
   image: docker:20.10.16
