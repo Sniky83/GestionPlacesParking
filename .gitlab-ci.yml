@@ -92,6 +92,9 @@ deploy-BDD:
     - docker network create $DOCKER_NETWORK || true
     - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
+    - echo "$ACCEPT"
+    - echo "$BDD_PWD"
+    - echo "$BDD_VERSION"
     - "docker run -d --rm \
     --env ACCEPT_EULA=$ACCEPT \
     --env SA_PASSWORD=$BDD_PWD \
