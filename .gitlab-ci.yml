@@ -88,7 +88,7 @@ deploy-BDD:
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
-    DOCKER_CONTAINER_NAME_BUILDER: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
     DOCKER_APP_VOLUME: appparcindus$CI_COMMIT_REF_NAME
