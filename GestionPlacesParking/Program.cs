@@ -1,4 +1,4 @@
-﻿using GestionPlacesParking.Core.Application.Repositories;
+using GestionPlacesParking.Core.Application.Repositories;
 using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
@@ -84,8 +84,8 @@ app.UseAuthorization();
 app.UseSession();
 
 // Implémentation des Customs Middlewares
-app.UseRedirectIfNotConnected();
-app.UseRedirectIfNotAdmin();
+// app.UseRedirectIfNotConnected();
+// app.UseRedirectIfNotAdmin();
 
 app.MapRazorPages();
 
