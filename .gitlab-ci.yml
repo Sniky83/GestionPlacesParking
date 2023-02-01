@@ -178,6 +178,7 @@ deploy-app:
     -l traefik.http.routers.parking.service=parking  \
     -l traefik.http.routers.parking.tls=true \
     -l traefik.http.services.parking.loadbalancer.server.scheme=http \
+    --env KeycloakPasswordUser=pyLcVV$tAFRaNv3J
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
