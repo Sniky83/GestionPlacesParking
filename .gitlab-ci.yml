@@ -176,7 +176,7 @@ deploy-app:
     -l traefik.http.routers.parking.entrypoints=http,https \
     -l traefik.http.routers.parking.service=parking  \
     -l traefik.http.routers.parking.tls=true \
-    --env KeycloakPasswordUser=$KEYCLOAK_PWD
+    --env KeycloakPasswordUser=$KEYCLOAK_PWD \
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
