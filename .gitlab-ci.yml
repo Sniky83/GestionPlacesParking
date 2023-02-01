@@ -166,6 +166,7 @@ deploy-app:
     TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
+    KEYCLOAK_PWD: $KC_PWD
     CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -178,7 +179,7 @@ deploy-app:
     -l traefik.http.routers.parking.service=parking  \
     -l traefik.http.routers.parking.tls=true \
     -l traefik.http.services.parking.loadbalancer.server.scheme=http \
-    --env KeycloakPasswordUser='pyLcVV$tAFRaNv3J'
+    --env KeycloakPasswordUser=$KEYCLOAK_PWD
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
