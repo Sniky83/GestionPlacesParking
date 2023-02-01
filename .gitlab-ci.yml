@@ -175,7 +175,7 @@ deploy-app:
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
-    -l traefik.http.routers.parking.service=parking\
+    -l traefik.http.routers.parking.service=parking \
     -l traefik.http.routers.parking.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
     --network=$DOCKER_NETWORK \
