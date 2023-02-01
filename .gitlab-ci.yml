@@ -108,7 +108,6 @@ deploy-BDD:
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_APP_VOLUME || true
-    - docker volume rm $DOCKER_VOLUME || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     # Create the volumeBDD&network
