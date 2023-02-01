@@ -1,0 +1,68 @@
+pipeline {
+    agent none
+	parameters {
+	    choice(name: 'VERSION', choices: ['master', 'develop','devops'], description: 'Choix de la version')
+	}
+    stages {
+            stage('Git'){
+            agent{label 'agent_build'}
+            environment{
+            Gitlab_CREDENTIALS = credentials('jenkinsInGitlab')
+            Lien_Repo="https://gitlab.indus.aix.apsdigit.lan/apside/projet-parking-indus"
+            }
+            steps {
+            sh "git clone -b ${VERSION} https://${Gitlab_CREDENTIALS_USR}:${Gitlab_CREDENTIALS_PSW}@gitlab.indus.aix.apsdigit.lan/apside/projet-parking-indus.git"
+            stash includes: 'projet-parking-indus/', name: 'projet'          
+                }
+            }
+            stage("Build&Push") {
+            agent {label "agent_docker_build"}
+            environment{
+            Name_Project = "dotnetbuildparcindus"
+            Harbor_CREDENTIALS = credentials('robot_harbor_jenkins')
+            Url_Harbor = "harbor.indus.aix.apsdigit.lan"
+            Project_Harbor = "parcindus"
+            }
+            steps{
+                unstash 'projet'
+                sh 'echo $Harbor_CREDENTIALS_PSW | docker login ${Url_Harbor} -u $Harbor_CREDENTIALS_USR --password-stdin'
+                sh "docker build --no-cache -f ${WORKSPACE}/projet-parking-indus/dockerfile -t ${Url_Harbor}/${Project_Harbor}/${Name_Project} ."
+                stash includes: 'projet-parking-indus/docker-compose.yml', name:'compose'
+                script{
+                    if (VERSION == 'master') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        }
+                    if (VERSION == 'develop') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        }
+                    if (VERSION == 'devops') {
+                        sh "docker rmi -f ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker tag ${Url_Harbor}/${Project_Harbor}/${Name_Project} ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        sh "docker push ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                        }      
+                }
+            }
+            
+        }
+        stage("Run Migration BDD & Run App"){
+            agent{label 'agent_deploy'}
+            environment{
+                Url_Harbor = "harbor.indus.aix.apsdigit.lan"
+                Harbor_CREDENTIALS = credentials('robot_harbor_jenkins')
+                Name_Project = "dotnetbuildparcindus"
+                Project_Harbor = "parcindus"
+                docker_image= "harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus"
+            }
+            steps{
+                    unstash 'compose'
+                    sh "docker pull ${Url_Harbor}/${Project_Harbor}/${Name_Project}:${VERSION}"
+                    sh "mv projet-parking-indus/docker-compose.yml ${WORKSPACE}/docker-compose.yml"
+                    sh "docker compose up -d"
+            }
+        }      
+    }
+}

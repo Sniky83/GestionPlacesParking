@@ -1,8 +1,13 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:7.0
+ARG bdd_host
+ARG bdd_pwd
+ARG keycloak_pwd
+ARG uri
 COPY . /src/myWebApp
+ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;"
+ENV KeycloakPasswordUser=$keycloak_pwd
+ENV WebsiteUri=$uri
 RUN mkdir /app
-ENV ParkingContextConnectionString='Server=mssql1;Database=parcIndus;User Id=parcadmin;Password=!@pside2022!;'
-ENV WebsiteUri='http://localhost'
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json 
 RUN dotnet tool install -g dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"

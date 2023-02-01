@@ -1,0 +1,180 @@
+# Made by Apside - 2023
+stages:
+  - docker-images
+  - deploy-bdd
+  - deploy
+
+create-image-sql:
+  stage: docker-images
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
+    CI_DEBUG_TRACE: "true"
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Build Image mssqlcusto
+    - "docker build -t $DOCKER_IMAGE -f DevOps/mssql/dockerfile ."
+    # Push Image to Harbor
+    - docker push $DOCKER_IMAGE
+
+create-image-builder:
+    stage: docker-images
+    image: docker:20.10.16
+    tags:
+    - docker
+    variables:
+        REGISTRY_USER: $HARBGOR_REGISTRY_USER
+        REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+        REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+        DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
+        KEYCLOAK_PWD: $KC_PWD
+        URI: $WBURI
+        BDD_HOST: $BDD_HOST
+        BDD_PWD: $BDD_PWD
+        CI_DEBUG_TRACE: "true"
+    before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+    script:
+      # Build image builder
+    - echo "KEYCLOAK_PWD"
+    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE \
+    --build-arg bdd_host=$BDD_HOST \
+    --build-arg bdd_pwd=$BDD_PWD \
+    --build-arg keycloak_pwd=$KEYCLOAK_PWD \
+    --build-arg uri=$URI . "
+    # Push Image to docker
+    - docker push $DOCKER_IMAGE
+
+create-image-app:
+  stage: docker-images
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+      REGISTRY_USER: $HARBGOR_REGISTRY_USER
+      REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+      REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+      DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+      BDD_HOST: $BDD_HOST
+      BDD_PWD: $BDD_PWD
+      URI: $WBURI
+      CI_DEBUG_TRACE: "true"
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Build image runner
+    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile \
+    --build-arg bdd_host=$BDD_HOST \
+    --build-arg bdd_pwd=$BDD_PWD \
+    --build-arg uri=$URI ."
+    # Push Image to docker
+    - docker push $DOCKER_IMAGE
+
+# séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
+deploy-BDD:
+  stage: deploy-bdd
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
+    DOCKER_APP_VOLUME: appparcindus$CI_COMMIT_REF_NAME
+    DOCKER_NETWORK: parcindus
+    BBD_PWD: $BDD_PWD
+    EULA: $ACCEPT
+    VERSION: $BDD_VERSION
+    CI_DEBUG_TRACE: "true"
+  # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Stop and remove the container if it exists
+    - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
+    - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
+    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker stop $DOCKER_CONTAINER_NAME_APP  || true
+    - docker network rm $DOCKER_NETWORK || true
+    - docker volume rm $DOCKER_APP_VOLUME || true
+    - docker rm $DOCKER_CONTAINER_NAME_APP || true
+    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    # Create the volumeBDD&network
+    - docker network create $DOCKER_NETWORK || true
+    # First run the back, with little sleep after it to let it some time
+    - "docker run -d -p 1433:1433 --rm \
+    --env ACCEPT_EULA=$EULA \
+    --env SA_PASSWORD=$BDD_PWD \
+    --env MSSQL_PID=$BDD_VERSION \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
+    --network=$DOCKER_NETWORK \
+    --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
+    - sleep 60
+deploy-Builder:
+  stage: deploy
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
+    DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
+    DOCKER_NETWORK: parcindus
+    CI_DEBUG_TRACE: "true"
+# To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Create the volume APP
+    - docker volume create $DOCKER_VOLUME || true
+    # RUN builder pour migrations de BDD & liaison dossier /app
+    - "docker run -d \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --network=$DOCKER_NETWORK \
+    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+deploy-app:
+  stage: deploy
+  image: docker:20.10.16
+  tags:
+    - docker
+  variables:
+    REGISTRY_USER: $HARBGOR_REGISTRY_USER
+    REGISTRY_PASSWORD: $HARBOR_REGISTRY_PASSWORD
+    REGISTRY_URL: harbor.indus.aix.apsdigit.lan
+    DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
+    DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
+    DOCKER_NETWORK: parcindus
+    DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
+    TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
+    BDD_PWD: $BDD_PWD
+    BDD_HOST: $BDD_HOST
+    KEYCLOAK_PWD: $KC_PWD
+    CI_DEBUG_TRACE: "true"
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
+  script:
+    # Run APP
+    - "docker run -d --rm \
+    -l traefik.http.services.parking.LoadBalancer.server.port=80 \
+    -l $TRAEFIK_LABEL_HOST \
+    -l traefik.http.routers.parking.entrypoints=http,https \
+    -l traefik.http.routers.parking.service=parking  \
+    -l traefik.http.routers.parking.tls=true \
+    --env KeycloakPasswordUser=$KEYCLOAK_PWD
+    --network=$DOCKER_NETWORK \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
