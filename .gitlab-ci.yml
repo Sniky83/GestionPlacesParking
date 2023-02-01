@@ -172,7 +172,7 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d --rm -p 35880:80 -p 35843:443 \
+    - "docker run -d --rm \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
