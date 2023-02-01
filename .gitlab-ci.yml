@@ -76,7 +76,7 @@ create-image-app:
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
-# séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
+# séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD/creation des DataBases avant de deployer Builder/Runner
 deploy-BDD:
   stage: deploy-bdd
   image: docker:20.10.16
@@ -101,19 +101,21 @@ deploy-BDD:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # Stop and remove the container if it exists
+    # Stop the containers if it exists
     - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
-    - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
     - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
-    - docker network rm $DOCKER_NETWORK || true
-    - docker volume rm $DOCKER_APP_VOLUME || true
+    # Remove the containers, volume & network if it exists
+    - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
+    - docker network rm $DOCKER_NETWORK || true
+    - docker volume rm $DOCKER_APP_VOLUME || true
     # Create the volumeBDD&network
+    - docker volume create $DOCKER_VOLUME || true
     - docker network create $DOCKER_NETWORK || true
-    # First run the back, with little sleep after it to let it some time
-    - "docker run -d -p 1433:1433 --rm \
+    # Launch containerBDD  mssqlserver2017 express
+    - "docker run -d -p 1433:1433 \
     --env ACCEPT_EULA=$EULA \
     --env SA_PASSWORD=$BDD_PWD \
     --env MSSQL_PID=$BDD_VERSION \
@@ -142,7 +144,7 @@ deploy-Builder:
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
     # RUN builder pour migrations de BDD & liaison dossier /app
-    - "docker run -d \
+    - "docker run -d --rm \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
@@ -159,7 +161,9 @@ deploy-app:
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
-    TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
+    TRAEFFIK_APP_URL: parking_$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
+    TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`$TRAEFIK_APP_URL`)'
+    TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
     KEYCLOAK_PWD: $KC_PWD
@@ -167,12 +171,12 @@ deploy-app:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # Run APP
+    # Run APP mount folder app compilé
     - "docker run -d --rm \
     -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.parking.entrypoints=http,https \
-    -l traefik.http.routers.parking.service=parking  \
+    -l traefik.http.routers.parking.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.parking.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD
     --network=$DOCKER_NETWORK \
