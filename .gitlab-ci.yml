@@ -112,7 +112,6 @@ deploy-BDD:
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     # Create the volumeBDD&network
     - docker network create $DOCKER_NETWORK || true
-    - docker volume create $DOCKER_VOLUME || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d -p 1433:1433 --rm \
     --env ACCEPT_EULA=$EULA \
@@ -140,8 +139,6 @@ deploy-Builder:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # remove volume if it exists
-    - docker volume rm $DOCKER_VOLUME || true
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
     # RUN builder pour migrations de BDD & liaison dossier /app
