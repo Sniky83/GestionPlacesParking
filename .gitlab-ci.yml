@@ -161,9 +161,8 @@ deploy-app:
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
-    TRAEFFIK_APP_URL: parking_$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
-    TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_APP_URL`)'
-    TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
+    TRAEFFIK_APP_URL: parking.deploy.indus.aix.apsdigit.lan
+    TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`$TRAEFIK_APP_URL`)'
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
     KEYCLOAK_PWD: $KC_PWD
@@ -173,11 +172,11 @@ deploy-app:
   script:
     # Run APP mount folder app compilé
     - "docker run -d --rm \
-    -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
+    -l traefik.http.services.parking.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
+    -l traefik.http.routers.parking.entrypoints=http,https \
+    -l traefik.http.routers.parking.service=parking\
+    -l traefik.http.routers.parking.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
