@@ -133,6 +133,8 @@ deploy-Builder:
     DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
+    BDD_HOST: $BDD_HOST
+    BDD_PWD: $BDD_PWD
     CONNEXION_STRING: "Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;"
     CI_DEBUG_TRACE: "true"
 # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
