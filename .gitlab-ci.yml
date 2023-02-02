@@ -141,11 +141,7 @@ deploy-Builder:
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
     # RUN builder pour migrations de BDD & liaison dossier /app
-    - "docker run -d \
-    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
-    --env $CONNEXION_STRING \
-    --network=$DOCKER_NETWORK \
-    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+    - "docker run -d --mount type=volume,src=$DOCKER_VOLUME,dst=/app -e $CONNEXION_STRING --network=$DOCKER_NETWORK --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
     #
 deploy-app:
   stage: deploy
@@ -172,14 +168,4 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d --rm \
-    -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
-    -l $TRAEFIK_LABEL_HOST \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
-    -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
-    --env KeycloakPasswordUser=$KEYCLOAK_PWD \
-    --env $CONNEXION_STRING \
-    --network=$DOCKER_NETWORK \
-    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
-    --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
+    - "docker run -d --rm -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 -l $TRAEFIK_LABEL_HOST -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true -e KeycloakPasswordUser=$KEYCLOAK_PWD -e $CONNEXION_STRING --network=$DOCKER_NETWORK --mount type=volume,src=$DOCKER_VOLUME,dst=/app --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
