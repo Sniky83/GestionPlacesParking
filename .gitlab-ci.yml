@@ -121,7 +121,7 @@ deploy-Builder:
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME_APP || true
     # RUN builder pour migrations de BDD & liaison dossier /app
-    - "docker run -d \
+    - "docker run -d --rm \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
