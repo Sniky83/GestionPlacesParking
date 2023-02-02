@@ -133,6 +133,7 @@ deploy-Builder:
     DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
+    CONNEXION_STRING: "Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;"
     CI_DEBUG_TRACE: "true"
 # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
@@ -143,9 +144,10 @@ deploy-Builder:
     # RUN builder pour migrations de BDD & liaison dossier /app
     - "docker run -d \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
-    --env ParkingContextConnectionString="Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;" \
+    --env ParkingContextConnectionString=$CONNEXION_STRING \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+    #
 deploy-app:
   stage: deploy
   image: docker:20.10.16
@@ -165,6 +167,7 @@ deploy-app:
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
     KEYCLOAK_PWD: $KC_PWD
+    CONNEXION_STRING: "Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;"
     CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -177,7 +180,7 @@ deploy-app:
     -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
-    --env ParkingContextConnectionString="Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;" \
+    --env  ParkingContextConnectionString=$CONNEXION_STRING \
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
