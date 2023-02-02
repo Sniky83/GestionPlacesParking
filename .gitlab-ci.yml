@@ -71,12 +71,12 @@ create-image-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Build image runner
-    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile \
+    - "docker build -f DevOps/dockerfile -t $DOCKER_IMAGE_APP \
     --build-arg bdd_host=$BDD_HOST \
     --build-arg bdd_pwd=$BDD_PWD \
     --build-arg uri=$URI . " 
     # Push Image to docker
-    - docker push $DOCKER_IMAGE
+    - docker push $DOCKER_IMAGE_APP
 
 # séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
 deploy-BDD:
