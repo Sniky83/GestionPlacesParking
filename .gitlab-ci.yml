@@ -34,7 +34,7 @@ create-image-builder:
         REGISTRY_URL: harbor.indus.aix.apsdigit.lan
         DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
         KEYCLOAK_PWD: $KC_PWD
-        URI: $WBURI
+        URI: "'https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan'"
         BDD_HOST: $BDD_HOST
         BDD_PWD: $BDD_PWD
         CI_DEBUG_TRACE: "true"
@@ -63,7 +63,7 @@ create-image-app:
       DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
       BDD_HOST: $BDD_HOST
       BDD_PWD: $BDD_PWD
-      URI: $WBURI
+      URI: "'https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan'"
       CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -92,7 +92,7 @@ deploy-BDD:
     DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: bddparcindus$CI_COMMIT_REF_NAME
     DOCKER_APP_VOLUME: appparcindus$CI_COMMIT_REF_NAME
-    DOCKER_NETWORK: parcindus
+    DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
     BBD_PWD: $BDD_PWD
     EULA: $ACCEPT
     VERSION: $BDD_VERSION
@@ -133,7 +133,7 @@ deploy-Builder:
     DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
     DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
-    DOCKER_NETWORK: parcindus
+    DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
     CI_DEBUG_TRACE: "true"
 # To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
   before_script:
@@ -157,9 +157,11 @@ deploy-app:
     REGISTRY_URL: harbor.indus.aix.apsdigit.lan
     DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
-    DOCKER_NETWORK: parcindus
+    DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
-    TRAEFIK_LABEL_HOST: 'traefik.http.routers.parking.rule=Host(`parking.deploy.indus.aix.apsdigit.lan`)'
+    TRAEFIK_ROUTER: paking_$CI_COMMIT_REF_NAME
+    TRAEFIK_URL: parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
+    TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
     KEYCLOAK_PWD: $KC_PWD
@@ -169,11 +171,11 @@ deploy-app:
   script:
     # Run APP
     - "docker run -d --rm \
-    -l traefik.http.services.parking.LoadBalancer.server.port=80 \
+    -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
-    -l traefik.http.routers.parking.entrypoints=http,https \
-    -l traefik.http.routers.parking.service=parking  \
-    -l traefik.http.routers.parking.tls=true \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
