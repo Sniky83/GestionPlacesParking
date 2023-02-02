@@ -58,7 +58,6 @@ create-image-builder:
     --build-arg uri=$URI \
     --build-arg bdd_host=$BDD_HOST \
     --build-arg bdd_pwd=$BDD_PWD . "
-    #--build-arg keycloak_pwd=$KEYCLOAK_PWD \
     # Push Image to docker
     - docker push $DOCKER_IMAGE_BUILD
 
@@ -78,7 +77,7 @@ create-image-app:
     # Push Image to docker
     - docker push $DOCKER_IMAGE_APP
 
-# séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
+#Séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
 deploy-BDD:
   stage: deploy-bdd
   image: docker:20.10.16
@@ -109,6 +108,7 @@ deploy-BDD:
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
     - sleep 60
+    
 deploy-Builder:
   stage: deploy
   image: docker:20.10.16
@@ -125,6 +125,7 @@ deploy-Builder:
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+
 deploy-app:
   stage: deploy
   image: docker:20.10.16
