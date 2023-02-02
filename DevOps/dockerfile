@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
-ARG bdd_pwd
-ARG bdd_host
-ARG uri
-ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;"
+#ARG bdd_pwd
+#ARG bdd_host
+#ARG uri
+#ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;"
 ENV IsSso=1
 ENV WebsiteUri=$uri
 WORKDIR /app

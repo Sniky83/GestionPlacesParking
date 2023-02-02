@@ -45,9 +45,8 @@ create-image-builder:
     - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE \
     --build-arg bdd_host=$BDD_HOST \
     --build-arg bdd_pwd=$BDD_PWD \
-    --build-arg keycloak_pwd=$KEYCLOAK_PWD \
     --build-arg uri=$URI . "
-    #
+    #--build-arg keycloak_pwd=$KEYCLOAK_PWD \
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -144,6 +143,7 @@ deploy-Builder:
     # RUN builder pour migrations de BDD & liaison dossier /app
     - "docker run -d \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --env 
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
 deploy-app:
@@ -176,7 +176,8 @@ deploy-app:
     -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
     -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
-    --env KeycloakPasswordUser=$KEYCLOAK_PWD
+    --env KeycloakPasswordUser=$KEYCLOAK_PWD \
+    --env ParkingContextConnectionString="Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;" \
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
