@@ -26,7 +26,7 @@ variables:
   DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
   BBD_ADMIN_PWD: $BDD_ADMIN_PWD
   TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
-  TRAEFIK_URL: parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
+  TRAEFIK_URL: parking.deploy.indus.aix.apsdigit.lan
   TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
   EULA: $ACCEPT
   VERSION: $BDD_VERSION
@@ -54,6 +54,7 @@ create-image-builder:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
     script:
       # Build image builder
+      # !! Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour Build DLL&migration BDD
     - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE_BUILD \
     --build-arg uri=$URI \
     --build-arg bdd_host=$BDD_HOST \
@@ -69,7 +70,8 @@ create-image-app:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # Build image runner
+    # Build image runner !!
+    #Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour execution de l'APP
     - "docker build -f DevOps/dockerfile -t $DOCKER_IMAGE_APP \
     --build-arg bdd_host=$BDD_HOST \
     --build-arg bdd_pwd=$BDD_PWD \
@@ -77,7 +79,7 @@ create-image-app:
     # Push Image to docker
     - docker push $DOCKER_IMAGE_APP
 
-#Séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD avant de deployer le reste de l'APP
+#séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD/creation des DataBases avant de deployer Builder/Runner
 deploy-BDD:
   stage: deploy-bdd
   image: docker:20.10.16
@@ -135,7 +137,7 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d \
+    - "docker run -d --rm \
     -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
