@@ -43,9 +43,9 @@ create-image-builder:
     script:
       # Build image builder
     - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE \
-    --build-arg bdd_host=$BDD_HOST \
-    --build-arg bdd_pwd=$BDD_PWD \
-    --build-arg uri=$URI . "
+    --build-arg uri=$URI . \ "
+    #--build-arg bdd_host=$BDD_HOST \
+    #--build-arg bdd_pwd=$BDD_PWD \
     #--build-arg keycloak_pwd=$KEYCLOAK_PWD \
     # Push Image to docker
     - docker push $DOCKER_IMAGE
@@ -143,7 +143,7 @@ deploy-Builder:
     # RUN builder pour migrations de BDD & liaison dossier /app
     - "docker run -d \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
-    --env 
+    --env ParkingContextConnectionString="Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;" \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
 deploy-app:
