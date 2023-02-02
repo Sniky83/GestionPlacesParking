@@ -63,7 +63,7 @@ create-image-app:
       DOCKER_IMAGE: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
       BDD_HOST: $BDD_HOST
       BDD_PWD: $BDD_PWD
-      URI: "'https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan'"
+      URI: "https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan"
       CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
