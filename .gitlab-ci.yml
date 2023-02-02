@@ -98,13 +98,14 @@ deploy-BDD:
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
     - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     # Create the volumeBDD&network
+    - docker volume create $DOCKER_VOLUME_BDD || true
     - docker network create $DOCKER_NETWORK || true
     # First run the back, with little sleep after it to let it some time
     - "docker run -d --rm \
     --env ACCEPT_EULA=$EULA \
     --env SA_PASSWORD=$BDD_ADMIN_PWD \
     --env MSSQL_PID=$BDD_VERSION \
-    --mount type=volume,src=$DOCKER_VOLUME,dst=/var/opt/mssql/data \
+    --mount type=volume,src=$DOCKER_VOLUME_BDD,dst=/var/opt/mssql/data \
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
     - sleep 60
