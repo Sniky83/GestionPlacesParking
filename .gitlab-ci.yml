@@ -159,7 +159,7 @@ deploy-app:
     DOCKER_VOLUME: appparcindus$CI_COMMIT_REF_NAME
     DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
     DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
-    TRAEFIK_ROUTER: paking_$CI_COMMIT_REF_NAME
+    TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
     TRAEFIK_URL: parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
     TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
     BDD_PWD: $BDD_PWD
