@@ -66,9 +66,10 @@ create-image-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Build image runner
-    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile --build-arg uri=$URI . "
-    #--build-arg bdd_host=$BDD_HOST \
-    #--build-arg bdd_pwd=$BDD_PWD \
+    - "docker build -t $DOCKER_IMAGE -f DevOps/dockerfile \
+    --build-arg bdd_host=$BDD_HOST \
+    --build-arg bdd_pwd=$BDD_PWD \
+    --build-arg uri=$URI . " 
     # Push Image to docker
     - docker push $DOCKER_IMAGE
 
@@ -141,7 +142,10 @@ deploy-Builder:
     # Create the volume APP
     - docker volume create $DOCKER_VOLUME || true
     # RUN builder pour migrations de BDD & liaison dossier /app
-    - "docker run -d --mount type=volume,src=$DOCKER_VOLUME,dst=/app -e $CONNEXION_STRING --network=$DOCKER_NETWORK --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
+    - "docker run -d \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --network=$DOCKER_NETWORK \
+    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
     #
 deploy-app:
   stage: deploy
@@ -162,10 +166,18 @@ deploy-app:
     BDD_PWD: $BDD_PWD
     BDD_HOST: $BDD_HOST
     KEYCLOAK_PWD: $KC_PWD
-    CONNEXION_STRING: "ParkingContextConnectionString=Server=$BDD_HOST;Database=parcIndus;User Id=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;"
     CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d --rm -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 -l $TRAEFIK_LABEL_HOST -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true -e KeycloakPasswordUser=$KEYCLOAK_PWD -e $CONNEXION_STRING --network=$DOCKER_NETWORK --mount type=volume,src=$DOCKER_VOLUME,dst=/app --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
+    - "docker run -d --rm \
+    -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
+    -l $TRAEFIK_LABEL_HOST \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
+    -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
+    -e KeycloakPasswordUser=$KEYCLOAK_PWD \
+    --network=$DOCKER_NETWORK \
+    --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
+    --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
