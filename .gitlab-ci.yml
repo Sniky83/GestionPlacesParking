@@ -163,9 +163,6 @@ deploy-app:
     TRAEFIK_URL: parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
     TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
     KEYCLOAK_PWD: $KC_PWD
-    BDD_HOST: $BDD_HOST
-    BDD_PWD: $BDD_PWD
-    CONNEXION_STRING: "ParkingContextConnectionString=Server=$bdd_host;Database=parcIndus;User Id=parcadmin;Password=$bdd_pwd;TrustServerCertificate=true;"
     CI_DEBUG_TRACE: "true"
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
@@ -178,7 +175,6 @@ deploy-app:
     -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
-    --env  $CONNEXION_STRING \
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
