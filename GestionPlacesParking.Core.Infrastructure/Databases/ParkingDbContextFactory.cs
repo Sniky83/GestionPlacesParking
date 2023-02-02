@@ -1,4 +1,4 @@
-﻿using GestionPlacesParking.Web.UI.Utils;
+﻿using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -8,7 +8,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Databases
     {
         public ParkingDbContext CreateDbContext(string[] args)
         {
-            string connectionString = ConnectionStringUtil.GetConnectionString();
+            string connectionString = ConnectionStringEnv.ConnectionString;
 
             var optionsBuilder = new DbContextOptionsBuilder<ParkingDbContext>();
             optionsBuilder.UseSqlServer(connectionString);

@@ -1,6 +1,8 @@
 ﻿@page
+@using GestionPlacesParking.Web.UI.CustomMethods
 @model GestionPlacesParking.Web.UI.Pages.Errors._404Model
 @{
+    Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 }
 
-<h1 class="text-center">Erreur 404 : La page que vous cherchez est introuvable !</h1>
+<h1 class="text-center display-6">Erreur 404 : La page que vous cherchez est introuvable !</h1>

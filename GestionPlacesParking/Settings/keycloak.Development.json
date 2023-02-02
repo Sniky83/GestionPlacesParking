@@ -1,0 +1,12 @@
+{
+  "realm": "gestionPDP",
+  "auth-server-url": "https://keycloak.indus.aix.apsdigit.lan/auth/",
+  "ssl-required": "external",
+  "resource": "gestionPDP",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "c4e66325-eb1e-4e14-9b9a-ab630e8468d0"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}

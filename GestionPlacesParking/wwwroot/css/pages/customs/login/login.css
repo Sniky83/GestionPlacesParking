@@ -13,3 +13,7 @@
     margin-top: 3%;
     position: relative;
 }
+
+body {
+    overflow: hidden;
+}

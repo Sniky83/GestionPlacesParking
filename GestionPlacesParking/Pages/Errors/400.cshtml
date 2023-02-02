@@ -1,6 +1,8 @@
 ﻿@page
+@using GestionPlacesParking.Web.UI.CustomMethods
 @model GestionPlacesParking.Web.UI.Pages.Errors._400Model
 @{
+    Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
 }
 
-<h1 class="text-center">Erreur 400 : Problème rencontré lors de l'envoi de la requête au serveur !</h1>
+<h1 class="text-center display-6">Erreur 400 : Problème rencontré lors de l'envoi de la requête au serveur !</h1>

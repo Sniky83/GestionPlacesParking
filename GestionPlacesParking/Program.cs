@@ -1,24 +1,31 @@
-﻿using GestionPlacesParking.Core.Application.Repositories;
+using GestionPlacesParking.Core.Application.Repositories;
+using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
 using GestionPlacesParking.Core.Infrastructure.Web.Middlewares;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
-using GestionPlacesParking.Web.UI.Utils;
 using Microsoft.EntityFrameworkCore;
+using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+//Utile pour les DateTime
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-string connectionString = ConnectionStringUtil.GetConnectionString();
+string connectionString = ConnectionStringEnv.ConnectionString;
 
 // Add context
 builder.Services.AddDbContext<ParkingDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+
+// Custom Logger
+builder.Logging.AddProvider(new CustomLoggerProvider());
 
 // Injections de dépendances
 builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
@@ -30,7 +37,12 @@ builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
 builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
-builder.Services.AddScoped<IDayRepository, DayRepository>();
+//Pas de dataLayer car en Local
+builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
+
+//Utilise le dataLayer de Réservation
+builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
+builder.Services.AddScoped<IProfileLocalRepository, ProfileLocalRepository>();
 
 // Config de la session
 builder.Services.AddDistributedMemoryCache();
@@ -72,8 +84,8 @@ app.UseAuthorization();
 app.UseSession();
 
 // Implémentation des Customs Middlewares
-app.UseRedirectIfNotConnected();
-app.UseRedirectIfNotAdmin();
+// app.UseRedirectIfNotConnected();
+// app.UseRedirectIfNotAdmin();
 
 app.MapRazorPages();
 

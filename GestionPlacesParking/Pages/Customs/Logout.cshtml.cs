@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using KeycloakCore.Keycloak;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GestionPlacesParking.Web.UI.Pages.Customs
@@ -9,7 +11,17 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
         {
             HttpContext.Session.Clear();
 
-            return Redirect("/login");
+            if (IsSsoEnv.IsSso)
+            {
+                var keycloakManager = new WebManager();
+                string redirectUri = WebsiteUriEnv.WebsiteUri + "/login";
+
+                return Redirect(keycloakManager.UserLogoutUri(redirectUri).ToString());
+            }
+            else
+            {
+                return RedirectToPage("./Login");
+            }
         }
     }
 }

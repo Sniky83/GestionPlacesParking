@@ -10,7 +10,7 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<ParkingSlot> GetAll()
         {
-            return Context?.ParkingSlots.ToList();
+            return Context.ParkingSlots.ToList();
         }
     }
 }

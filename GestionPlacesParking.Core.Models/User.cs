@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GestionPlacesParking.Core.Models
 {
@@ -13,6 +8,8 @@ namespace GestionPlacesParking.Core.Models
     public class User
     {
         public int Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
         [DataType(DataType.Password)]

@@ -1,4 +1,5 @@
 ﻿using GestionPlacesParking.Core.Application.Exceptions;
+using GestionPlacesParking.Core.Application.Utils;
 using GestionPlacesParking.Core.Global.BusinessLogics;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
@@ -30,7 +31,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             return deleteOne;
         }
 
-        public List<Reservation> GetAll()
+        public List<Reservation> GetAll(bool isCheckingDiff = false)
         {
             List<Reservation> reservationList;
 
@@ -41,6 +42,11 @@ namespace GestionPlacesParking.Core.Application.Repositories
             else
             {
                 reservationList = _dataLayer.GetAllReservationsCurrentWeek();
+            }
+
+            if (!isCheckingDiff)
+            {
+                ReservationUtil.FillAllReservingName(reservationList);
             }
 
             return reservationList;
@@ -55,7 +61,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 throw new DateNotInRangeException(nameof(reservation.ReservationDate));
             }
 
-            var insertOne = _dataLayer.AddOne(reservation);
+            int insertOne = _dataLayer.AddOne(reservation);
 
             //Si la reservation est null
             if (insertOne == 0)
@@ -66,6 +72,11 @@ namespace GestionPlacesParking.Core.Application.Repositories
             {
                 //Si la réservation tente d'être dupliquée
                 throw new DuplicateDataException(nameof(insertOne));
+            }
+            else if (insertOne == -2)
+            {
+                //Si le réservataire tente de réserver 2x le même jour
+                throw new MultipleReservationException(nameof(insertOne));
             }
 
             return insertOne;

@@ -1,0 +1,151 @@
+﻿@page "/Historique"
+@using GestionPlacesParking.Core.Models.Locals.History
+@model GestionPlacesParking.Web.UI.Customs.HistoriqueModel
+@{
+    Layout = "_AdminLayout";
+
+    bool isReservationsCurMonth = false;
+    bool isReservationsCurQuarter = false;
+    bool isReservationsCurYear = false;
+
+    if (Model.HistoryFilterDto == null || Model.HistoryFilterDto.Mois >= 1 ||
+        (Model.HistoryFilterDto.Mois == 0 && Model.HistoryFilterDto.Trimestre == 0 && Model.HistoryFilterDto.Annee == 0)
+    )
+    {
+        isReservationsCurMonth = true;
+    }
+    else if (Model.HistoryFilterDto.Trimestre >= 1)
+    {
+        isReservationsCurQuarter = true;
+    }
+    else if (Model.HistoryFilterDto.Annee >= 1)
+    {
+        isReservationsCurYear = true;
+    }
+}
+
+<h1 class="display-6">Historique des places réservées</h1>
+
+@if (Model.HistoryLocal == null)
+{
+    <h4 class="text-danger text-center mt-2 mb-4">@Model.ErrorMessage</h4>
+}
+else
+{
+    <form method="POST">
+        <div class="form-group row mb-auto mt-3">
+            <label class="col-md-1 mt-2">Trimestre</label>
+            <div class="col-md-2">
+                <select id="filtreTrimestre" asp-for="HistoryFilterDto.Trimestre" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
+                    <option value=""></option>
+                </select>
+            </div>
+            <label class="col-md-1 mt-2">Mois</label>
+            <div class="col-md-2">
+                <select id="filtreMois" asp-for="HistoryFilterDto.Mois" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
+                    <option value=""></option>
+                </select>
+            </div>
+            <label class="col-md-1 mt-2">Année</label>
+            <div class="col-md-2">
+                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-orange-apside">
+                    <i class="fa-solid fa-filter text-white"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    @if (isReservationsCurMonth)
+    {
+        <h1 class="display-6 mt-5">Tableau des réservations du mois de @Model.HistoryLocal.Mois @Model.HistoryLocal.Annee</h1>
+    }
+    else if(isReservationsCurQuarter)
+    {
+        <h1 class="display-6 mt-5">Tableau des réservations du @Model.HistoryLocal.Trimestre trimestre @Model.HistoryLocal.Annee</h1>
+    }
+    else if(isReservationsCurYear)
+    {
+        <h1 class="display-6 mt-5">Tableau des réservations de l'année @Model.HistoryLocal.Annee</h1>
+    }
+
+    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@Model.HistoryLocal.MoyenneReservationsMois</b> j</span>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center">Utilisateur</th>
+                <th scope="col" class="text-center">Nombre de jours réservés</th>
+                <th scope="col" class="text-center">Moyenne des réservations /année</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (isReservationsCurMonth)
+            {
+                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
+                {
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
+                    {
+                        <tr>
+                            <td><b>@historyLocal.ReservingName</b></td>
+                            <td class="text-center">@historyLocal.NbReservationsMois</td>
+                            <td class="text-center">@historyLocal.MoyenneAnnee</td>
+                        </tr>
+                    }
+                }
+            }
+            else
+            {
+                //Si on choisi le filtre par année ou trimestre
+                //On ajoute les subrows sur l'utilisateur
+                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
+                {
+                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
+                    {
+                        bool findHistoryMonth = Model.HistoryLocal.HistoryUserMonthsListLocal.Where(
+                            h => h.ProprietaireId == historyLocal.ProprietaireId
+                        ).Any();
+
+                        if (findHistoryMonth)
+                        {
+                            <tr class="table-secondary">
+                                <td><b>@historyLocal.ReservingName</b></td>
+                                <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
+                                <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
+                            </tr>
+
+                            @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserMonthsListLocal)
+                            {
+                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId || historyMonthsLocal.ProprietaireId == "")
+                                {
+                                    <tr>
+                                        <td> - @historyMonthsLocal.MoisString</td>
+                                        <td class="text-center">@historyMonthsLocal.NbReservations</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@section scripts {
+    <script>
+        let filtreMois = document.getElementById("filtreMois");
+        let filtreTrimestre = document.getElementById("filtreTrimestre");
+
+        filtreMois.addEventListener('change', function () {
+            //Reset filtre trimestre
+            filtreTrimestre.selectedIndex = 0;
+        });
+
+        filtreTrimestre.addEventListener('change', function () {
+            //Reset filtre mois
+            filtreMois.selectedIndex = 0;
+        });
+    </script>
+}
