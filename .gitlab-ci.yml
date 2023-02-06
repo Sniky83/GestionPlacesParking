@@ -1,4 +1,3 @@
-# Made by Apside - 2023
 stages:
   - docker-images
   - deploy-bdd
@@ -150,3 +149,4 @@ deploy-app:
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
+
