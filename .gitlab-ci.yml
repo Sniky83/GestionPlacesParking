@@ -14,7 +14,7 @@ variables:
   DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
   ##Variables Globales utilisé dans un ou plusieurs stage
   KEYCLOAK_PWD: $KC_PWD
-  URI: "https://parking.deploy.indus.aix.apsdigit.lan"
+  URI: "https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan"
   BDD_HOST: $BDD_HOST
   BDD_PWD: $BDD_PWD
   #Variables pour les run docker
@@ -26,7 +26,7 @@ variables:
   DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
   ##Variables pour reverse proxy Traefik du conteneur de l'APP
   TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
-  TRAEFIK_URL: parking.deploy.indus.aix.apsdigit.lan
+  TRAEFIK_URL: parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan
   TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
   ##Variables de run du conteneur de BDD
   BBD_ADMIN_PWD: $BDD_ADMIN_PWD
