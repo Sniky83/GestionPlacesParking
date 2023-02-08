@@ -1,4 +1,4 @@
-﻿using GestionPlacesParking.Core.Application.Repositories;
+using GestionPlacesParking.Core.Application.Repositories;
 using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Infrastructure.Databases;
 using GestionPlacesParking.Core.Infrastructure.DataLayers;
@@ -10,7 +10,6 @@ using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-
 //Utile pour les DateTime
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("fr-FR");
 
