@@ -1,6 +1,6 @@
 ﻿namespace GestionPlacesParking.Core.Models.Locals.History
 {
-    public class HistoryUserLocal
+    public class HistoryUserLocalV1
     {
         public string ProprietaireId { get; set; } = string.Empty;
         public int UserId { get; set; }

@@ -1,5 +1,6 @@
 ﻿using GestionPlacesParking.Core.Global.Consts;
 using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
+using GestionPlacesParking.Core.Infrastructure.Web.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -15,16 +16,7 @@ namespace GestionPlacesParking.Core.Infrastructure.Web.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            dynamic? userId;
-
-            if (IsSsoEnv.IsSso)
-            {
-                userId = context.Session.GetString(SessionConst.UserId);
-            }
-            else
-            {
-                userId = context.Session.GetInt32(SessionConst.UserId);
-            }
+            dynamic? userId = SessionUtil.GetUserId(context);
 
             var isAdmin = context.Session.GetInt32(SessionConst.IsAdmin);
             bool isHistorique = context.Request.Path.Value.ToLower().Contains("historique");
