@@ -33,7 +33,7 @@ namespace GestionPlacesParking.Core.Application.Repositories
             {
                 ReservationUtil.FillAllReservingName(historyUserLocalList);
             }
-            else
+            else if(historyUserQuarterOrYearLocalList != null)
             {
                 ReservationUtil.FillAllReservingName(historyUserQuarterOrYearLocalList);
             }
@@ -50,18 +50,16 @@ namespace GestionPlacesParking.Core.Application.Repositories
             historyLocalBase.Trimestre = trimestre;
             historyLocalBase.Annee = annee;
 
-            try
-            {
+            if(moyenneMensuelle.Any())
                 historyLocalBase.MoyenneReservationsMois = Math.Round(moyenneMensuelle.Average(), 1);
-            }
-            catch (Exception)
-            {
-                historyLocalBase.MoyenneReservationsMois = 0;
-            }
 
-            //On affiche la liste par ordre de réservations
-            historyLocalBase.HistoryUserLocalList = historyUserLocalList.OrderByDescending(h => h.NbTotalReservations).ToList();
-            historyLocalBase.HistoryUserQuarterOrYearLocalList = historyUserQuarterOrYearLocalList;            
+            if(historyUserLocalList != null)
+                //On affiche la liste par ordre de réservations
+                historyLocalBase.HistoryUserLocalList = historyUserLocalList.OrderByDescending(h => h.NbTotalReservations).ToList();
+
+            if(historyUserQuarterOrYearLocalList != null)
+                //On affiche la liste par ordre de mois du premier au dernier
+                historyLocalBase.HistoryUserQuarterOrYearLocalList = historyUserQuarterOrYearLocalList.OrderBy(h => h.Mois).ToList();            
 
             return historyLocalBase;
         }
@@ -100,7 +98,14 @@ namespace GestionPlacesParking.Core.Application.Repositories
         {
             foreach (var oneHistoryUser in historyUserLocalList)
             {
-                oneHistoryUser.NbTotalReservations = historyUserQuarterOrYearList.Where(h => h.UserId == oneHistoryUser.UserId).Sum(h => h.NbReservations);
+                if (IsSsoEnv.IsSso)
+                {
+                    oneHistoryUser.NbTotalReservations = historyUserQuarterOrYearList.Where(h => h.ProprietaireId == oneHistoryUser.ProprietaireId).Sum(h => h.NbReservations);
+                }
+                else
+                {
+                    oneHistoryUser.NbTotalReservations = historyUserQuarterOrYearList.Where(h => h.UserId == oneHistoryUser.UserId).Sum(h => h.NbReservations);
+                }
             }
         }
 
