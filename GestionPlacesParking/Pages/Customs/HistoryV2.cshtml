@@ -1,4 +1,5 @@
 ﻿@page "/Historique2"
+@using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 @using GestionPlacesParking.Core.Models.Locals.History
 @using System.Globalization;
 @model GestionPlacesParking.Web.UI.Customs.HistoriqueV2Model
@@ -100,32 +101,60 @@ else
             {
                 //Si on choisi le filtre par année ou trimestre
                 //On ajoute les subrows sur l'utilisateur
-                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserLocalList)
+                @foreach (var historyUserLocal in Model.HistoryLocal.HistoryUserLocalList)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
+                    @if (!string.IsNullOrEmpty(historyUserLocal.ReservingName))
                     {
-                        bool findHistoryMonth = Model.HistoryLocal.HistoryUserQuarterOrYearLocalList.Where(
-                            h => h.ProprietaireId == historyLocal.ProprietaireId
-                        ).Any();
+                        bool findHistoryMonth = false;
+
+                        if(IsSsoEnv.IsSso)
+                        {
+                            findHistoryMonth = Model.HistoryLocal.HistoryUserQuarterOrYearLocalList.Where(
+                                h => h.ProprietaireId == historyUserLocal.ProprietaireId
+                            ).Any();
+                        }
+                        else
+                        {
+                            findHistoryMonth = Model.HistoryLocal.HistoryUserQuarterOrYearLocalList.Where(
+                                h => h.UserId == historyUserLocal.UserId
+                            ).Any();
+                        }
 
                         if (findHistoryMonth)
                         {
                             <tr class="table-secondary">
-                                <td><b>@historyLocal.ReservingName</b></td>
-                                <td class="text-center"><b>@historyLocal.NbTotalReservations</b></td>
-                                <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
+                                <td><b>@historyUserLocal.ReservingName</b></td>
+                                <td class="text-center"><b>@historyUserLocal.NbTotalReservations</b></td>
+                                <td class="text-center"><b>@historyUserLocal.MoyenneAnnee</b></td>
                             </tr>
 
-                            @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserQuarterOrYearLocalList)
+                            @foreach (var historyUserQuarterOrYearLocal in Model.HistoryLocal.HistoryUserQuarterOrYearLocalList)
                             {
-                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId || historyMonthsLocal.ProprietaireId == "")
+                                bool isFound = false;
+
+                                if (IsSsoEnv.IsSso)
                                 {
-                                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(historyMonthsLocal.Mois);
+                                    @if (historyUserLocal.ProprietaireId == historyUserQuarterOrYearLocal.ProprietaireId)
+                                    {
+                                        isFound = true;
+                                    }
+                                }
+                                else
+                                {
+                                    @if (historyUserLocal.UserId == historyUserQuarterOrYearLocal.UserId)
+                                    {
+                                        isFound = true;
+                                    }
+                                }
+
+                                if(isFound)
+                                {
+                                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(historyUserQuarterOrYearLocal.Mois);
                                     monthName = char.ToUpperInvariant(monthName[0]) + monthName.Substring(1);
 
                                     <tr>
                                         <td> - @monthName</td>
-                                        <td class="text-center">@historyMonthsLocal.NbReservations</td>
+                                        <td class="text-center">@historyUserQuarterOrYearLocal.NbReservations</td>
                                     </tr>
                                 }
                             }

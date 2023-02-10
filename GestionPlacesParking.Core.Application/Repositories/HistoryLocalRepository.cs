@@ -10,6 +10,7 @@ using GestionPlacesParking.Core.Models.Locals.HistoryV2;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 using static GestionPlacesParking.Core.Models.Locals.History.HistoryFilterLocal;
 
 namespace GestionPlacesParking.Core.Application.Repositories
@@ -24,17 +25,17 @@ namespace GestionPlacesParking.Core.Application.Repositories
         }
         
         #region Generic Methods
-        private HistoryLocal FillHistoryLocal(FilterHistoryDto filterHistoryDto = null, List<HistoryUserLocal> historyUserMonthLocalList = null, List<HistoryUserQuarterOrYearLocal> historyUserQuarterOrYearLocal = null)
+        private HistoryLocal FillHistoryLocal(FilterHistoryDto filterHistoryDto = null, List<HistoryUserLocal> historyUserLocalList = null, List<HistoryUserQuarterOrYearLocal> historyUserQuarterOrYearLocalList = null)
         {
-            FillYearAverage(filterHistoryDto, historyUserMonthLocalList);
+            FillYearAverage(filterHistoryDto, historyUserLocalList);
 
-            if (historyUserMonthLocalList != null)
+            if (historyUserLocalList != null)
             {
-                ReservationUtil.FillAllReservingName(historyUserMonthLocalList);
+                ReservationUtil.FillAllReservingName(historyUserLocalList);
             }
             else
             {
-                ReservationUtil.FillAllReservingName(historyUserQuarterOrYearLocal);
+                ReservationUtil.FillAllReservingName(historyUserQuarterOrYearLocalList);
             }
 
             string? mois = Enum.GetName(typeof(Mois), (filterHistoryDto == null || filterHistoryDto.Mois == 0 ? DateTime.Now.Month : filterHistoryDto.Mois));
@@ -58,8 +59,9 @@ namespace GestionPlacesParking.Core.Application.Repositories
                 historyLocalBase.MoyenneReservationsMois = 0;
             }
 
-            historyLocalBase.HistoryUserLocalList = historyUserMonthLocalList;
-            historyLocalBase.HistoryUserQuarterOrYearLocalList = historyUserQuarterOrYearLocal;
+            //On affiche la liste par ordre de réservations
+            historyLocalBase.HistoryUserLocalList = historyUserLocalList.OrderByDescending(h => h.NbTotalReservations).ToList();
+            historyLocalBase.HistoryUserQuarterOrYearLocalList = historyUserQuarterOrYearLocalList;            
 
             return historyLocalBase;
         }
