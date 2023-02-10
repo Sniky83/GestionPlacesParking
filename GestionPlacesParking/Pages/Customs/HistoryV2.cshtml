@@ -9,17 +9,17 @@
     bool isReservationsCurQuarter = false;
     bool isReservationsCurYear = false;
 
-    if (Model.HistoryFilterDto == null || Model.HistoryFilterDto.Mois >= 1 ||
-        (Model.HistoryFilterDto.Mois == 0 && Model.HistoryFilterDto.Trimestre == 0 && Model.HistoryFilterDto.Annee == 0)
+    if (Model.FilterHistoryDto == null || Model.FilterHistoryDto.Mois >= 1 ||
+        (Model.FilterHistoryDto.Mois == 0 && Model.FilterHistoryDto.Trimestre == 0 && Model.FilterHistoryDto.Annee == 0)
     )
     {
         isReservationsCurMonth = true;
     }
-    else if (Model.HistoryFilterDto.Trimestre >= 1)
+    else if (Model.FilterHistoryDto.Trimestre >= 1)
     {
         isReservationsCurQuarter = true;
     }
-    else if (Model.HistoryFilterDto.Annee >= 1)
+    else if (Model.FilterHistoryDto.Annee >= 1)
     {
         isReservationsCurYear = true;
     }
@@ -37,19 +37,19 @@ else
         <div class="form-group row mb-auto mt-3">
             <label class="col-md-1 mt-2">Trimestre</label>
             <div class="col-md-2">
-                <select id="filtreTrimestre" asp-for="HistoryFilterDto.Trimestre" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
+                <select id="filtreTrimestre" asp-for="FilterHistoryDto.Trimestre" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Trimestre>()" class="form-select">
                     <option value=""></option>
                 </select>
             </div>
             <label class="col-md-1 mt-2">Mois</label>
             <div class="col-md-2">
-                <select id="filtreMois" asp-for="HistoryFilterDto.Mois" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
+                <select id="filtreMois" asp-for="FilterHistoryDto.Mois" asp-items="Html.GetEnumSelectList<HistoryFilterLocal.Mois>()" class="form-select">
                     <option value=""></option>
                 </select>
             </div>
             <label class="col-md-1 mt-2">Année</label>
             <div class="col-md-2">
-                <select asp-for="HistoryFilterDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select"></select>
+                <select asp-for="FilterHistoryDto.Annee" asp-items="Model.HistoryFilterLocal.Annee" class="form-select"></select>
             </div>
             <div class="col-md-3">
                 <button type="submit" class="btn btn-orange-apside">

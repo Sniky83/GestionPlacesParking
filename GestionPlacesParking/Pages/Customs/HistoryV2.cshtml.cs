@@ -13,7 +13,7 @@ namespace GestionPlacesParking.Web.UI.Customs
         private readonly IHistoryLocalRepository _historyLocalRepository;
 
         [BindProperty]
-        public FilterHistoryDto HistoryFilterDto { get; set; }
+        public FilterHistoryDto FilterHistoryDto { get; set; }
         public HistoryFilterLocal HistoryFilterLocal { get; set; }
         public HistoryLocal HistoryLocal { get; set; }
         public string ErrorMessage { get; set; }
@@ -31,7 +31,6 @@ namespace GestionPlacesParking.Web.UI.Customs
             {
                 HistoryFilterLocal = _historyLocalRepository.GetYears();
                 HistoryLocal = _historyLocalRepository.GetAllUserMonth();
-                _historyLocalRepository.GetAllUserMonth();
             }
             catch (Exception)
             {
@@ -48,16 +47,7 @@ namespace GestionPlacesParking.Web.UI.Customs
             try
             {
                 HistoryFilterLocal = _historyLocalRepository.GetYears();
-
-                if (HistoryFilterDto != null && (HistoryFilterDto.Mois >= 1 || HistoryFilterDto.Trimestre >= 1 || HistoryFilterDto.Annee >= 1))
-                {
-                    HistoryLocal = _historyLocalRepository.GetAllFilter(HistoryFilterDto);
-                }
-                else
-                {
-                    //Get current Month
-                    HistoryLocal = _historyLocalRepository.GetAllUserMonth();
-                }
+                HistoryLocal = _historyLocalRepository.GetAllFilter(FilterHistoryDto);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using GestionPlacesParking.Core.Application.Utils;
+﻿using GestionPlacesParking.Core.Application.Exceptions;
+using GestionPlacesParking.Core.Application.Utils;
 using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 using GestionPlacesParking.Core.Global.Utils;
 using GestionPlacesParking.Core.Interfaces.Infrastructures;
@@ -136,8 +137,8 @@ namespace GestionPlacesParking.Core.Application.Repositories
 
         private HistoryLocal GetAllUserQuarterOrYearGeneric(FilterHistoryDto filterHistoryDto)
         {
-            List<HistoryUserQuarterOrYearLocal> historyUserQuarterOrYearList;
-            List<HistoryUserLocal> historyUserLocalList;
+            List<HistoryUserQuarterOrYearLocal> historyUserQuarterOrYearList = new List<HistoryUserQuarterOrYearLocal>();
+            List<HistoryUserLocal> historyUserLocalList = new List<HistoryUserLocal>();
 
             if (filterHistoryDto != null && (filterHistoryDto.Trimestre > 0 || filterHistoryDto.Annee > 0))
             {
@@ -167,14 +168,21 @@ namespace GestionPlacesParking.Core.Application.Repositories
         {
             HistoryLocal historyLocalBase = new HistoryLocal();
 
-            //Mois actuel ou mois selectionné dans le filtre
-            if (filterHistoryDto.Mois > 0)
+            if(filterHistoryDto != null)
             {
-                historyLocalBase = GetAllUserMonthGeneric(filterHistoryDto);
-            }
-            else if(filterHistoryDto.Trimestre > 0 || filterHistoryDto.Annee > 0)
-            {
-                historyLocalBase = GetAllUserQuarterOrYearGeneric(filterHistoryDto);
+                //Mois actuel ou mois selectionné dans le filtre
+                if (filterHistoryDto.Mois > 0 && filterHistoryDto.Annee > 0)
+                {
+                    historyLocalBase = GetAllUserMonthGeneric(filterHistoryDto);
+                }
+                else if (filterHistoryDto.Trimestre > 0 || filterHistoryDto.Annee > 0)
+                {
+                    historyLocalBase = GetAllUserQuarterOrYearGeneric(filterHistoryDto);
+                }
+                else
+                {
+                    throw new NotFoundException(nameof(filterHistoryDto));
+                }
             }
             else
             {
