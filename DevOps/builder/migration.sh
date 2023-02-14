@@ -5,4 +5,5 @@ dotnet publish /src/myWebApp/GestionPlacesParking/GestionPlacesParking.Web.UI.cs
 /root/.dotnet/tools/dotnet-ef migrations add "AddTableUser" --project=/src/myWebApp/GestionPlacesParking.Core.Infrastructure
 /root/.dotnet/tools/dotnet-ef database update --project=/src/myWebApp/GestionPlacesParking.Core.Infrastructure
 apt-get remove -y dotnet-sdk-7.0
+rm -f -R /src/myWebApp
 dotnet /app/GestionPlacesParking.Web.UI.dll
