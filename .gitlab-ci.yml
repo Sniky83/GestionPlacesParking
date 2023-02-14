@@ -113,7 +113,7 @@ deploy-app:
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
     --env WebsiteUri=$URI \
     --env IsSso=1 \
-    --env ParkingContextConnectionString="Server=${BDD_HOST};Database=parcIndus;User Id=parcadmin;Password=${BDD_PWD};TrustServerCertificate=true;" 
+    --env ParkingContextConnectionString="'Server=${BDD_HOST};Database=parcIndus;User Id=parcadmin;Password=${BDD_PWD};TrustServerCertificate=true;'" 
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
