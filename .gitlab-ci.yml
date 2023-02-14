@@ -17,7 +17,6 @@ variables:
   URI: "https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan"
   BDD_HOST: $BDD_HOST
   BDD_PWD: $BDD_PWD
-  CONNEXION_STRING: "Server=$BDD_HOST;Database=parcIndus;'User Id'=parcadmin;Password=$BDD_PWD;TrustServerCertificate=true;"
   #Variables pour les run docker
   DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
   DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
@@ -113,8 +112,7 @@ deploy-app:
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
     --env WebsiteUri=$URI \
-    --env IsSso=1 \
-    --env ParkingContextConnectionString=$CONNEXION_STRING 
+    --env IsSso=1 \ 
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
