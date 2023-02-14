@@ -12,7 +12,8 @@ RUN apt-get update
 RUN apt-get install -y dotnet-sdk-7.0
 RUN mkdir /app
 RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json
+RUN mv /src/myWebApp/DevOps/builder/migration.sh /app/migration.sh
 RUN dotnet tool install -g dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
 WORKDIR /app
-CMD  ["bash","/src/myWebApp/DevOps/builder/migration.sh"]
+CMD  ["bash","/app/migration.sh"]
