@@ -100,7 +100,7 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d --rm \
+    - "docker run -d \
     -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
