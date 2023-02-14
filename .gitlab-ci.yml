@@ -59,8 +59,7 @@ create-image-app:
 #Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour execution de l'APP
     - "docker build -f DevOps/dockerfile -t $DOCKER_IMAGE_APP \
     --build-arg bdd_host=$BDD_HOST \
-    --build-arg bdd_pwd=$BDD_PWD \
-    --build-arg uri=$URI . " 
+    --build-arg bdd_pwd=$BDD_PWD . " 
     # Push Image to docker
     - docker push $DOCKER_IMAGE_APP
 
@@ -112,6 +111,8 @@ deploy-app:
     -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
+    --env WebsiteUri=$URI \
+    --env IsSso=1 \
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
