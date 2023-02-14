@@ -103,7 +103,7 @@ else
                 //On ajoute les subrows sur l'utilisateur
                 @foreach (var historyUserLocal in Model.HistoryLocal.HistoryUserLocalList)
                 {
-                    @if (!string.IsNullOrEmpty(historyUserLocal.ReservingName))
+                    @if (!string.IsNullOrEmpty(historyUserLocal.ReservingName) && historyUserLocal.NbTotalReservations > 0)
                     {
                         bool findHistoryMonth = false;
 
