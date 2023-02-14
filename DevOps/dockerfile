@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
-ARG bdd_host
-ARG bdd_pwd
+#ARG bdd_host
+#ARG bdd_pwd
 COPY . /src/myWebApp
-ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;" 
+#ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;" 
 RUN apt-get update
 RUN apt-get install -y wget
 RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
