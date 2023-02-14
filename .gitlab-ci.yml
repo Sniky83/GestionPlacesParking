@@ -10,7 +10,6 @@ variables:
   REGISTRY_URL: harbor.indus.aix.apsdigit.lan
   ##Variables Globales pour tag différentes images du projet
   DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
-  DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
   DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
   ##Variables Globales utilisé dans un ou plusieurs stage
   KEYCLOAK_PWD: $KC_PWD
@@ -19,7 +18,6 @@ variables:
   BDD_PWD: $BDD_PWD
   #Variables pour les run docker
   DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
-  DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
   DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
   DOCKER_VOLUME_BDD: bddparcindus$CI_COMMIT_REF_NAME
   DOCKER_VOLUME_APP: appparcindus$CI_COMMIT_REF_NAME
@@ -76,12 +74,10 @@ deploy-BDD:
     # Stop and remove the container if it exists
     - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
-    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_APP_VOLUME || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
-    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     # Create the volumeBDD&network
     - docker volume create $DOCKER_VOLUME_BDD || true
     - docker network create $DOCKER_NETWORK || true
