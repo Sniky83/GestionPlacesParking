@@ -112,4 +112,26 @@ deploy-app:
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
-
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    url: "https://$TRAEFIK_URL"
+    on_stop: stop
+  only:
+    - master
+    - branches
+stop:
+  stage: deploy
+  image: docker:20.10.16
+  allow_failure: true
+  rules:
+  - if: $CI_COMMIT_REF_NAME == 'master'
+    when: manual
+  tags:
+    - docker
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    action: stop
+  script:
+    - docker stop $DOCKER_CONTAINER_NAME_SQL $DOCKER_CONTAINER_NAME_APP || true
+    - docker rm $DOCKER_CONTAINER_NAME_SQL $DOCKER_CONTAINER_NAME_APP || true
+    - docker network rm $DOCKER_NETWORK || true
