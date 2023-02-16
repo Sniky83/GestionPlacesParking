@@ -1,6 +1,7 @@
 ﻿using GestionPlacesParking.Core.Models;
 using GestionPlacesParking.Core.Models.DTOs;
 using GestionPlacesParking.Core.Models.Locals.History;
+using GestionPlacesParking.Core.Models.Locals.HistoryV2;
 using GestionPlacesParking.Core.Models.Locals.Profile;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -13,12 +14,21 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
         int AddOne(Reservation reservation);
         int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
         List<SelectListItem> ExtractYears();
-        List<HistoryUserLocal> GetNumberReservationsSpecificMonth(FilterHistoryDto historyFilterDto);
-        List<HistoryUserLocal> GetUsersWhoReservedSpecificYear(FilterHistoryDto historyFilterDto);
-        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto historyFilterDto);
-        List<HistoryUserLocal> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto historyFilterDto);
+
+        List<HistoryUserLocal> GetNumberReservationsSpecificMonthV2(FilterHistoryDto? filterHistoryDto = null);
+        List<HistoryUserQuarterOrYearLocal> GetNumberReservationsSpecificTrimesterWithYearOrYearV2(FilterHistoryDto filterHistoryDto);
+        List<HistoryUserAvgLocal> GetNumberReservationsSpecificYearForAverageV2(FilterHistoryDto? filterHistoryDto = null);
+        List<HistoryUserLocal> GetUsersWhoReservedSpecificYearV2(FilterHistoryDto filterHistoryDto);
+        IEnumerable<int> GetNumberReservationsCurrentMonthForAverage(FilterHistoryDto? filterHistoryDto = null);
+
+        List<HistoryUserLocalV1> GetNumberReservationsSpecificMonth(FilterHistoryDto filterHistoryDto);
+        List<HistoryUserLocalV1> GetUsersWhoReservedSpecificYear(FilterHistoryDto filterHistoryDto);
+        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto filterHistoryDto);
+        List<HistoryUserLocalV1> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto filterHistoryDto);
+
         List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto profileDto);
         List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths();
-        public int GetFirstMonthReserved(int year);
+
+        int GetFirstMonthReserved(int year);
     }
 }

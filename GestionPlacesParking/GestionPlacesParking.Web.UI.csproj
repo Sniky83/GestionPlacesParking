@@ -34,4 +34,11 @@
     <ProjectReference Include="..\Keycloak.Core.SSO\Keycloak.Core.SSO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Customs\HistoryV2.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

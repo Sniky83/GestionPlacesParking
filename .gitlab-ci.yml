@@ -10,7 +10,6 @@ variables:
   REGISTRY_URL: harbor.indus.aix.apsdigit.lan
   ##Variables Globales pour tag différentes images du projet
   DOCKER_IMAGE_SQL: harbor.indus.aix.apsdigit.lan/parcindus/mssqlparcindus:$CI_COMMIT_REF_NAME
-  DOCKER_IMAGE_BUILD: harbor.indus.aix.apsdigit.lan/parcindus/dotnetbuildparcindus:$CI_COMMIT_REF_NAME
   DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
   ##Variables Globales utilisé dans un ou plusieurs stage
   KEYCLOAK_PWD: $KC_PWD
@@ -19,12 +18,11 @@ variables:
   BDD_PWD: $BDD_PWD
   #Variables pour les run docker
   DOCKER_CONTAINER_NAME_SQL: mssqlparcindus_$CI_COMMIT_REF_NAME
-  DOCKER_CONTAINER_NAME_BUILD: buildparcindus_$CI_COMMIT_REF_NAME
   DOCKER_CONTAINER_NAME_APP: parking_indus_$CI_COMMIT_REF_NAME
   DOCKER_VOLUME_BDD: bddparcindus$CI_COMMIT_REF_NAME
   DOCKER_VOLUME_APP: appparcindus$CI_COMMIT_REF_NAME
   DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
-  ##Variables pour reverse proxy Traefik du conteneur de l'APP
+  ##Variables pour reverse proxy Traefik
   TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
   TRAEFIK_URL: parking.deploy.indus.aix.apsdigit.lan
   TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
@@ -47,23 +45,6 @@ create-image-sql:
     # Push Image to Harbor
     - docker push $DOCKER_IMAGE_SQL
 
-create-image-builder:
-    stage: docker-images
-    image: docker:20.10.16
-    tags:
-    - docker
-    before_script:
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
-    script:
-      # Build image builder
-      # !! Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour Build DLL&migration BDD
-    - "docker build -f DevOps/builder/dockerfile -t $DOCKER_IMAGE_BUILD \
-    --build-arg uri=$URI \
-    --build-arg bdd_host=$BDD_HOST \
-    --build-arg bdd_pwd=$BDD_PWD . "
-    # Push Image to docker
-    - docker push $DOCKER_IMAGE_BUILD
-
 create-image-app:
   stage: docker-images
   image: docker:20.10.16
@@ -72,16 +53,15 @@ create-image-app:
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
-    # Build image runner !!
-    #Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour execution de l'APP
+# Build image runner !!
+#Important variables BDD_HOST&BB_PWD nécessaires pour var env connexion_string du container pour execution de l'APP
     - "docker build -f DevOps/dockerfile -t $DOCKER_IMAGE_APP \
     --build-arg bdd_host=$BDD_HOST \
-    --build-arg bdd_pwd=$BDD_PWD \
-    --build-arg uri=$URI . " 
+    --build-arg bdd_pwd=$BDD_PWD . " 
     # Push Image to docker
     - docker push $DOCKER_IMAGE_APP
 
-#séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD/creation des DataBases avant de deployer Builder/Runner
+#Séparation deploiement BDD car il faut attendre la fin du deploiement de la BDD/creation des DataBases avant de deployer Builder/Runner
 deploy-BDD:
   stage: deploy-bdd
   image: docker:20.10.16
@@ -94,12 +74,10 @@ deploy-BDD:
     # Stop and remove the container if it exists
     - docker stop $DOCKER_CONTAINER_NAME_SQL  || true
     - docker rm $DOCKER_CONTAINER_NAME_SQL  || true
-    - docker stop $DOCKER_CONTAINER_NAME_BUILD  || true
     - docker stop $DOCKER_CONTAINER_NAME_APP  || true
     - docker network rm $DOCKER_NETWORK || true
     - docker volume rm $DOCKER_APP_VOLUME || true
     - docker rm $DOCKER_CONTAINER_NAME_APP || true
-    - docker rm $DOCKER_CONTAINER_NAME_BUILD  || true
     # Create the volumeBDD&network
     - docker volume create $DOCKER_VOLUME_BDD || true
     - docker network create $DOCKER_NETWORK || true
@@ -112,23 +90,6 @@ deploy-BDD:
     --network=$DOCKER_NETWORK \
     --name $DOCKER_CONTAINER_NAME_SQL $DOCKER_IMAGE_SQL "
     - sleep 60
-    
-deploy-Builder:
-  stage: deploy
-  image: docker:20.10.16
-  tags:
-    - docker
-# To know how this is working : https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-the-docker-executor-with-docker-socket-binding
-  before_script:
-    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
-  script:
-    # Create the volume APP
-    - docker volume create $DOCKER_VOLUME_APP || true
-    # RUN builder pour migrations de BDD & liaison dossier /app
-    - "docker run -d --rm \
-    --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
-    --network=$DOCKER_NETWORK \
-    --name $DOCKER_CONTAINER_NAME_BUILD $DOCKER_IMAGE_BUILD "
 
 deploy-app:
   stage: deploy
@@ -139,13 +100,15 @@ deploy-app:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD https://$REGISTRY_URL
   script:
     # Run APP
-    - "docker run -d --rm \
+    - "docker run -d \
     -l traefik.http.services.$TRAEFIK_ROUTER.LoadBalancer.server.port=80 \
     -l $TRAEFIK_LABEL_HOST \
     -l traefik.http.routers.$TRAEFIK_ROUTER.entrypoints=http,https \
     -l traefik.http.routers.$TRAEFIK_ROUTER.service=$TRAEFIK_ROUTER \
     -l traefik.http.routers.$TRAEFIK_ROUTER.tls=true \
     --env KeycloakPasswordUser=$KEYCLOAK_PWD \
+    --env WebsiteUri=$URI \
+    --env IsSso=1 \ 
     --network=$DOCKER_NETWORK \
     --mount type=volume,src=$DOCKER_VOLUME_APP,dst=/app \
     --name $DOCKER_CONTAINER_NAME_APP $DOCKER_IMAGE_APP "
@@ -155,6 +118,7 @@ deploy-app:
     on_stop: stop
   only:
     - master
+    - branches
 stop:
   stage: deploy
   image: docker:20.10.16

@@ -1,9 +1,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
-ARG bdd_pwd
 ARG bdd_host
-ARG uri
-ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;"
-ENV IsSso=1
-ENV WebsiteUri=$uri
+ARG bdd_pwd
+COPY . /src/myWebApp
+ENV ParkingContextConnectionString="Server=${bdd_host};Database=parcIndus;User Id=parcadmin;Password=${bdd_pwd};TrustServerCertificate=true;" 
+RUN apt-get update
+RUN apt-get install -y wget
+RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN rm packages-microsoft-prod.deb
+RUN apt-get update
+RUN apt-get install -y dotnet-sdk-7.0
+RUN mkdir /app
+RUN mv /src/myWebApp/GestionPlacesParking/Settings/keycloak.Development.json /src/myWebApp/GestionPlacesParking/Settings/keycloak.Production.json
+RUN mv /src/myWebApp/DevOps/builder/migration.sh /app/migration.sh
+RUN dotnet tool install -g dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
 WORKDIR /app
-CMD  ["dotnet","GestionPlacesParking.Web.UI.dll"]
+CMD  ["bash","/app/migration.sh"]
