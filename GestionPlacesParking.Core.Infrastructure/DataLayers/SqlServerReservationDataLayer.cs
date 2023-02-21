@@ -133,17 +133,33 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public List<SelectListItem> ExtractYears()
         {
-            //Récupère la liste des années des réservations
-            return Context.Reservations
-            .Where(r => r.IsDeleted == false)
-            .Select(r =>
-                new SelectListItem
-                {
-                    Value = r.ReservationDate.Year.ToString(),
-                    Text = r.ReservationDate.Year.ToString(),
-                    Selected = (r.ReservationDate.Year == DateTime.Now.Year ? true : false)
-                }
-            ).Distinct().ToList();
+            if (IsSsoEnv.IsSso)
+            {
+                //Récupère la liste des années des réservations
+                return Context.Reservations
+                .Where(r => !string.IsNullOrEmpty(r.ProprietaireId) && r.IsDeleted == false)
+                .Select(r =>
+                    new SelectListItem
+                    {
+                        Value = r.ReservationDate.Year.ToString(),
+                        Text = r.ReservationDate.Year.ToString(),
+                        Selected = (r.ReservationDate.Year == DateTime.Now.Year ? true : false)
+                    }
+                ).Distinct().ToList();
+            }
+            else
+            {
+                return Context.Reservations
+                .Where(r => r.UserId > 0 && r.IsDeleted == false)
+                .Select(r =>
+                    new SelectListItem
+                    {
+                        Value = r.ReservationDate.Year.ToString(),
+                        Text = r.ReservationDate.Year.ToString(),
+                        Selected = (r.ReservationDate.Year == DateTime.Now.Year ? true : false)
+                    }
+                ).Distinct().ToList();
+            }
         }
 
         public List<HistoryUserLocalV1> GetNumberReservationsSpecificMonth(FilterHistoryDto filterHistoryDto)
