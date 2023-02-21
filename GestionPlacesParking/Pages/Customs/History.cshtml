@@ -1,5 +1,7 @@
 ﻿@page "/Historique"
+@using GestionPlacesParking.Core.Global.EnvironmentVariables.Envs;
 @using GestionPlacesParking.Core.Models.Locals.History
+@using System.Globalization;
 @model GestionPlacesParking.Web.UI.Customs.HistoriqueModel
 @{
     Layout = "_AdminLayout";
@@ -71,7 +73,7 @@ else
         <h1 class="display-6 mt-5">Tableau des réservations de l'année @Model.HistoryLocal.Annee</h1>
     }
 
-    <span class="text-dark">Moyenne des réservations sur le Mois courant : <b>@Model.HistoryLocal.MoyenneReservationsMois</b> j</span>
+    <span class="text-dark">Moyenne des réservations sur le Mois de @Model.HistoryLocal.Mois : <b>@Model.HistoryLocal.MoyenneReservationsMois</b> j</span>
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -83,13 +85,13 @@ else
         <tbody>
             @if (isReservationsCurMonth)
             {
-                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
+                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserLocalList)
                 {
                     @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
                     {
                         <tr>
                             <td><b>@historyLocal.ReservingName</b></td>
-                            <td class="text-center">@historyLocal.NbReservationsMois</td>
+                            <td class="text-center">@historyLocal.NbTotalReservations</td>
                             <td class="text-center">@historyLocal.MoyenneAnnee</td>
                         </tr>
                     }
@@ -99,29 +101,60 @@ else
             {
                 //Si on choisi le filtre par année ou trimestre
                 //On ajoute les subrows sur l'utilisateur
-                @foreach (var historyLocal in Model.HistoryLocal.HistoryUserListLocal)
+                @foreach (var historyUserLocal in Model.HistoryLocal.HistoryUserLocalList)
                 {
-                    @if (!string.IsNullOrEmpty(historyLocal.ReservingName))
+                    @if (!string.IsNullOrEmpty(historyUserLocal.ReservingName) && historyUserLocal.NbTotalReservations > 0)
                     {
-                        bool findHistoryMonth = Model.HistoryLocal.HistoryUserMonthsListLocal.Where(
-                            h => h.ProprietaireId == historyLocal.ProprietaireId
-                        ).Any();
+                        bool findHistoryMonth = false;
+
+                        if(IsSsoEnv.IsSso)
+                        {
+                            findHistoryMonth = Model.HistoryLocal.HistoryUserQuarterOrYearLocalList.Where(
+                                h => h.ProprietaireId == historyUserLocal.ProprietaireId
+                            ).Any();
+                        }
+                        else
+                        {
+                            findHistoryMonth = Model.HistoryLocal.HistoryUserQuarterOrYearLocalList.Where(
+                                h => h.UserId == historyUserLocal.UserId
+                            ).Any();
+                        }
 
                         if (findHistoryMonth)
                         {
                             <tr class="table-secondary">
-                                <td><b>@historyLocal.ReservingName</b></td>
-                                <td class="text-center"><b>@historyLocal.TotalReservations</b></td>
-                                <td class="text-center"><b>@historyLocal.MoyenneAnnee</b></td>
+                                <td><b>@historyUserLocal.ReservingName</b></td>
+                                <td class="text-center"><b>@historyUserLocal.NbTotalReservations</b></td>
+                                <td class="text-center"><b>@historyUserLocal.MoyenneAnnee</b></td>
                             </tr>
 
-                            @foreach (var historyMonthsLocal in Model.HistoryLocal.HistoryUserMonthsListLocal)
+                            @foreach (var historyUserQuarterOrYearLocal in Model.HistoryLocal.HistoryUserQuarterOrYearLocalList)
                             {
-                                @if (historyLocal.ProprietaireId == historyMonthsLocal.ProprietaireId || historyMonthsLocal.ProprietaireId == "")
+                                bool isFound = false;
+
+                                if (IsSsoEnv.IsSso)
                                 {
+                                    @if (historyUserLocal.ProprietaireId == historyUserQuarterOrYearLocal.ProprietaireId)
+                                    {
+                                        isFound = true;
+                                    }
+                                }
+                                else
+                                {
+                                    @if (historyUserLocal.UserId == historyUserQuarterOrYearLocal.UserId)
+                                    {
+                                        isFound = true;
+                                    }
+                                }
+
+                                if(isFound)
+                                {
+                                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(historyUserQuarterOrYearLocal.Mois);
+                                    monthName = char.ToUpperInvariant(monthName[0]) + monthName.Substring(1);
+
                                     <tr>
-                                        <td> - @historyMonthsLocal.MoisString</td>
-                                        <td class="text-center">@historyMonthsLocal.NbReservations</td>
+                                        <td> - @monthName</td>
+                                        <td class="text-center">@historyUserQuarterOrYearLocal.NbReservations</td>
                                     </tr>
                                 }
                             }

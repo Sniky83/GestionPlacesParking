@@ -18,12 +18,30 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
 
         public int AddOne(Reservation reservation)
         {
-            var checkDuplicateReservation = Context.Reservations
-            .Where(
-                r => r.IsDeleted == false &&
-                r.ReservationDate == reservation.ReservationDate &&
-                r.ParkingSlotId == reservation.ParkingSlotId
-            ).Any();
+            bool checkDuplicateReservation = false;
+
+            if (IsSsoEnv.IsSso)
+            {
+                checkDuplicateReservation =
+                    Context.Reservations
+                    .Where(
+                        r => r.IsDeleted == false &&
+                        r.ReservationDate == reservation.ReservationDate &&
+                        r.ParkingSlotId == reservation.ParkingSlotId &&
+                        !string.IsNullOrEmpty(r.ProprietaireId)
+                    ).Any();
+            }
+            else
+            {
+                checkDuplicateReservation =
+                    Context.Reservations
+                    .Where(
+                        r => r.IsDeleted == false &&
+                        r.ReservationDate == reservation.ReservationDate &&
+                        r.ParkingSlotId == reservation.ParkingSlotId &&
+                        r.UserId > 0
+                    ).Any();
+            }
 
             //Si la réservation est dupliquée
             if (checkDuplicateReservation)
@@ -159,192 +177,6 @@ namespace GestionPlacesParking.Core.Infrastructure.DataLayers
                         Selected = (r.ReservationDate.Year == DateTime.Now.Year ? true : false)
                     }
                 ).Distinct().ToList();
-            }
-        }
-
-        public List<HistoryUserLocalV1> GetNumberReservationsSpecificMonth(FilterHistoryDto filterHistoryDto)
-        {
-            int monthCondition = (filterHistoryDto == null || filterHistoryDto.Mois == 0 ? DateTime.Now.Month : filterHistoryDto.Mois);
-            int yearCondition = (filterHistoryDto == null || filterHistoryDto.Annee == 0 ? DateTime.Now.Year : filterHistoryDto.Annee);
-
-            if (IsSsoEnv.IsSso)
-            {
-                //Récupère le nombre de réservations par personne sur un mois donné
-                return Context.Reservations
-                .Where(
-                    r => r.ReservationDate.Month == monthCondition &&
-                    r.ReservationDate.Year == yearCondition &&
-                    !string.IsNullOrEmpty(r.ProprietaireId) &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        ProprietaireId = h.Key.ProprietaireId,
-                        NbReservationsMois = h.Count()
-                    }
-                ).ToList();
-            }
-            else
-            {
-                return Context.Reservations
-                .Include(r => r.User)
-                .Where(
-                    r => r.ReservationDate.Month == monthCondition &&
-                    r.ReservationDate.Year == yearCondition &&
-                    r.UserId > 0 &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
-                .OrderBy(r => r.Key.Month)
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        UserId = h.Key.UserId,
-                        NbReservationsMois = h.Count(),
-                        User = h.First().User
-                    }
-                ).ToList();
-            }
-        }
-
-        public List<HistoryUserLocalV1> GetUsersWhoReservedSpecificYear(FilterHistoryDto filterHistoryDto)
-        {
-            int yearCondition = (filterHistoryDto == null || filterHistoryDto.Annee == 0 ? DateTime.Now.Year : filterHistoryDto.Annee);
-
-            if (IsSsoEnv.IsSso)
-            {
-                return Context.Reservations
-                .Where(
-                    r => r.ReservationDate.Year == yearCondition &&
-                    !string.IsNullOrEmpty(r.ProprietaireId) &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ProprietaireId })
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        ProprietaireId = h.Key.ProprietaireId
-                    }
-                ).Distinct().ToList();
-            }
-            else
-            {
-                return Context.Reservations
-                .Include(r => r.User)
-                .Where(
-                    r => r.ReservationDate.Year == yearCondition &&
-                    r.UserId > 0 &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.UserId })
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        UserId = h.Key.UserId,
-                        User = h.First().User
-                    }
-                ).Distinct().ToList();
-            }
-        }
-
-        public List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto filterHistoryDto)
-        {
-            int startingMonth = (filterHistoryDto == null || filterHistoryDto.Trimestre == 0 ? 1 : QuarterUtil.GetStartingMonthFromQuarter(filterHistoryDto.Trimestre));
-            int endingMonthCondition = (filterHistoryDto == null || filterHistoryDto.Trimestre == 0 ? 12 : QuarterUtil.GetStartingMonthFromQuarter(filterHistoryDto.Trimestre + 1) - 1);
-
-            int yearCondition = (filterHistoryDto == null || filterHistoryDto.Annee == 0 ? DateTime.Now.Year : filterHistoryDto.Annee);
-
-            if (IsSsoEnv.IsSso)
-            {
-                return Context.Reservations
-                .Where(
-                    r =>
-                    (
-                        //Trimestre
-                        r.ReservationDate.Month >= startingMonth &&
-                        r.ReservationDate.Month <= endingMonthCondition
-                    ) &&
-                    r.ReservationDate.Year == yearCondition &&
-                    !string.IsNullOrEmpty(r.ProprietaireId) &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
-                .OrderBy(r => r.Key.Month)
-                .Select(h =>
-                    new HistoryUserMonthsLocal
-                    {
-                        ProprietaireId = h.Key.ProprietaireId,
-                        NbReservations = h.Count(),
-                        Mois = h.Key.Month
-                    }
-                ).ToList();
-            }
-            else
-            {
-                return Context.Reservations
-                .Where(
-                    r =>
-                    (
-                        //Trimestre
-                        r.ReservationDate.Month >= startingMonth &&
-                        r.ReservationDate.Month <= endingMonthCondition
-                    ) &&
-                    r.ReservationDate.Year == yearCondition &&
-                    r.UserId > 0 &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
-                .OrderBy(r => r.Key.Month)
-                .Select(h =>
-                    new HistoryUserMonthsLocal
-                    {
-                        UserId = h.Key.UserId,
-                        NbReservations = h.Count(),
-                        Mois = h.Key.Month
-                    }
-                ).ToList();
-            }
-        }
-
-        public List<HistoryUserLocalV1> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto filterHistoryDto)
-        {
-            int yearCondition = (filterHistoryDto == null || filterHistoryDto.Annee == 0 ? DateTime.Now.Year : filterHistoryDto.Annee);
-
-            if (IsSsoEnv.IsSso)
-            {
-                //Récupère le nombre de réservations par personne sur une année
-                //Utile également pour calculer la moyenne des réservations /1 année
-                return Context.Reservations
-                .Where(
-                    r => r.ReservationDate.Year == yearCondition &&
-                    !string.IsNullOrEmpty(r.ProprietaireId) &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.ProprietaireId })
-                .OrderBy(r => r.Key.Month)
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        ProprietaireId = h.Key.ProprietaireId,
-                        NbReservationsMois = h.Count(),
-                        Mois = h.Key.Month
-                    }
-                ).ToList();
-            }
-            else
-            {
-                //Récupère le nombre de réservations par personne sur une année
-                //Utile également pour calculer la moyenne des réservations /1 année
-                return Context.Reservations
-                .Where(
-                    r => r.ReservationDate.Year == yearCondition &&
-                    r.UserId > 0 &&
-                    r.IsDeleted == false)
-                .GroupBy(r => new { r.ReservationDate.Month, r.UserId })
-                .OrderBy(r => r.Key.Month)
-                .Select(h =>
-                    new HistoryUserLocalV1
-                    {
-                        UserId = h.Key.UserId,
-                        NbReservationsMois = h.Count(),
-                        Mois = h.Key.Month
-                    }
-                ).ToList();
             }
         }
 
