@@ -24,7 +24,7 @@ variables:
   DOCKER_NETWORK: parcindus_$CI_COMMIT_REF_NAME
   ##Variables pour reverse proxy Traefik
   TRAEFIK_ROUTER: parking_$CI_COMMIT_REF_NAME
-  TRAEFIK_URL: parking.deploy.indus.aix.apsdigit.lan
+  TRAEFIK_URL: parking-$CI_COMMIT_REF.deploy.indus.aix.apsdigit.lan
   TRAEFIK_LABEL_HOST: 'traefik.http.routers.$TRAEFIK_ROUTER.rule=Host(`$TRAEFIK_URL`)'
   ##Variables de run du conteneur de BDD
   BBD_ADMIN_PWD: $BDD_ADMIN_PWD
