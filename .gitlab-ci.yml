@@ -13,7 +13,7 @@ variables:
   DOCKER_IMAGE_APP: harbor.indus.aix.apsdigit.lan/parcindus/appparcindus:$CI_COMMIT_REF_NAME
   ##Variables Globales utilisé dans un ou plusieurs stage
   KEYCLOAK_PWD: $KC_PWD
-  URI: "https://parking-$CI_COMMIT_REF_NAME.indus.aix.apsdigit.lan"
+  URI: "https://parking-$CI_COMMIT_REF_NAME.deploy.indus.aix.apsdigit.lan"
   BDD_HOST: $BDD_HOST
   BDD_PWD: $BDD_PWD
   #Variables pour les run docker
