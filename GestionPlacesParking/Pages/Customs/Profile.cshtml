@@ -1,5 +1,6 @@
 ﻿@page "/Profile"
 @using GestionPlacesParking.Web.UI.CustomMethods
+@using System.Globalization;
 @model GestionPlacesParking.Web.UI.Pages.Customs.ProfileModel
 @{
     Layout = CorrectLayoutCustomMethod.GetCorrectLayout(HttpContext);
@@ -22,8 +23,11 @@
     <tbody>
         @foreach (var profileUserMonthsLocal in Model.ProfileLocal.ProfileUserMonthsListLocal)
         {
+            string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(profileUserMonthsLocal.Mois);
+            monthName = char.ToUpperInvariant(monthName[0]) + monthName.Substring(1);
+
             <tr class="@(profileUserMonthsLocal.NbReservations == 0 ? "table-secondary" : "")">
-                <td class="text-center">@profileUserMonthsLocal.MoisString</td>
+                <td class="text-center">@monthName</td>
                 <td class="text-center">@profileUserMonthsLocal.NbReservations</td>
                 <td class="text-center">@profileUserMonthsLocal.MoyenneMois</td>
             </tr>
