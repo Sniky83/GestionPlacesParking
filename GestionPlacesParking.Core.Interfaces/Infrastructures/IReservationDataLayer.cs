@@ -9,26 +9,23 @@ namespace GestionPlacesParking.Core.Interfaces.Infrastructures
 {
     public interface IReservationDataLayer
     {
+        //Reservation Repository
         List<Reservation> GetAllReservationsCurrentWeek();
         List<Reservation> GetAllReservationsNextWeek();
         int AddOne(Reservation reservation);
         int DeleteOne(DeleteOneReservationDto deleteOneReservationDto);
         List<SelectListItem> ExtractYears();
 
+        //History Repository
         List<HistoryUserLocal> GetNumberReservationsSpecificMonthV2(FilterHistoryDto? filterHistoryDto = null);
         List<HistoryUserQuarterOrYearLocal> GetNumberReservationsSpecificTrimesterWithYearOrYearV2(FilterHistoryDto filterHistoryDto);
         List<HistoryUserAvgLocal> GetNumberReservationsSpecificYearForAverageV2(FilterHistoryDto? filterHistoryDto = null);
         List<HistoryUserLocal> GetUsersWhoReservedSpecificYearV2(FilterHistoryDto filterHistoryDto);
         IEnumerable<int> GetNumberReservationsCurrentMonthForAverage(FilterHistoryDto? filterHistoryDto = null);
 
-        List<HistoryUserLocalV1> GetNumberReservationsSpecificMonth(FilterHistoryDto filterHistoryDto);
-        List<HistoryUserLocalV1> GetUsersWhoReservedSpecificYear(FilterHistoryDto filterHistoryDto);
-        List<HistoryUserMonthsLocal> GetNumberReservationsSpecificTrimesterWithYear(FilterHistoryDto filterHistoryDto);
-        List<HistoryUserLocalV1> GetNumberReservationsSpecificYearForAverage(FilterHistoryDto filterHistoryDto);
-
+        //Profile Repository
         List<ProfileUserMonthsLocal> GetNumberReservationsThisYear(GetProfileDto profileDto);
         List<ProfileAllUserMonthsLocal> GetNumberReservationsByMonths();
-
         int GetFirstMonthReserved(int year);
     }
 }

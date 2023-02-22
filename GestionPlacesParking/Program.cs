@@ -7,6 +7,7 @@ using GestionPlacesParking.Core.Interfaces.Infrastructures;
 using GestionPlacesParking.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SelfieAWookie.Core.Selfies.Infrastructures.Loggers;
+using SelfieAWookieAPI.ExtensionMethods;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,21 +29,7 @@ builder.Services.AddDbContext<ParkingDbContext>(options =>
 builder.Logging.AddProvider(new CustomLoggerProvider());
 
 // Injections de dépendances
-builder.Services.AddScoped<IUserDataLayer, SqlServerUserDataLayer>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-builder.Services.AddScoped<IParkingSlotDataLayer, SqlServerParkingSlotDataLayer>();
-builder.Services.AddScoped<IParkingSlotRepository, ParkingSlotRepository>();
-
-builder.Services.AddScoped<IReservationDataLayer, SqlServerReservationDataLayer>();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-
-//Pas de dataLayer car en Local
-builder.Services.AddScoped<IDayLocalRepository, DayLocalRepository>();
-
-//Utilise le dataLayer de Réservation
-builder.Services.AddScoped<IHistoryLocalRepository, HistoryLocalRepository>();
-builder.Services.AddScoped<IProfileLocalRepository, ProfileLocalRepository>();
+builder.Services.AddInjections();
 
 // Config de la session
 builder.Services.AddDistributedMemoryCache();

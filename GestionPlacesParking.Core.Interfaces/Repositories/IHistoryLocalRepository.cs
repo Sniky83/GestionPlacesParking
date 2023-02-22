@@ -8,8 +8,7 @@ namespace GestionPlacesParking.Core.Interfaces.Repositories
     public interface IHistoryLocalRepository
     {
         HistoryFilterLocal GetYears();
-        HistoryLocalV1 GetAll(FilterHistoryDto? filterHistoryDto = null);
-        HistoryLocal GetAllUserMonth();
+        HistoryLocal GetAll();
         HistoryLocal GetAllFilter(FilterHistoryDto filterHistoryDto);
     }
 }
