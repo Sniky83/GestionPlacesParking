@@ -31,7 +31,7 @@ Ces informations sont disponibles dans l'onglet : <b>Historique</b>.<br/>
 
 ### Explication de l'architecture :
 Cette application à été codée de manière à segmenter ses différentes parties.
-Elle est composée de <b>6 bibliothèques de classes<b/>.
+Elle est composée de <b>6 bibliothèques de classes</b>.
 #### Application :
 Cette partie sert globalement au code fonctionnel de l'application, on y stock également les règles métier.<br/>
 Ex: Je récupère les données de la BDD et j'effectue mon traitement, mon algorithme, je mets des exceptions pour protéger mon code.
@@ -49,7 +49,7 @@ Cette partie sert à la partie BDD, c'est d'ailleurs ici qu'on y met les requêt
 Ex: Je fais une requête à ma BDD avec EntityFramework et je renvoie un objet à ma couche <b>Application</b>.
 - Ciphers : On y stock les Algorithmes de chiffrement.
 - Databases : On y configure nos <b>Models</b> pour les convertirs en table SQL.
-- DataLayers : C'est le coeur de la bilbiothèque. Ici on y met les fichiers pour faire les requêtes à la BDD. Ces fichiers sont créers à partir du nom de nos tables donc nos <b>Models<b/>.
+- DataLayers : C'est le coeur de la bilbiothèque. Ici on y met les fichiers pour faire les requêtes à la BDD. Ces fichiers sont créers à partir du nom de nos tables donc nos <b>Models</b>.
 - Loggers : On y stock nos customs loggers.
 - Migrations : On y stock nos migrations de code en BDD (code first).
 #### Infrastructure Web :
