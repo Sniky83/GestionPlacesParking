@@ -52,7 +52,7 @@ namespace GestionPlacesParking.Web.UI.Customs
             catch (Exception ex)
             {
                 result = StatusCode(StatusCodes.Status500InternalServerError);
-                _logger.LogCritical("Erreur interne avec l'HistoryLocal repository.\n{ex}", ex);
+                _logger.LogCritical($"Erreur interne avec l'HistoryLocal repository.\n{ex}");
             }
 
             return result;

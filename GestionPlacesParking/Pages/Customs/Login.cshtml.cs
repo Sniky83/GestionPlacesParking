@@ -39,7 +39,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical("Impossible de se connecter à Keycloak.\n{ex}", ex);
+                    _logger.LogCritical($"Impossible de se connecter à Keycloak.\n{ex}");
                     return RedirectToAction("CallbackError", new { error = $"Erreur lors de l'appel à Keycloak. Exception {ex.Message}" });
                 }
             }
