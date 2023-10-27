@@ -42,7 +42,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs.Services
                 DeleteOneReservationDto.UserId = userId;
             }
 
-            DeleteOneReservationDto.IsAdmin = (isAdmin == 1) ? true : false;
+            DeleteOneReservationDto.IsAdmin = (isAdmin == 1);
 
             try
             {
