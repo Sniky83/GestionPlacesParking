@@ -42,7 +42,7 @@ namespace GestionPlacesParking.Web.UI.Pages.Customs
                 {
                     //Erreur interne (Day repository)
                     result = StatusCode(StatusCodes.Status500InternalServerError);
-                    _logger.LogCritical($"Erreur interne avec le Day repository.\n{ex}");
+                    _logger.LogCritical("Erreur interne avec le Day repository.\n{ex}", ex);
                 }
             }
 
